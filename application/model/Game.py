@@ -15,16 +15,16 @@ class Singleton(object):
 class Game(Singleton):
     def __init__(self):
         self.size = 10
-        self.__map = [[1, 0, 3, 0, 3, 0, 0, 0, 0, 3],
-                      [0, 0, 3, 0, 3, 0, 0, 0, 0, 3],
-                      [4, 0, 3, 0, 3, 0, 0, 4, 0, 3],
-                      [0, 0, 3, 0, 3, 0, 0, 0, 0, 3],
+        self.__map = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3],
                       [0, 0, 0, 0, 3, 0, 0, 0, 0, 3],
-                      [4, 0, 3, 0, 3, 0, 4, 0, 0, 3],
-                      [0, 0, 3, 0, 3, 0, 0, 0, 0, 3],
-                      [0, 0, 3, 0, 3, 0, 0, 4, 0, 3],
-                      [2, 0, 3, 0, 3, 0, 0, 0, 0, 3],
-                      [0, 0, 3, 0, 3, 0, 0, 0, 0, 3]]
+                      [4, 0, 0, 0, 0, 0, 4, 4, 0, 3],
+                      [0, 0, 4, 0, 3, 0, 0, 0, 0, 3],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+                      [4, 0, 0, 0, 3, 0, 4, 0, 0, 3],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 3],
+                      [0, 0, 0, 0, 3, 0, 0, 4, 0, 3],
+                      [2, 0, 3, 0, 0, 0, 0, 0, 0, 3],
+                      [0, 0, 0, 0, 3, 0, 0, 0, 0, 3]]
 
         Settings.BLOCK_SIZE = Settings.SIZE // self.size
         self.__player = Player(0, 0)
@@ -32,6 +32,12 @@ class Game(Singleton):
 
     def __outBorders(self, i: int, j: int):
         return i <= 0 or j <= 0 or i >= self.size or j >= self.size
+
+    def __collition(self, i: int, j: int):
+        return self.__map[i][j] != Settings.GRASS or self.__outBorders(i, j)
+
+    def moveOnMap(self):
+        pass
 
     def getMap(self):
         return self.__map

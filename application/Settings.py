@@ -8,6 +8,7 @@ class Settings:
     ENEMY = 2
     BLOCK = 3
     BOX = 4
+    BOMB = 5
 
     # SCREEN
     SIZE = 800

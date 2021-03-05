@@ -1,9 +1,9 @@
-from application.view.ViewHandler import ViewHandler
+from application.GameLoop import GameLoop
 
 
 def main():
-    handler = ViewHandler()
-    handler.update()
+    gl = GameLoop()
+    gl.start()
 
 
 if __name__ == '__main__':
