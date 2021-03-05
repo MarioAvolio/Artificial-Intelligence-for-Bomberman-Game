@@ -30,11 +30,8 @@ class Game(Singleton):
         self.__player = Player(0, 0)
         self.__enemy = Enemy(8, 0)
 
-    def __outBorders(self, i: int, j: int):
+    def outBorders(self, i: int, j: int):
         return i <= 0 or j <= 0 or i >= self.size or j >= self.size
-
-    def __collition(self, i: int, j: int):
-        return self.__map[i][j] != Settings.GRASS or self.__outBorders(i, j)
 
     def moveOnMap(self):
         pass

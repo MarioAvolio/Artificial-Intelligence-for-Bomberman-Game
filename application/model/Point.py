@@ -8,3 +8,15 @@ class Point:
 
     def getJ(self):
         return self.__j
+
+    def moveUp(self):
+        self.__i -= 1
+
+    def moveDown(self):
+        self.__i += 1
+
+    def moveLeft(self):
+        self.__j -= 1
+
+    def moveRight(self):
+        self.__j += 1

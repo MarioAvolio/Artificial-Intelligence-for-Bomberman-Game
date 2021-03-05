@@ -2,31 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5c8dc34-5861-4ada-8634-556433dbbd0e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/application/GameLoop.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/application/model/Movements.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/application/resources/bomb.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/application/resources/enemy.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/Settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/Settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/controller/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/controller/MoveController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/model/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/battleship.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/bomb/1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/bomb/2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/bomb/3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/bomberman.png" beforeDir="false" afterPath="$PROJECT_DIR$/application/resources/bomberman.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/tile015.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/tile031.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/tile047.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/tile080.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/tile081.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/tile082.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/resources/explosion/tile083.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/view/ViewHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/view/ViewHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/model/Movements.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Movements.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/model/Point.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Point.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -185,7 +164,7 @@
       <workItem from="1614939002538" duration="36000" />
       <workItem from="1614945023197" duration="6609000" />
       <workItem from="1614956698410" duration="2864000" />
-      <workItem from="1614977209749" duration="4248000" />
+      <workItem from="1614977209749" duration="4837000" />
     </task>
     <task id="LOCAL-00001" summary="Adding img">
       <created>1614959568060</created>
@@ -194,11 +173,21 @@
       <option name="project" value="LOCAL" />
       <updated>1614959568060</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Adding GameLoop">
+      <created>1614981614328</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1614981614328</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UpdateCopyrightCheckinHandler">
+    <option name="UPDATE_COPYRIGHT" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
@@ -252,10 +241,10 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="922" y="173" key="SettingsEditor/0.0.1920.1050@0.0.1920.1050" timestamp="1614951067889" />
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1614959572489">
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1614981616984">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1050@0.0.1920.1050" timestamp="1614959572489" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1050@0.0.1920.1050" timestamp="1614981616984" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/BomberFriends$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1614981294892" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application" />
