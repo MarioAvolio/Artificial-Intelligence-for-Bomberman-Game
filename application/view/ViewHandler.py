@@ -13,24 +13,49 @@ class ViewHandler:
         pygame.init()
         self.__screen = pygame.display.set_mode((Settings.SIZE, Settings.SIZE))
 
-    def update(self) -> bool:
+        # PATH
+        terrainPath = os.path.join(Settings.resource_path, "terrain")
 
-        img = pygame.image.load(os.path.join(Settings.resource_path, "battleship.png"))
-        img = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
-        self.__screen.blit(img, (Settings.SIZE / 2, Settings.SIZE / 2))  # resize
+        # IMG TERRAIN
+        img = pygame.image.load(os.path.join(terrainPath, "block.png"))
+        self.__imgBlock = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+        img = pygame.image.load(os.path.join(terrainPath, "box.png"))
+        self.__imgBox = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+        img = pygame.image.load(os.path.join(terrainPath, "grass.png"))
+        self.__imgGrass = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
+        # IMG BOMBERMAN
+        img = pygame.image.load(os.path.join(Settings.resource_path, "bomberman.png"))
+        self.__imgBomberman = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
+        # BACKGROUND
+        self.__imgBackground = pygame.image.load(os.path.join(Settings.resource_path, "background.png"))
+
+    def update(self) -> bool:
+        maps = game.getMap()
 
         while 1:
-            maps = game.getMap()
-            self.__screen.fill(0)
+            # add background img
+            self.__screen.blit(self.__imgBackground, (0, 0))
             for i in range(game.size):
                 for j in range(game.size):
-                    if maps[i][j] == Settings.BLOCK1:
-                        self.__screen.blit(img, (0, 0))
 
-            pygame.display.flip()
+                    img = None
+                    if maps[i][j] == Settings.BLOCK:
+                        img = self.__imgBlock
+                    elif maps[i][j] == Settings.BOX:
+                        img = self.__imgBox
+                    elif maps[i][j] == Settings.PLAYER:
+                        img = self.__imgBomberman
+                    # elif maps[i][j] == Settings.GRASS:
+                    #     img = self.__imgGrass
+
+                    if img is not None:
+                        self.__screen.blit(img, (j * Settings.BLOCK_SIZE, i * Settings.BLOCK_SIZE))
+
+            pygame.display.update()
 
             for event in pygame.event.get():
 
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    exit(0)
+                    return False

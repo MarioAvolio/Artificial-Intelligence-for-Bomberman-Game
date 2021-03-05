@@ -3,10 +3,11 @@ import os
 
 class Settings:
     # GAME
-    NONE = 0
+    GRASS = 0
     PLAYER = 1
     ENEMY = 2
-    BLOCK1 = 3
+    BLOCK = 3
+    BOX = 4
 
     # SCREEN
     SIZE = 800
