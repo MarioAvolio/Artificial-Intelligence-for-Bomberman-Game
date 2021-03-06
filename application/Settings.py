@@ -14,6 +14,6 @@ class Settings:
 
     # SCREEN
     SIZE = 800
-    BLOCK_SIZE = SIZE // Game.size
+    BLOCK_SIZE = SIZE // Game.getInstance().getSize()
     current_path = os.path.dirname(__file__)  # Where your .py file is located
     resource_path = os.path.join(current_path, 'resources')  # The resource folder path

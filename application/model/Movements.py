@@ -10,19 +10,12 @@ class Movements:
     UP = 2
     DOWN = 3
 
-    reverse = {
-        LEFT: RIGHT,
-        RIGHT: LEFT,
-        DOWN: UP,
-        UP: DOWN
-    }
-
     def __init__(self):
         pass
 
     @staticmethod
     def collision(i: int, j: int) -> bool:
-        return Game().outBorders(i, j) or Game.map[i][j] != Settings.GRASS
+        return Game.getInstance().outBorders(i, j) or Game.getInstance().getMap()[i][j] != Settings.GRASS
 
     @staticmethod
     def move(mov: int, point):
@@ -40,4 +33,4 @@ class Movements:
             point.setI(oldPoint.getI())
             point.setJ(oldPoint.getJ())
         else:
-            Game().moveOnMap(point, oldPoint)
+            Game.getInstance().moveOnMap(point, oldPoint)

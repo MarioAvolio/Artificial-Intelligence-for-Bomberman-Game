@@ -24,9 +24,9 @@ class MoveController:
             # controller
             if event.type == pygame.KEYDOWN:
                 if event.key in MoveController.movements:
-                    Movements.move(MoveController.movements[event.key], Game.player)
-            elif pygame.KEYUP == event.type:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    pass
+                    Movements.move(MoveController.movements[event.key], Game.getInstance().getPlayer())
+            # elif pygame.KEYUP == event.type:
+            #     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+            #         pass
 
         return True
