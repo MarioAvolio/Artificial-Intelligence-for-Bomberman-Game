@@ -20,3 +20,6 @@ class Point:
 
     def moveRight(self):
         self.__j += 1
+
+    def __str__(self):
+        return str(self.__i) + ", " + str(self.__j)

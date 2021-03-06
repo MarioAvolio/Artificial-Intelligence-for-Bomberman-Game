@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b5c8dc34-5861-4ada-8634-556433dbbd0e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/controller/MoveController.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/controller/MoveController.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/model/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Game.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/model/Movements.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Movements.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/model/Point.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Point.py" afterDir="false" />
@@ -165,6 +166,7 @@
       <workItem from="1614945023197" duration="6609000" />
       <workItem from="1614956698410" duration="2864000" />
       <workItem from="1614977209749" duration="4837000" />
+      <workItem from="1615041496352" duration="3661000" />
     </task>
     <task id="LOCAL-00001" summary="Adding img">
       <created>1614959568060</created>
@@ -221,22 +223,38 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="1236" y="151" key="Github.UntrackedFilesDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1614945200053" />
-    <state width="1877" height="162" key="GridCell.Tab.0.bottom" timestamp="1614981294901">
+    <state width="1877" height="162" key="GridCell.Tab.0.bottom" timestamp="1615045100745">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="162" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1614981294901" />
-    <state width="1877" height="162" key="GridCell.Tab.0.center" timestamp="1614981294901">
+    <state width="1877" height="162" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1615045100745" />
+    <state width="1877" height="162" key="GridCell.Tab.0.center" timestamp="1615045100745">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="162" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1614981294901" />
-    <state width="1877" height="162" key="GridCell.Tab.0.left" timestamp="1614981294901">
+    <state width="1877" height="162" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1615045100745" />
+    <state width="1877" height="162" key="GridCell.Tab.0.left" timestamp="1615045100745">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="162" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1614981294901" />
-    <state width="1877" height="162" key="GridCell.Tab.0.right" timestamp="1614981294901">
+    <state width="1877" height="162" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1615045100745" />
+    <state width="1877" height="162" key="GridCell.Tab.0.right" timestamp="1615045100745">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="162" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1614981294901" />
+    <state width="1877" height="162" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1615045100745" />
+    <state width="1877" height="344" key="GridCell.Tab.1.bottom" timestamp="1615044441491">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="344" key="GridCell.Tab.1.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1615044441491" />
+    <state width="1877" height="344" key="GridCell.Tab.1.center" timestamp="1615044441491">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="344" key="GridCell.Tab.1.center/0.0.1920.1050@0.0.1920.1050" timestamp="1615044441491" />
+    <state width="1877" height="344" key="GridCell.Tab.1.left" timestamp="1615044441490">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="344" key="GridCell.Tab.1.left/0.0.1920.1050@0.0.1920.1050" timestamp="1615044441490" />
+    <state width="1877" height="344" key="GridCell.Tab.1.right" timestamp="1615044441491">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="344" key="GridCell.Tab.1.right/0.0.1920.1050@0.0.1920.1050" timestamp="1615044441491" />
     <state x="922" y="173" key="SettingsEditor" timestamp="1614951067889">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
@@ -245,9 +263,13 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1050@0.0.1920.1050" timestamp="1614981616984" />
+    <state x="623" y="227" width="672" height="678" key="search.everywhere.popup" timestamp="1615042388318">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="623" y="227" width="672" height="678" key="search.everywhere.popup/0.0.1920.1050@0.0.1920.1050" timestamp="1615042388318" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/BomberFriends$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1614981294892" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application" />
+    <SUITE FILE_PATH="coverage/BomberFriends$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1615045100732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application" />
     <SUITE FILE_PATH="coverage/BomberFriends$ViewHandler__1_.coverage" NAME="ViewHandler (1) Coverage Results" MODIFIED="1614955449585" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application/view" />
     <SUITE FILE_PATH="coverage/BomberFriends$ViewHandler.coverage" NAME="ViewHandler Coverage Results" MODIFIED="1614953689684" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application/view" />
   </component>
