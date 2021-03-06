@@ -13,4 +13,4 @@ class GameLoop(Thread):
         vh = ViewHandler()
         while MoveController.update():
             vh.update()
-            sleep(0.6)
+            sleep(0.1)

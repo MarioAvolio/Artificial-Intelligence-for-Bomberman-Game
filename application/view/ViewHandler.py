@@ -5,16 +5,11 @@ import pygame
 from application.Settings import Settings
 from application.model.Game import Game, Singleton
 
-game = Game()
-
 
 class ViewHandler(Singleton):
     def __init__(self):
         pygame.init()
         self.__screen = pygame.display.set_mode((Settings.SIZE, Settings.SIZE))
-
-        # map
-        self.__maps = game.getMap()
 
         # PATH
         terrainPath = os.path.join(Settings.resource_path, "terrain")
@@ -41,19 +36,19 @@ class ViewHandler(Singleton):
     def update(self):
         # add background img
         # self.__screen.blit(self.__imgBackground, (0, 0))
-        for i in range(game.size):
-            for j in range(game.size):
+        for i in range(Game().size):
+            for j in range(Game().size):
 
                 img = None
-                if self.__maps[i][j] == Settings.BLOCK:
+                if Game.map[i][j] == Settings.BLOCK:
                     img = self.__imgBlock
-                elif self.__maps[i][j] == Settings.BOX:
+                elif Game.map[i][j] == Settings.BOX:
                     img = self.__imgBox
-                elif self.__maps[i][j] == Settings.PLAYER:
+                elif Game.map[i][j] == Settings.PLAYER:
                     img = self.__imgBomberman
-                elif self.__maps[i][j] == Settings.ENEMY:
+                elif Game.map[i][j] == Settings.ENEMY:
                     img = self.__imgEnemy
-                elif self.__maps[i][j] == Settings.GRASS:
+                elif Game.map[i][j] == Settings.GRASS:
                     img = self.__imgGrass
 
                 if img is not None:

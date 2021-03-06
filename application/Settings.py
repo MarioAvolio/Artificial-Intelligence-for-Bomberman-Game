@@ -1,5 +1,7 @@
 import os
 
+from application.model.Game import Game
+
 
 class Settings:
     # GAME
@@ -12,6 +14,6 @@ class Settings:
 
     # SCREEN
     SIZE = 800
-    BLOCK_SIZE = None
+    BLOCK_SIZE = SIZE // Game.size
     current_path = os.path.dirname(__file__)  # Where your .py file is located
     resource_path = os.path.join(current_path, 'resources')  # The resource folder path

@@ -22,7 +22,7 @@ class Movements:
 
     @staticmethod
     def collision(i: int, j: int) -> bool:
-        return Game().getMap()[i][j] != Settings.GRASS or Game().outBorders(i, j)
+        return Game.map[i][j] != Settings.GRASS or Game().outBorders(i, j)
 
     @staticmethod
     def move(mov: int, point):
@@ -35,6 +35,8 @@ class Movements:
             point.moveUp()
         elif mov == Movements.DOWN:
             point.moveDown()
+        #
+        # print(hex(id(point)))
 
         # if Movements.collision(point.getI(), point.getJ()):
         #     mov = Movements.reverse[mov]
