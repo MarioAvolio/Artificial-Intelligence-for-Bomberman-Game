@@ -35,12 +35,10 @@ class Game(Singleton):
     size = len(map)
 
     def outBorders(self, i: int, j: int) -> bool:
-        return i <= 0 or j <= 0 or i >= self.size or j >= self.size
+        return i < 0 or j < 0 or i >= Game.size or j >= Game.size
 
     def __swap(self, oldI, oldJ, newI, newJ):
-        # print(f"fist: {Game.map[oldI][oldJ]}")
         Game.map[oldI][oldJ], Game.map[newI][newJ] = Game.map[newI][newJ], Game.map[oldI][oldJ]
-        # print(f"second: {Game.map[oldI][oldJ]}")
 
     def moveOnMap(self, newPoint: Point, oldPoint: Point):
         self.__swap(oldPoint.getI(), oldPoint.getJ(), newPoint.getI(), newPoint.getJ())

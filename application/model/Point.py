@@ -9,6 +9,12 @@ class Point:
     def getJ(self):
         return self.__j
 
+    def setI(self, i: int):
+        self.__i = i
+
+    def setJ(self, j: int):
+        self.__j = j
+
     def moveUp(self):
         self.__i -= 1
 
