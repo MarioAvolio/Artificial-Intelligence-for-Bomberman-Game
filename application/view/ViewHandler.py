@@ -2,8 +2,8 @@ import os
 
 import pygame
 
-from application.Settings import Settings
-from application.model.Game import Game
+from application.Settings_ import Settings
+from application.model.Game_ import Game
 
 
 class Singleton(object):
@@ -39,6 +39,10 @@ class ViewHandler(Singleton):
         img = pygame.image.load(os.path.join(Settings.resource_path, "enemy.png"))
         self.__imgEnemy = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
 
+        # IMG BOMB
+        img = pygame.image.load(os.path.join(Settings.resource_path, "bomb.png"))
+        self.__imgBomb = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
         # BACKGROUND
         self.__imgBackground = pygame.image.load(os.path.join(Settings.resource_path, "background.png"))
 
@@ -49,16 +53,18 @@ class ViewHandler(Singleton):
             for j in range(Game.getInstance().getSize()):
 
                 img = None
-                if Game.getInstance().getMap()[i][j] == Settings.BLOCK:
+                if Game.getInstance().getElement(i, j) == Settings.BLOCK:
                     img = self.__imgBlock
-                elif Game.getInstance().getMap()[i][j] == Settings.BOX:
+                elif Game.getInstance().getElement(i, j) == Settings.BOX:
                     img = self.__imgBox
-                elif Game.getInstance().getMap()[i][j] == Settings.PLAYER:
+                elif Game.getInstance().getElement(i, j) == Settings.PLAYER:
                     img = self.__imgBomberman
-                elif Game.getInstance().getMap()[i][j] == Settings.ENEMY:
+                elif Game.getInstance().getElement(i, j) == Settings.ENEMY:
                     img = self.__imgEnemy
-                elif Game.getInstance().getMap()[i][j] == Settings.GRASS:
+                elif Game.getInstance().getElement(i, j) == Settings.GRASS:
                     img = self.__imgGrass
+                elif Game.getInstance().getElement(i, j) == Settings.BOMB:
+                    img = self.__imgBomb
 
                 if img is not None:
                     self.__screen.blit(img, (j * Settings.BLOCK_SIZE, i * Settings.BLOCK_SIZE))

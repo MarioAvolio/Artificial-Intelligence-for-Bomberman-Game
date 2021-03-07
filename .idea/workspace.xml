@@ -20,11 +20,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5c8dc34-5861-4ada-8634-556433dbbd0e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/application/model/Bomb_.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/Settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/Settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/controller/MoveController.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/controller/MoveController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/model/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/model/Movements.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Movements.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/model/Enemy.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Enemy_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/model/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Game_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/model/Movements.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Movements_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/model/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Player_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/model/Point.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Point_.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/view/ViewHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/view/ViewHandler.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -185,7 +189,8 @@
       <workItem from="1614945023197" duration="6609000" />
       <workItem from="1614956698410" duration="2864000" />
       <workItem from="1614977209749" duration="4837000" />
-      <workItem from="1615041496352" duration="8828000" />
+      <workItem from="1615041496352" duration="9545000" />
+      <workItem from="1615142456309" duration="3471000" />
     </task>
     <task id="LOCAL-00001" summary="Adding img">
       <created>1614959568060</created>
@@ -222,7 +227,14 @@
       <option name="project" value="LOCAL" />
       <updated>1615049350575</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Modify Singleton and private variable">
+      <created>1615050478975</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1615050478975</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -241,6 +253,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
@@ -251,20 +264,25 @@
     <MESSAGE value="TODO: movements" />
     <MESSAGE value="Movements Works!" />
     <MESSAGE value="Make Collision" />
-    <option name="LAST_COMMIT_MESSAGE" value="Make Collision" />
+    <MESSAGE value="Modify Singleton and private variable" />
+    <option name="LAST_COMMIT_MESSAGE" value="Modify Singleton and private variable" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="640" y="260" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1615143384575">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="640" y="260" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1615143384575" />
     <state x="1073" y="275" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1614980961704">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="1073" y="275" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1614980961704" />
-    <state x="585" y="7" key="CommitChangelistDialog2" timestamp="1615049314060">
+    <state x="585" y="7" key="CommitChangelistDialog2" timestamp="1615050442847">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="585" y="7" key="CommitChangelistDialog2/0.0.1920.1050@0.0.1920.1050" timestamp="1615049314060" />
+    <state x="585" y="7" key="CommitChangelistDialog2/0.0.1920.1050@0.0.1920.1050" timestamp="1615050442847" />
     <state x="1258" y="446" key="Github.CreateGistDialog" timestamp="1614945082901">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
@@ -277,53 +295,53 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="1236" y="151" key="Github.UntrackedFilesDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1614945200053" />
-    <state width="1877" height="162" key="GridCell.Tab.0.bottom" timestamp="1615050377181">
+    <state width="1877" height="162" key="GridCell.Tab.0.bottom" timestamp="1615145934577">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="162" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1615050377181" />
-    <state width="1877" height="162" key="GridCell.Tab.0.center" timestamp="1615050377181">
+    <state width="1877" height="162" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1615145934577" />
+    <state width="1877" height="162" key="GridCell.Tab.0.center" timestamp="1615145934577">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="162" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1615050377181" />
-    <state width="1877" height="162" key="GridCell.Tab.0.left" timestamp="1615050377180">
+    <state width="1877" height="162" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1615145934577" />
+    <state width="1877" height="162" key="GridCell.Tab.0.left" timestamp="1615145934577">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="162" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1615050377180" />
-    <state width="1877" height="162" key="GridCell.Tab.0.right" timestamp="1615050377181">
+    <state width="1877" height="162" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1615145934577" />
+    <state width="1877" height="162" key="GridCell.Tab.0.right" timestamp="1615145934577">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="162" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1615050377181" />
-    <state width="1877" height="344" key="GridCell.Tab.1.bottom" timestamp="1615044441491">
+    <state width="1877" height="162" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1615145934577" />
+    <state width="1877" height="344" key="GridCell.Tab.1.bottom" timestamp="1615055037986">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="344" key="GridCell.Tab.1.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1615044441491" />
-    <state width="1877" height="344" key="GridCell.Tab.1.center" timestamp="1615044441491">
+    <state width="1877" height="344" key="GridCell.Tab.1.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1615055037986" />
+    <state width="1877" height="344" key="GridCell.Tab.1.center" timestamp="1615055037986">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="344" key="GridCell.Tab.1.center/0.0.1920.1050@0.0.1920.1050" timestamp="1615044441491" />
-    <state width="1877" height="344" key="GridCell.Tab.1.left" timestamp="1615044441490">
+    <state width="1877" height="344" key="GridCell.Tab.1.center/0.0.1920.1050@0.0.1920.1050" timestamp="1615055037986" />
+    <state width="1877" height="344" key="GridCell.Tab.1.left" timestamp="1615055037986">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="344" key="GridCell.Tab.1.left/0.0.1920.1050@0.0.1920.1050" timestamp="1615044441490" />
-    <state width="1877" height="344" key="GridCell.Tab.1.right" timestamp="1615044441491">
+    <state width="1877" height="344" key="GridCell.Tab.1.left/0.0.1920.1050@0.0.1920.1050" timestamp="1615055037986" />
+    <state width="1877" height="344" key="GridCell.Tab.1.right" timestamp="1615055037986">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="344" key="GridCell.Tab.1.right/0.0.1920.1050@0.0.1920.1050" timestamp="1615044441491" />
+    <state width="1877" height="344" key="GridCell.Tab.1.right/0.0.1920.1050@0.0.1920.1050" timestamp="1615055037986" />
     <state x="922" y="173" key="SettingsEditor" timestamp="1614951067889">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="922" y="173" key="SettingsEditor/0.0.1920.1050@0.0.1920.1050" timestamp="1614951067889" />
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1615049356736">
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1615050481194">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1050@0.0.1920.1050" timestamp="1615049356736" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1050@0.0.1920.1050" timestamp="1615050481194" />
     <state x="623" y="227" width="672" height="678" key="search.everywhere.popup" timestamp="1615042388318">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="623" y="227" width="672" height="678" key="search.everywhere.popup/0.0.1920.1050@0.0.1920.1050" timestamp="1615042388318" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/BomberFriends$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1615050377169" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application" />
+    <SUITE FILE_PATH="coverage/BomberFriends$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1615145934565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application" />
     <SUITE FILE_PATH="coverage/BomberFriends$ViewHandler__1_.coverage" NAME="ViewHandler (1) Coverage Results" MODIFIED="1614955449585" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application/view" />
     <SUITE FILE_PATH="coverage/BomberFriends$ViewHandler.coverage" NAME="ViewHandler Coverage Results" MODIFIED="1614953689684" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application/view" />
   </component>

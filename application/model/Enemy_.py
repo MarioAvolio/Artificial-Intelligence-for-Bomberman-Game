@@ -1,4 +1,4 @@
-from application.model.Point import Point
+from application.model.Point_ import Point
 
 
 class Enemy(Point):

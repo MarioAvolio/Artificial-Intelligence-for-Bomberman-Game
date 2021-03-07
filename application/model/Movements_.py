@@ -1,7 +1,7 @@
 import copy
 
-from application.Settings import Settings
-from application.model.Game import Game
+from application.Settings_ import Settings
+from application.model.Game_ import Game
 
 
 class Movements:
@@ -15,7 +15,7 @@ class Movements:
 
     @staticmethod
     def collision(i: int, j: int) -> bool:
-        return Game.getInstance().outBorders(i, j) or Game.getInstance().getMap()[i][j] != Settings.GRASS
+        return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) != Settings.GRASS
 
     @staticmethod
     def move(mov: int, point):
@@ -34,3 +34,9 @@ class Movements:
             point.setJ(oldPoint.getJ())
         else:
             Game.getInstance().moveOnMap(point, oldPoint)
+
+    @staticmethod
+    def plant():
+        i = Game.getInstance().getPlayer().getI()
+        j = Game.getInstance().getPlayer().getJ()
+        Game.getInstance().plantBomb(i, j)

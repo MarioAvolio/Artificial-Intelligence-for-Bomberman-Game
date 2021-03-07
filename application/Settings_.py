@@ -1,6 +1,6 @@
 import os
 
-from application.model.Game import Game
+from application.model.Game_ import Game
 
 
 class Settings:

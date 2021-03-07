@@ -1,7 +1,7 @@
 import pygame
 
-from application.model.Game import Game
-from application.model.Movements import Movements
+from application.model.Game_ import Game
+from application.model.Movements_ import Movements
 
 
 class MoveController:
@@ -25,6 +25,8 @@ class MoveController:
             if event.type == pygame.KEYDOWN:
                 if event.key in MoveController.movements:
                     Movements.move(MoveController.movements[event.key], Game.getInstance().getPlayer())
+                elif event.key == pygame.K_SPACE:
+                    Movements.plant()
             # elif pygame.KEYUP == event.type:
             #     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
             #         pass
