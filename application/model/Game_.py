@@ -7,7 +7,6 @@ from application.model.Point_ import Point
 
 
 class Game:
-
     __instance = None
 
     @staticmethod
@@ -58,8 +57,8 @@ class Game:
             if Movements.collision(i, j):
                 return False
 
-            from application import Settings_
-            self.writeElement(i, j, Settings_.BOMB)
+            from application.Settings_ import Settings
+            self.writeElement(i, j, Settings.BOMB)
             # START THREAD BOMB
             Bomb(i, j).start()
 
@@ -69,17 +68,22 @@ class Game:
         with self.lock:
             self.__swap(oldPoint.getI(), oldPoint.getJ(), newPoint.getI(), newPoint.getJ())
 
-    def explode(self, listPoints):
+    def explode(self, listPoints, coordinateBomb: Point):
         with self.lock:
-            from application import Settings_
+            print("i am in explode")
+            from application.model.Movements_ import Movements
+            from application.Settings_ import Settings
+            # remove bomb
+            self.writeElement(coordinateBomb.getI(), coordinateBomb.getJ(), Settings.GRASS)
+
             for point in listPoints:
-                from application.model.Movements_ import Movements
-                if self.getElement(point.getI(), point.getJ()) == Settings_.ENEMY:
+                if self.getElement(point.getI(), point.getJ()) == Settings.ENEMY:
                     pass  # win
-                elif self.getElement(point.getI(), point.getJ()) == Settings_.PLAYER:
+                elif self.getElement(point.getI(), point.getJ()) == Settings.PLAYER:
                     pass  # game over
-                elif not Movements.collision(point.getI(), point.getJ()):
-                    self.writeElement(point.getI(), point.getJ(), Settings_.GRASS)
+                elif not Movements.collisionBomb(point.getI(), point.getJ()):
+                    print(f"no collision in {point.getI()}, {point.getJ()}")
+                    self.writeElement(point.getI(), point.getJ(), Settings.GRASS)
 
     # SETTER
     def writeElement(self, i: int, j: int, elem):

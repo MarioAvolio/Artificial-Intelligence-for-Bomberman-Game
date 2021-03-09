@@ -9,6 +9,14 @@ class Movements:
     UP = 2
     DOWN = 3
 
+    MOVEMENTS_MATRIX = {  # MOVEMENTS ON THE MATRIX
+        # tuples
+        LEFT: (0, -1),
+        RIGHT: (0, 1),
+        UP: (-1, 0),
+        DOWN: (1, 0)
+    }
+
     def __init__(self):
         pass
 
@@ -18,16 +26,16 @@ class Movements:
         return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) != Settings.GRASS
 
     @staticmethod
-    def move(mov: int, point):
+    def collisionBomb(i: int, j: int) -> bool:
+        from application.Settings_ import Settings
+        return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) == Settings.BLOCK
+
+    @staticmethod
+    def move(direction: int, point):
         oldPoint = copy.deepcopy(point)
-        if mov == Movements.LEFT:
-            point.moveLeft()
-        elif mov == Movements.RIGHT:
-            point.moveRight()
-        elif mov == Movements.UP:
-            point.moveUp()
-        elif mov == Movements.DOWN:
-            point.moveDown()
+
+        if direction in Movements.MOVEMENTS_MATRIX.keys():
+            point.move(direction)
 
         if Movements.collision(point.getI(), point.getJ()):
             point.setI(oldPoint.getI())
@@ -37,6 +45,8 @@ class Movements:
 
     @staticmethod
     def plant():
-        i = Game.getInstance().getPlayer().getI()
-        j = Game.getInstance().getPlayer().getJ()
+        from application.controller.MoveController import MoveController
+        from application.model.Point_ import Point
+        i = Game.getInstance().getPlayer().getI() + MoveController.lastMovement[Point.I]
+        j = Game.getInstance().getPlayer().getJ() + MoveController.lastMovement[Point.J]
         Game.getInstance().plantBomb(i, j)

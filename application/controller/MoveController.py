@@ -5,6 +5,7 @@ from application.model.Movements_ import Movements
 
 
 class MoveController:
+    lastMovement = None
     movements = {
         pygame.K_LEFT: Movements.LEFT,
         pygame.K_RIGHT: Movements.RIGHT,
@@ -24,7 +25,9 @@ class MoveController:
             # controller
             if event.type == pygame.KEYDOWN:
                 if event.key in MoveController.movements:
-                    Movements.move(MoveController.movements[event.key], Game.getInstance().getPlayer())
+                    direction = MoveController.movements[event.key]
+                    MoveController.lastMovement = Movements.MOVEMENTS_MATRIX[direction]  # set last movement
+                    Movements.move(direction, Game.getInstance().getPlayer())
                 elif event.key == pygame.K_SPACE:
                     Movements.plant()
             # elif pygame.KEYUP == event.type:
