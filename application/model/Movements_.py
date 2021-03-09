@@ -1,6 +1,5 @@
 import copy
 
-from application.Settings_ import Settings
 from application.model.Game_ import Game
 
 
@@ -15,6 +14,7 @@ class Movements:
 
     @staticmethod
     def collision(i: int, j: int) -> bool:
+        from application.Settings_ import Settings
         return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) != Settings.GRASS
 
     @staticmethod

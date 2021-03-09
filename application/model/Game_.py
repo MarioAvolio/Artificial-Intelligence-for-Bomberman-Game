@@ -1,14 +1,13 @@
 from threading import RLock
 
-from application import Settings_
 from application.model.Bomb_ import Bomb
 from application.model.Enemy_ import Enemy
-from application.model.Movements_ import Movements
 from application.model.Player_ import Player
 from application.model.Point_ import Point
 
 
 class Game:
+
     __instance = None
 
     @staticmethod
@@ -55,9 +54,11 @@ class Game:
 
     def plantBomb(self, i: int, j: int) -> bool:
         with self.lock:
+            from application.model.Movements_ import Movements
             if Movements.collision(i, j):
                 return False
 
+            from application import Settings_
             self.writeElement(i, j, Settings_.BOMB)
             # START THREAD BOMB
             Bomb(i, j).start()
@@ -70,7 +71,9 @@ class Game:
 
     def explode(self, listPoints):
         with self.lock:
+            from application import Settings_
             for point in listPoints:
+                from application.model.Movements_ import Movements
                 if self.getElement(point.getI(), point.getJ()) == Settings_.ENEMY:
                     pass  # win
                 elif self.getElement(point.getI(), point.getJ()) == Settings_.PLAYER:
