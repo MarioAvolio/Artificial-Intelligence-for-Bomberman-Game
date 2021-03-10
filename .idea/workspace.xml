@@ -20,13 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5c8dc34-5861-4ada-8634-556433dbbd0e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/application/resources/icon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/resources/background.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/GameLoop.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/GameLoop.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/controller/MoveController.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/controller/MoveController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/model/Bomb_.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Bomb_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/model/Enemy_.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Enemy_.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/model/Game_.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Game_.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/model/Movements_.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/model/Movements_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/resources/background.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/application/view/ViewHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/application/view/ViewHandler.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -68,14 +68,14 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\Mario\Documents\BomberFriends\application\resources" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Mario\Documents\BomberFriends\application\resources" />
       <recent name="D:\Mario\Documents\BomberFriends\application\view" />
       <recent name="D:\Mario\Documents\BomberFriends" />
       <recent name="D:\Mario\Documents\BomberFriends\application\model" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Mario\Documents\BomberFriends\application\resources" />
     </key>
   </component>
   <component name="RunManager" selected="Python.main (1)">
@@ -191,7 +191,8 @@
       <workItem from="1615142456309" duration="3637000" />
       <workItem from="1615220560363" duration="17000" />
       <workItem from="1615316341913" duration="4055000" />
-      <workItem from="1615368111933" duration="1431000" />
+      <workItem from="1615368111933" duration="1588000" />
+      <workItem from="1615385872772" duration="2833000" />
     </task>
     <task id="LOCAL-00001" summary="Adding img">
       <created>1614959568060</created>
@@ -282,7 +283,8 @@
     <MESSAGE value="Modify Singleton and private variable" />
     <MESSAGE value="Problem ImportError" />
     <MESSAGE value="Fixing ImportError" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing ImportError" />
+    <MESSAGE value="Adding icon and finish game" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding icon and finish game" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -296,10 +298,10 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="1073" y="275" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1614980961704" />
-    <state x="585" y="7" key="CommitChangelistDialog2" timestamp="1615323547597">
+    <state x="585" y="7" key="CommitChangelistDialog2" timestamp="1615369678831">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="585" y="7" key="CommitChangelistDialog2/0.0.1920.1050@0.0.1920.1050" timestamp="1615323547597" />
+    <state x="585" y="7" key="CommitChangelistDialog2/0.0.1920.1050@0.0.1920.1050" timestamp="1615369678831" />
     <state x="1258" y="446" key="Github.CreateGistDialog" timestamp="1614945082901">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
@@ -312,22 +314,22 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="1236" y="151" key="Github.UntrackedFilesDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1614945200053" />
-    <state width="1877" height="166" key="GridCell.Tab.0.bottom" timestamp="1615369540076">
+    <state width="1877" height="166" key="GridCell.Tab.0.bottom" timestamp="1615388648963">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="166" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1615369540076" />
-    <state width="1877" height="166" key="GridCell.Tab.0.center" timestamp="1615369540076">
+    <state width="1877" height="166" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1615388648963" />
+    <state width="1877" height="166" key="GridCell.Tab.0.center" timestamp="1615388648963">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="166" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1615369540076" />
-    <state width="1877" height="166" key="GridCell.Tab.0.left" timestamp="1615369540075">
+    <state width="1877" height="166" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1615388648963" />
+    <state width="1877" height="166" key="GridCell.Tab.0.left" timestamp="1615388648962">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="166" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1615369540075" />
-    <state width="1877" height="166" key="GridCell.Tab.0.right" timestamp="1615369540076">
+    <state width="1877" height="166" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1615388648962" />
+    <state width="1877" height="166" key="GridCell.Tab.0.right" timestamp="1615388648963">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="166" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1615369540076" />
+    <state width="1877" height="166" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1615388648963" />
     <state width="1877" height="352" key="GridCell.Tab.1.bottom" timestamp="1615323643225">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
@@ -362,7 +364,7 @@
     <state x="623" y="227" width="672" height="678" key="search.everywhere.popup/0.0.1920.1050@0.0.1920.1050" timestamp="1615042388318" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/BomberFriends$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1615369540062" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application" />
+    <SUITE FILE_PATH="coverage/BomberFriends$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1615388648952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application" />
     <SUITE FILE_PATH="coverage/BomberFriends$ViewHandler__1_.coverage" NAME="ViewHandler (1) Coverage Results" MODIFIED="1614955449585" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application/view" />
     <SUITE FILE_PATH="coverage/BomberFriends$ViewHandler.coverage" NAME="ViewHandler Coverage Results" MODIFIED="1614953689684" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/application/view" />
   </component>

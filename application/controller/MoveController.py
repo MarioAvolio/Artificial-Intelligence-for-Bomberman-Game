@@ -5,7 +5,7 @@ from application.model.Movements_ import Movements
 
 
 class MoveController:
-    lastMovement = None
+    lastMovement = Movements.MOVEMENTS_MATRIX[Movements.RIGHT]
     movements = {
         pygame.K_LEFT: Movements.LEFT,
         pygame.K_RIGHT: Movements.RIGHT,
@@ -19,6 +19,7 @@ class MoveController:
     @staticmethod
     def update() -> bool:
         for event in pygame.event.get():
+
             if event.type == pygame.QUIT:
                 return False
 

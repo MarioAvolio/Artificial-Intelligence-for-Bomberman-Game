@@ -51,10 +51,11 @@ class ViewHandler(Singleton):
         self.__imgBomb = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
 
         # BACKGROUND
-        self.__imgBackground = pygame.image.load(os.path.join(Settings.resource_path, "background.png"))
+        img = pygame.image.load(os.path.join(Settings.resource_path, "background.jpg"))
+        self.__imgBackground = pygame.transform.scale(img, (Settings.SIZE, Settings.SIZE))
 
     def update(self):
-        if Game.finish is None:
+        if Game.getInstance().getFinish() is None:
             for i in range(Game.getInstance().getSize()):
                 for j in range(Game.getInstance().getSize()):
 
@@ -80,6 +81,10 @@ class ViewHandler(Singleton):
         pygame.display.update()
 
     def __gameOver(self):
+        # INSIDE OF THE GAME LOOP
+        self.__screen.blit(self.__imgBackground, (0, 0))
+
+        # REST OF ITEMS ARE BLIT'D TO SCREEN.
         # define the RGB value for white,
         #  green, blue colour .
         white = (255, 255, 255)
@@ -98,7 +103,7 @@ class ViewHandler(Singleton):
 
         # create a text suface object,
         # on which text is drawn on it.
-        text = font.render(f"{Game.finish} Win!", True, green, blue)
+        text = font.render(f"{Game.getInstance().getFinish()} Win!", True, green, blue)
 
         # create a rectangular object for the
         # text surface object
@@ -106,10 +111,6 @@ class ViewHandler(Singleton):
 
         # set the center of the rectangular object.
         textRect.center = (X, Y)
-
-        # completely fill the surface object
-        # with white color
-        self.__screen.fill(white)
 
         # copying the text surface object
         # to the display surface object
