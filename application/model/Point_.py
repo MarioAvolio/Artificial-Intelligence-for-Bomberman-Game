@@ -1,8 +1,13 @@
-class Point:
+from languages.predicate import Predicate
+
+
+class Point(Predicate):
+    predicate_name = "point"
     I = 0
     J = 1
 
     def __init__(self, i: int, j: int):
+        Predicate.__init__(self, [i, j])
         self.__coordinate = [i, j]  # list
 
     def getI(self):
@@ -22,3 +27,6 @@ class Point:
         if direction in Movements.MOVEMENTS_MATRIX.keys():
             self.__coordinate[Point.I] += Movements.MOVEMENTS_MATRIX[direction][Point.I]
             self.__coordinate[Point.J] += Movements.MOVEMENTS_MATRIX[direction][Point.J]
+
+    def __str__(self):
+        return f"Point({self.__coordinate[Point.I]}, {self.__coordinate[Point.J]}) \n"
