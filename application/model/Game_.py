@@ -8,6 +8,7 @@ from application.model.Point_ import Point
 
 class Game:
     __instance = None
+    finish = None
 
     @staticmethod
     def getInstance():
@@ -46,23 +47,22 @@ class Game:
     def outBorders(self, i: int, j: int) -> bool:
         return i < 0 or j < 0 or i >= self.__size or j >= self.__size
 
-    def __swap(self, oldI, oldJ, newI, newJ):
+    def __swap(self, oldI: int, oldJ: int, newI: int, newJ: int):
         self.__map[oldI][oldJ], self.__map[newI][newJ] = \
             self.__map[newI][newJ], \
             self.__map[oldI][oldJ]
 
-    def plantBomb(self, i: int, j: int) -> bool:
+    def plantBomb(self, i: int, j: int):
         with self.lock:
             from application.model.Movements_ import Movements
-            if Movements.collision(i, j):
-                return False
-
             from application.Settings_ import Settings
+
+            if Movements.collision(i, j):
+                return
+
             self.writeElement(i, j, Settings.BOMB)
             # START THREAD BOMB
             Bomb(i, j).start()
-
-            return True
 
     def moveOnMap(self, newPoint: Point, oldPoint: Point):
         with self.lock:
@@ -70,19 +70,18 @@ class Game:
 
     def explode(self, listPoints, coordinateBomb: Point):
         with self.lock:
-            print("i am in explode")
             from application.model.Movements_ import Movements
             from application.Settings_ import Settings
+
             # remove bomb
             self.writeElement(coordinateBomb.getI(), coordinateBomb.getJ(), Settings.GRASS)
 
-            for point in listPoints:
+            for point in listPoints:  # adjacent point
                 if self.getElement(point.getI(), point.getJ()) == Settings.ENEMY:
-                    pass  # win
+                    Game.finish = "Player"  # player win
                 elif self.getElement(point.getI(), point.getJ()) == Settings.PLAYER:
-                    pass  # game over
+                    Game.finish = "Enemy"  # enemy win
                 elif not Movements.collisionBomb(point.getI(), point.getJ()):
-                    print(f"no collision in {point.getI()}, {point.getJ()}")
                     self.writeElement(point.getI(), point.getJ(), Settings.GRASS)
 
     # SETTER

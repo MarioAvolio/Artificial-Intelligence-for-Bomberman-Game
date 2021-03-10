@@ -17,9 +17,6 @@ class Movements:
         DOWN: (1, 0)
     }
 
-    def __init__(self):
-        pass
-
     @staticmethod
     def collision(i: int, j: int) -> bool:
         from application.Settings_ import Settings
@@ -47,6 +44,7 @@ class Movements:
     def plant():
         from application.controller.MoveController import MoveController
         from application.model.Point_ import Point
+
         i = Game.getInstance().getPlayer().getI() + MoveController.lastMovement[Point.I]
         j = Game.getInstance().getPlayer().getJ() + MoveController.lastMovement[Point.J]
         Game.getInstance().plantBomb(i, j)

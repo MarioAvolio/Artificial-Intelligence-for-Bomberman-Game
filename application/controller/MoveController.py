@@ -30,6 +30,7 @@ class MoveController:
                     Movements.move(direction, Game.getInstance().getPlayer())
                 elif event.key == pygame.K_SPACE:
                     Movements.plant()
+
             # elif pygame.KEYUP == event.type:
             #     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
             #         pass
