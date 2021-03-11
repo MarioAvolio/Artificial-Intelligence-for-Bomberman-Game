@@ -8,6 +8,7 @@ from specializations.dlv2.desktop.dlv2_desktop_service import DLV2DesktopService
 
 from application.GameLoop import GameLoop
 from application.Settings_ import Settings
+from application.model.Game_ import Game
 from application.model.Point_ import Point
 
 
@@ -27,11 +28,21 @@ def initializeASP():
         ASPMapper.get_instance().register_class(Point)
         inputProgram = ASPInputProgram()
 
-        rules = "point(Y,X) | noPoint(X,Y) :- point(X,Y)."
-        rules += ":~ point(X,Y). [X@Y, X, Y]"
+        rules = "point(X,Y,T)."
+        # rules = "point(Y,X) | noPoint(X,Y) :- point(X,Y)."
+        # rules += ":~ point(X,Y). [X@Y, X, Y]"
 
         inputProgram.add_program(rules)
-        inputProgram.add_program("point(1,2).")
+
+        # inputProgram.add_program("point(1,2).") INPUT FACTS EXAMPLE
+
+        # input matrix as facts
+        for i in range(0, 16):
+            for j in range(0, 16):
+                inputProgram.add_program(
+                    "point(" + str(i) + "," + str(j) + "," + str(Game.getElement(Game.getInstance(), i, j)))
+                print(Game.getElement(Game.getInstance(), i, j))
+
         handler.add_program(inputProgram)
         answerSets = handler.start_sync()
 
