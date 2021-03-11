@@ -1,13 +1,12 @@
 from languages.predicate import Predicate
 
-
 class Point(Predicate):
     predicate_name = "point"
     I = 0
     J = 1
 
     def __init__(self, i: int, j: int):
-        Predicate.__init__(self, [i, j])
+        Predicate.__init__(self, [("i"), ("j")])
         self.__coordinate = [i, j]  # list
 
     def getI(self):
