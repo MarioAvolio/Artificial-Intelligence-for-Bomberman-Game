@@ -28,20 +28,15 @@ def initializeASP():
         ASPMapper.get_instance().register_class(Point)
         inputProgram = ASPInputProgram()
 
-        rules = "point(X,Y,T)."
-        # rules = "point(Y,X) | noPoint(X,Y) :- point(X,Y)."
-        # rules += ":~ point(X,Y). [X@Y, X, Y]"
-
-        inputProgram.add_program(rules)
-
-        # inputProgram.add_program("point(1,2).") INPUT FACTS EXAMPLE
-
+        # Example facts: point(I, J, ELEMENT_TYPE)
         # input matrix as facts
-        for i in range(0, 16):
-            for j in range(0, 16):
-                inputProgram.add_program(
-                    "point(" + str(i) + "," + str(j) + "," + str(Game.getElement(Game.getInstance(), i, j)))
-                print(Game.getElement(Game.getInstance(), i, j))
+        size = Game.getInstance().getSize()
+        for i in range(size):
+            for j in range(size):
+                inputProgram.add_program(f"point({i},{j},{Game.getInstance().getElement(i, j)}")
+
+        # input type of elements as facts
+
 
         handler.add_program(inputProgram)
         answerSets = handler.start_sync()
@@ -56,5 +51,5 @@ def initializeASP():
 
 if __name__ == '__main__':
     # install_whl(os.path.join(Settings.resource_path, "../../lib/EmbASP-7.4.0-py2.py3-none-any.whl")) # EMBASP INSTALLER
-    # main()
     initializeASP()
+    # main()

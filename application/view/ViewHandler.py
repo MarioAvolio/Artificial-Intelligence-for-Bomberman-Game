@@ -30,25 +30,30 @@ class ViewHandler(Singleton):
         # PATH
         terrainPath = os.path.join(Settings.resource_path, "terrain")
 
+        # IMG DICTIONARY
+        self.__imgdictionary = {}
+
         # IMG TERRAIN
         img = pygame.image.load(os.path.join(terrainPath, "block.png"))
-        self.__imgBlock = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+        self.__imgdictionary[Settings.BLOCK] = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
         img = pygame.image.load(os.path.join(terrainPath, "box.png"))
-        self.__imgBox = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+        self.__imgdictionary[Settings.BOX] = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
         img = pygame.image.load(os.path.join(terrainPath, "grass.png"))
-        self.__imgGrass = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+        self.__imgdictionary[Settings.GRASS] = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
 
         # IMG BOMBERMAN
         img = pygame.image.load(os.path.join(Settings.resource_path, "bomberman.png"))
-        self.__imgBomberman = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+        self.__imgdictionary[Settings.PLAYER] = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
 
         # IMG ENEMY
         img = pygame.image.load(os.path.join(Settings.resource_path, "enemy.png"))
-        self.__imgEnemy = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+        self.__imgdictionary[Settings.ENEMY] = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
 
         # IMG BOMB
         img = pygame.image.load(os.path.join(Settings.resource_path, "bomb.png"))
-        self.__imgBomb = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+        self.__imgdictionary[Settings.BOMB] = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
 
         # BACKGROUND
         img = pygame.image.load(os.path.join(Settings.resource_path, "background.jpg"))
@@ -59,21 +64,8 @@ class ViewHandler(Singleton):
             for i in range(Game.getInstance().getSize()):
                 for j in range(Game.getInstance().getSize()):
 
-                    img = None
-                    if Game.getInstance().getElement(i, j) == Settings.BLOCK:
-                        img = self.__imgBlock
-                    elif Game.getInstance().getElement(i, j) == Settings.BOX:
-                        img = self.__imgBox
-                    elif Game.getInstance().getElement(i, j) == Settings.PLAYER:
-                        img = self.__imgBomberman
-                    elif Game.getInstance().getElement(i, j) == Settings.ENEMY:
-                        img = self.__imgEnemy
-                    elif Game.getInstance().getElement(i, j) == Settings.GRASS:
-                        img = self.__imgGrass
-                    elif Game.getInstance().getElement(i, j) == Settings.BOMB:
-                        img = self.__imgBomb
-
-                    if img is not None:
+                    if Game.getInstance().getElement(i, j) in self.__imgdictionary.keys():
+                        img = self.__imgdictionary[Game.getInstance().getElement(i, j)]
                         self.__screen.blit(img, (j * Settings.BLOCK_SIZE, i * Settings.BLOCK_SIZE))
         else:
             self.__gameOver()
