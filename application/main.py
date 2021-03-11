@@ -19,5 +19,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # install_whl(os.path.join(Settings.resource_path, "EmbASP-7.4.0-py2.py3-none-any.whl")) # EMBASP INSTALLER
+    install_whl(os.path.join(Settings.resource_path, "../../lib/EmbASP-7.4.0-py2.py3-none-any.whl")) # EMBASP INSTALLER
     main()
