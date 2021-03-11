@@ -18,17 +18,17 @@ def install_whl(path):
 def main():
     gl = GameLoop()
     gl.start()
-    handler = DesktopHandler(DLV2DesktopService(os.path.join(Settings.resource_path, "DLV2.exe")))
 
 
 def initializeASP():
     try:
 
-        handler = DesktopHandler(DLV2DesktopService(os.path.join(Settings.resource_path, "DLV2.exe")))
+        handler = DesktopHandler(DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
         ASPMapper.get_instance().register_class(Point)
         inputProgram = ASPInputProgram()
 
-        rules = "point(Y,X) :- point(X,Y)."
+        rules = "point(Y,X) | noPoint(X,Y) :- point(X,Y)."
+        rules += ":~ point(X,Y). [X@Y, X, Y]"
 
         inputProgram.add_program(rules)
         inputProgram.add_program("point(1,2).")
@@ -38,12 +38,8 @@ def initializeASP():
         for answerSet in answerSets.get_optimal_answer_sets():
             print(answerSet)
 
-            for obj in answerSet.get_atoms():
-
-                if isinstance(obj, Point):
-                    print(answerSet)
-
     except Exception as e:
+        print("exception")
         print(str(e))
 
 
