@@ -153,15 +153,19 @@ class Point(Predicate):
     I = 0
     J = 1
 
-    def __init__(self, i=None, j=None):
-        Predicate.__init__(self, [("i"), ("j")])
+    def __init__(self, i=None, j=None, type=None):
+        Predicate.__init__(self, [("i"), ("j"), ("type")])
         self.__coordinate = [i, j]  # list
+        self.__type = type
 
     def getI(self):
         return self.__coordinate[Point.I]
 
     def getJ(self):
         return self.__coordinate[Point.J]
+
+    def getType(self):
+        return self.__type
 
     def setI(self, i: int):
         self.__coordinate[Point.I] = i
@@ -180,12 +184,12 @@ class Point(Predicate):
 
 class Player(Point):
     def __init__(self, i: int, j: int):
-        super().__init__(i, j)
+        super().__init__(i, j, Settings.PLAYER)
 
 
 class Enemy(Point):
     def __init__(self, i: int, j: int):
-        super().__init__(i, j)
+        super().__init__(i, j, Settings.ENEMY)
 
 
 class Bomb(Thread, Point):

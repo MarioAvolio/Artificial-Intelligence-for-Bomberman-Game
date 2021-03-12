@@ -18,6 +18,7 @@ def install_whl(path):
 def main():
     gl = GameLoop()
     gl.start()
+    initializeASP()
 
 
 def initializeASP():
@@ -32,9 +33,16 @@ def initializeASP():
         size = Game.getInstance().getSize()
         for i in range(size):
             for j in range(size):
-                inputProgram.add_program(f"point({i},{j},{Game.getInstance().getElement(i, j)}")
+                typeNumber = Game.getInstance().getElement(i, j)
+                inputProgram.add_program(f"point({i},{j},{Settings.mapString[typeNumber]}")
+                print(f"point({i},{j},{Settings.mapString[typeNumber]}).")
 
         # input type of elements as facts
+        # elem(type).
+        for typeNumber in range(6):
+            inputProgram.add_program(f"elem({Settings.mapString[typeNumber]}).")
+            print(f"elem({Settings.mapString[typeNumber]}).")
+
 
         handler.add_program(inputProgram)
         answerSets = handler.start_sync()
@@ -49,5 +57,4 @@ def initializeASP():
 
 if __name__ == '__main__':
     # install_whl(os.path.join(Settings.resource_path, "../../lib/EmbASP-7.4.0-py2.py3-none-any.whl")) # EMBASP INSTALLER
-    # initializeASP()
     main()
