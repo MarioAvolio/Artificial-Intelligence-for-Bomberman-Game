@@ -1,8 +1,8 @@
 from threading import Thread
 from time import sleep
 
-from application.controller.MoveController import MoveController
-from application.view.ViewHandler import ViewHandler
+from application.model.game import MoveController
+from application.view.viewHandler_ import ViewHandler
 
 
 class GameLoop(Thread):

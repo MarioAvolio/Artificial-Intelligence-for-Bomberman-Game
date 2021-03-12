@@ -1,9 +1,11 @@
-from threading import RLock
+import copy
+from threading import RLock, Thread
+from time import sleep
 
-from application.model.Bomb_ import Bomb
-from application.model.Enemy_ import Enemy
-from application.model.Player_ import Player
-from application.model.Point_ import Point
+import pygame
+from languages.predicate import Predicate
+from application.settings_ import Settings
+from application.model import dependance
 
 
 class Game:
@@ -40,6 +42,7 @@ class Game:
                           [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
             self.__size = len(self.__map)
+            Settings.BLOCK_SIZE = Settings.SIZE // self.__size
             self.__lock = RLock()
             Game.__instance = self
             self.__finish = None
@@ -58,8 +61,7 @@ class Game:
             if self.getFinish() is not None:
                 return
 
-            from application.model.Movements_ import Movements
-            from application.Settings_ import Settings
+            from application.settings_ import Settings
 
             if Movements.collision(i, j):
                 return
@@ -68,20 +70,17 @@ class Game:
             # START THREAD BOMB
             Bomb(i, j).start()
 
-    def moveOnMap(self, newPoint: Point, oldPoint: Point):
+    def moveOnMap(self, newPoint, oldPoint):
         with self.__lock:
             if self.getFinish() is not None:
                 return
 
             self.__swap(oldPoint.getI(), oldPoint.getJ(), newPoint.getI(), newPoint.getJ())
 
-    def explode(self, listPoints, coordinateBomb: Point):
+    def explode(self, listPoints, coordinateBomb):
         with self.__lock:
             if self.getFinish() is not None:
                 return
-
-            from application.model.Movements_ import Movements
-            from application.Settings_ import Settings
 
             # remove bomb
             self.__writeElement(coordinateBomb.getI(), coordinateBomb.getJ(), Settings.GRASS)
@@ -120,3 +119,116 @@ class Game:
     def getFinish(self):
         with self.__lock:
             return self.__finish
+
+
+class Movements:
+
+    @staticmethod
+    def collision(i: int, j: int) -> bool:
+        return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) != Settings.GRASS
+
+    @staticmethod
+    def collisionBomb(i: int, j: int) -> bool:
+        return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) == Settings.BLOCK
+
+    @staticmethod
+    def move(direction: int, point):
+        oldPoint = copy.deepcopy(point)
+
+        if direction in dependance.MOVEMENTS_MATRIX.keys():
+            point.move(direction)
+
+        if Movements.collision(point.getI(), point.getJ()):
+            point.setI(oldPoint.getI())
+            point.setJ(oldPoint.getJ())
+        else:
+            Game.getInstance().moveOnMap(point, oldPoint)
+
+    @staticmethod
+    def plant():
+        i = Game.getInstance().getPlayer().getI() + dependance.lastMovement[Point.I]
+        j = Game.getInstance().getPlayer().getJ() + dependance.lastMovement[Point.J]
+        Game.getInstance().plantBomb(i, j)
+
+
+class MoveController:
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def update() -> bool:
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                return False
+
+            # controller
+            if event.type == pygame.KEYDOWN:
+                if event.key in dependance.movements:
+                    direction = dependance.movements[event.key]
+                    dependance.lastMovement = dependance.MOVEMENTS_MATRIX[direction]  # set last movement
+                    Movements.move(direction, Game.getInstance().getPlayer())
+                elif event.key == pygame.K_SPACE:
+                    Movements.plant()
+
+            # elif pygame.KEYUP == event.type:
+            #     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+            #         pass
+
+        return True
+
+
+class Point(Predicate):
+    predicate_name = "point"
+    I = 0
+    J = 1
+
+    def __init__(self, i=None, j=None):
+        Predicate.__init__(self, [("i"), ("j")])
+        self.__coordinate = [i, j]  # list
+
+    def getI(self):
+        return self.__coordinate[Point.I]
+
+    def getJ(self):
+        return self.__coordinate[Point.J]
+
+    def setI(self, i: int):
+        self.__coordinate[Point.I] = i
+
+    def setJ(self, j: int):
+        self.__coordinate[Point.J] = j
+
+    def move(self, direction: int):
+        if direction in dependance.MOVEMENTS_MATRIX.keys():
+            self.__coordinate[Point.I] += dependance.MOVEMENTS_MATRIX[direction][Point.I]
+            self.__coordinate[Point.J] += dependance.MOVEMENTS_MATRIX[direction][Point.J]
+
+    def __str__(self):
+        return f"Point({self.__coordinate[Point.I]}, {self.__coordinate[Point.J]}) \n"
+
+
+class Player(Point):
+    def __init__(self, i: int, j: int):
+        super().__init__(i, j)
+
+
+class Enemy(Point):
+    def __init__(self, i: int, j: int):
+        super().__init__(i, j)
+
+
+class Bomb(Thread, Point):
+    def __init__(self, i: int, j: int):
+        Thread.__init__(self)
+        Point.__init__(self, i, j)
+        self.__listPoints = [Point(i, j) for _ in range(4)]
+        self.__listPoints[0].move(dependance.LEFT)
+        self.__listPoints[1].move(dependance.RIGHT)
+        self.__listPoints[2].move(dependance.UP)
+        self.__listPoints[3].move(dependance.DOWN)
+
+    def run(self) -> None:
+        sleep(2)  # time to explode bomb
+        Game.getInstance().explode(self.__listPoints, self)

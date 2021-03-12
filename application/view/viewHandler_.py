@@ -2,8 +2,8 @@ import os
 
 import pygame
 
-from application.Settings_ import Settings
-from application.model.Game_ import Game
+from application.settings_ import Settings
+from application.model.game import Game
 
 
 class Singleton(object):
@@ -17,6 +17,7 @@ class Singleton(object):
 
 class ViewHandler(Singleton):
     def __init__(self):
+        Game()
         pygame.init()
         self.__screen = pygame.display.set_mode((Settings.SIZE, Settings.SIZE))
 

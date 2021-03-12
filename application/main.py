@@ -6,10 +6,9 @@ from languages.asp.asp_mapper import ASPMapper
 from platforms.desktop.desktop_handler import DesktopHandler
 from specializations.dlv2.desktop.dlv2_desktop_service import DLV2DesktopService
 
-from application.GameLoop import GameLoop
-from application.Settings_ import Settings
-from application.model.Game_ import Game
-from application.model.Point_ import Point
+from application.loop import GameLoop
+from application.settings_ import Settings
+from application.model.game import Game, Point
 
 
 def install_whl(path):
@@ -37,7 +36,6 @@ def initializeASP():
 
         # input type of elements as facts
 
-
         handler.add_program(inputProgram)
         answerSets = handler.start_sync()
 
@@ -51,5 +49,5 @@ def initializeASP():
 
 if __name__ == '__main__':
     # install_whl(os.path.join(Settings.resource_path, "../../lib/EmbASP-7.4.0-py2.py3-none-any.whl")) # EMBASP INSTALLER
-    initializeASP()
-    # main()
+    # initializeASP()
+    main()
