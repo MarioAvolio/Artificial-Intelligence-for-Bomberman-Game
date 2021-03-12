@@ -26,7 +26,10 @@ def initializeASP():
 
         handler = DesktopHandler(DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
         ASPMapper.get_instance().register_class(Point)
-        inputProgram = ASPInputProgram()
+        fixedInputProgram = ASPInputProgram()  # rules
+        variableInputProgram = ASPInputProgram()  # map
+
+        fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
 
         # Example facts: point(I, J, ELEMENT_TYPE)
         # input matrix as facts
@@ -34,17 +37,12 @@ def initializeASP():
         for i in range(size):
             for j in range(size):
                 typeNumber = Game.getInstance().getElement(i, j)
-                inputProgram.add_program(f"point({i},{j},{Settings.mapString[typeNumber]}")
-                print(f"point({i},{j},{Settings.mapString[typeNumber]}).")
+                variableInputProgram.add_program(f"cell({i},{j},{Settings.mapString[typeNumber]}).")
+                print(f"cell({i},{j},{Settings.mapString[typeNumber]}).")
 
-        # input type of elements as facts
-        # elem(type).
-        for typeNumber in range(6):
-            inputProgram.add_program(f"elem({Settings.mapString[typeNumber]}).")
-            print(f"elem({Settings.mapString[typeNumber]}).")
-
-
-        handler.add_program(inputProgram)
+        variableInputProgram.clear_all()  # clear at each call
+        handler.add_program(fixedInputProgram)
+        handler.add_program(variableInputProgram)
         answerSets = handler.start_sync()
 
         for answerSet in answerSets.get_optimal_answer_sets():

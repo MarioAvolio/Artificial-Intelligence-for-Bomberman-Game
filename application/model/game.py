@@ -154,7 +154,7 @@ class Point(Predicate):
     J = 1
 
     def __init__(self, i=None, j=None, type=None):
-        Predicate.__init__(self, [("i"), ("j"), ("type")])
+        Predicate.__init__(self, [("i", int), ("j", int), ("type", int)])
         self.__coordinate = [i, j]  # list
         self.__type = type
 
