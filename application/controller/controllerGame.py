@@ -1,6 +1,6 @@
 import pygame
 
-from application.model import dependance
+from application import dependance
 from application.model.game import Game, Movements
 
 

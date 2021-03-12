@@ -4,7 +4,7 @@ from time import sleep
 
 from languages.predicate import Predicate
 from application.settings_ import Settings
-from application.model import dependance
+from application import dependance
 
 
 class Game:
