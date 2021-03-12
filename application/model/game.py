@@ -2,7 +2,6 @@ import copy
 from threading import RLock, Thread
 from time import sleep
 
-import pygame
 from languages.predicate import Predicate
 from application.settings_ import Settings
 from application.model import dependance
@@ -60,8 +59,6 @@ class Game:
         with self.__lock:
             if self.getFinish() is not None:
                 return
-
-            from application.settings_ import Settings
 
             if Movements.collision(i, j):
                 return
@@ -149,34 +146,6 @@ class Movements:
         i = Game.getInstance().getPlayer().getI() + dependance.lastMovement[Point.I]
         j = Game.getInstance().getPlayer().getJ() + dependance.lastMovement[Point.J]
         Game.getInstance().plantBomb(i, j)
-
-
-class MoveController:
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def update() -> bool:
-        for event in pygame.event.get():
-
-            if event.type == pygame.QUIT:
-                return False
-
-            # controller
-            if event.type == pygame.KEYDOWN:
-                if event.key in dependance.movements:
-                    direction = dependance.movements[event.key]
-                    dependance.lastMovement = dependance.MOVEMENTS_MATRIX[direction]  # set last movement
-                    Movements.move(direction, Game.getInstance().getPlayer())
-                elif event.key == pygame.K_SPACE:
-                    Movements.plant()
-
-            # elif pygame.KEYUP == event.type:
-            #     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-            #         pass
-
-        return True
 
 
 class Point(Predicate):

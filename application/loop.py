@@ -1,7 +1,7 @@
 from threading import Thread
 from time import sleep
 
-from application.model.game import MoveController
+from application.controller.controllerGame import MoveController
 from application.view.viewHandler_ import ViewHandler
 
 
