@@ -10,14 +10,14 @@ class Settings:
     BOX = 4
     BOMB = 5
 
-    mapString = {
-        GRASS: "grass",
-        PLAYER: "player",
-        ENEMY: "enemy",
-        BLOCK: "block",
-        BOX: "box",
-        BOMB: "bomb"
-    }
+    # mapString = {
+    #     GRASS: "grass",
+    #     PLAYER: "player",
+    #     ENEMY: "enemy",
+    #     BLOCK: "block",
+    #     BOX: "box",
+    #     BOMB: "bomb"
+    # }
 
     # SCREEN
     SIZE = 800

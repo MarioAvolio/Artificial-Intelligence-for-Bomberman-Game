@@ -30,6 +30,8 @@ def initializeASP():
         variableInputProgram = ASPInputProgram()  # map
 
         fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
+        for elem in range(6):
+            fixedInputProgram.add_program(f"elem({elem}).")
 
         # Example facts: point(I, J, ELEMENT_TYPE)
         # input matrix as facts
@@ -37,8 +39,10 @@ def initializeASP():
         for i in range(size):
             for j in range(size):
                 typeNumber = Game.getInstance().getElement(i, j)
-                variableInputProgram.add_program(f"cell({i},{j},{Settings.mapString[typeNumber]}).")
-                print(f"cell({i},{j},{Settings.mapString[typeNumber]}).")
+                variableInputProgram.add_program(f"cell({i},{j},{typeNumber}).")
+                print(f"cell({i},{j},{typeNumber}).", end=' ')
+
+        print()
 
         variableInputProgram.clear_all()  # clear at each call
         handler.add_program(fixedInputProgram)
