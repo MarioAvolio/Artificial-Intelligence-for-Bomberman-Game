@@ -1,10 +1,16 @@
 import copy
+import os
 from threading import RLock, Thread
 from time import sleep
 
+from languages.asp.asp_input_program import ASPInputProgram
+from languages.asp.asp_mapper import ASPMapper
 from languages.predicate import Predicate
-from application.settings_ import Settings
+from platforms.desktop.desktop_handler import DesktopHandler
+from specializations.dlv2.desktop.dlv2_desktop_service import DLV2DesktopService
+
 from application import dependance
+from application.settings_ import Settings
 
 
 class Game:
@@ -192,16 +198,87 @@ class Enemy(Point):
         super().__init__(i, j, Settings.ENEMY)
 
 
+def getDistanceEP(self) -> int:
+    PI = Game.getInstance().getPlayer().getI()
+    PJ = Game.getInstance().getPlayer().getJ()
+    EI = Game.getInstance().getEnemy().getI()
+    EJ = Game.getInstance().getEnemy().getJ()
+
+    distance = pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)
+
+    return distance
+
+
+def computeNeighbors(i: int, j: int):
+    listPoints = [Point(i, j) for _ in range(4)]
+    listPoints[0].move(dependance.LEFT)
+    listPoints[1].move(dependance.RIGHT)
+    listPoints[2].move(dependance.UP)
+    listPoints[3].move(dependance.DOWN)
+
+    return listPoints
+
+
 class Bomb(Thread, Point):
     def __init__(self, i: int, j: int):
         Thread.__init__(self)
         Point.__init__(self, i, j)
-        self.__listPoints = [Point(i, j) for _ in range(4)]
-        self.__listPoints[0].move(dependance.LEFT)
-        self.__listPoints[1].move(dependance.RIGHT)
-        self.__listPoints[2].move(dependance.UP)
-        self.__listPoints[3].move(dependance.DOWN)
+        self.__listPoints = computeNeighbors(i, j)
 
     def run(self) -> None:
         sleep(2)  # time to explode bomb
         Game.getInstance().explode(self.__listPoints, self)
+
+
+handler = None
+fixedInputProgram = None
+variableInputProgram = None
+
+
+def initializeASP():
+    try:
+
+        handler = DesktopHandler(DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
+        ASPMapper.get_instance().register_class(Point)
+        fixedInputProgram = ASPInputProgram()  # rules
+        variableInputProgram = ASPInputProgram()  # map
+
+        fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
+        for elem in range(6):
+            fixedInputProgram.add_program(f"elem({elem}).")
+
+        handler.add_program(fixedInputProgram)
+
+    except Exception as e:
+        print("exception")
+        print(str(e))
+
+
+def recallASP():
+    try:
+        variableInputProgram.clear_all()  # clear at each call
+
+        # Example facts: point(I, J, ELEMENT_TYPE)
+        # input matrix as facts
+        size = Game.getInstance().getSize()
+        for i in range(size):
+            for j in range(size):
+                typeNumber = Game.getInstance().getElement(i, j)
+                variableInputProgram.add_program(f"point({i},{j},{typeNumber}).")
+                print(f"point({i},{j},{typeNumber}).", end=' ')
+
+        print()
+
+        # compute neighbors values
+        e = Game.getInstance().getEnemy()
+        p = Game.getInstance().getPalayer()
+
+        handler.add_program(variableInputProgram)
+        answerSets = handler.start_sync()
+
+        for answerSet in answerSets.get_optimal_answer_sets():
+            print(answerSet)
+
+    except Exception as e:
+        print("exception")
+        print(str(e))
