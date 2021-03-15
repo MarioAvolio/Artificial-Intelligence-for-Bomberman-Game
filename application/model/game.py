@@ -79,7 +79,7 @@ class Game:
             if self.getFinish() is not None:
                 return
 
-            self.__swap(oldPoint.getI(), oldPoint.getJ(), newPoint.getI(), newPoint.getJ())
+            self.__swap(oldPoint.get_i(), oldPoint.get_j(), newPoint.get_i(), newPoint.get_j())
 
     def explode(self, listPoints, coordinateBomb):
         with self.__lock:
@@ -87,16 +87,16 @@ class Game:
                 return
 
             # remove bomb
-            self.__writeElement(coordinateBomb.getI(), coordinateBomb.getJ(), Settings.GRASS)
+            self.__writeElement(coordinateBomb.get_i(), coordinateBomb.get_j(), Settings.GRASS)
 
             for point in listPoints:  # adjacent point
-                if not self.outBorders(point.getI(), point.getJ()):
-                    if self.getElement(point.getI(), point.getJ()) == Settings.ENEMY:
+                if not self.outBorders(point.get_i(), point.get_j()):
+                    if self.getElement(point.get_i(), point.get_j()) == Settings.ENEMY:
                         self.__finish = "Player"  # player win
-                    elif self.getElement(point.getI(), point.getJ()) == Settings.PLAYER:
+                    elif self.getElement(point.get_i(), point.get_j()) == Settings.PLAYER:
                         self.__finish = "Enemy"  # enemy win
-                    elif not Movements.collisionBomb(point.getI(), point.getJ()):
-                        self.__writeElement(point.getI(), point.getJ(), Settings.GRASS)
+                    elif not Movements.collisionBomb(point.get_i(), point.get_j()):
+                        self.__writeElement(point.get_i(), point.get_j(), Settings.GRASS)
 
     # SETTER
     def __writeElement(self, i: int, j: int, elem):
@@ -144,16 +144,16 @@ class Movements:
         if direction in dependance.MOVEMENTS_MATRIX.keys():
             point.move(direction)
 
-        if Movements.collision(point.getI(), point.getJ()):
-            point.setI(oldPoint.getI())
-            point.setJ(oldPoint.getJ())
+        if Movements.collision(point.get_i(), point.get_j()):
+            point.set_i(oldPoint.get_i())
+            point.set_j(oldPoint.get_j())
         else:
             Game.getInstance().moveOnMap(point, oldPoint)
 
     @staticmethod
     def plant():
-        i = Game.getInstance().getPlayer().getI() + dependance.lastMovement[Point.I]
-        j = Game.getInstance().getPlayer().getJ() + dependance.lastMovement[Point.J]
+        i = Game.getInstance().getPlayer().get_i() + dependance.lastMovement[Point.I]
+        j = Game.getInstance().getPlayer().get_j() + dependance.lastMovement[Point.J]
         Game.getInstance().plantBomb(i, j)
 
 
@@ -167,19 +167,22 @@ class Point(Predicate):
         self.__coordinate = [i, j]  # list
         self.__type = type
 
-    def getI(self):
+    def get_i(self):
         return self.__coordinate[Point.I]
 
-    def getJ(self):
+    def get_j(self):
         return self.__coordinate[Point.J]
 
-    def getType(self):
+    def get_type(self):
         return self.__type
 
-    def setI(self, i: int):
+    def set_type(self, type: int):
+        self.__type = type
+
+    def set_i(self, i: int):
         self.__coordinate[Point.I] = i
 
-    def setJ(self, j: int):
+    def set_j(self, j: int):
         self.__coordinate[Point.J] = j
 
     def move(self, direction: int):
@@ -201,13 +204,14 @@ class Enemy(Point):
         super().__init__(i, j, Settings.ENEMY)
 
 
-def getDistanceEP(p1: Point, e1: Point) -> int:
-    PI = p1.getI()
-    PJ = p1.getJ()
-    EI = e1.getI()
-    EJ = e1.getJ()
+def getDistanceEP(p1: Point, e1: Point):
+    PI = p1.get_i()
+    PJ = p1.get_j()
+    EI = e1.get_i()
+    EJ = e1.get_j()
 
-    return int(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2))
+    print((pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)).float.as_integer_ratio())
+    return (pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)).float.as_integer_ratio()
 
 
 def computeNeighbors(i: int, j: int):
@@ -263,26 +267,28 @@ def recallASP():
         for i in range(size):
             for j in range(size):
                 typeNumber = Game.getInstance().getElement(i, j)
-                variableInputProgram.add_program(f"point({i},{j},{typeNumber}).")
-                print(f"point({i},{j},{typeNumber}).", end=' ')
+                variableInputProgram.add_program(f"cell({i},{j},{typeNumber}).")
+                # print(f"cell({i},{j},{typeNumber}).", end=' ')
 
-        print()
+        # print()
 
         # compute neighbors values
         e = Game.getInstance().getEnemy()
         p = Game.getInstance().getPlayer()
 
-        listAdjacent = computeNeighbors(e.getI(), e.getJ())
+        listAdjacent = computeNeighbors(e.get_i(), e.get_j())
         for adjacent in listAdjacent:
-            if not Game.getInstance().outBorders(adjacent.getI(), adjacent.getJ()):
-                variableInputProgram.add_program(f"distance({adjacent.getI()}, {adjacent.getJ()}, {getDistanceEP(adjacent, p)}).")
-                print(f"distance({adjacent.getI()}, {adjacent.getJ()}, {getDistanceEP(adjacent, p)}).")
+            if not Game.getInstance().outBorders(adjacent.get_i(), adjacent.get_j()):
+                variableInputProgram.add_program(
+                    f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
+                print(f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
 
         handler.add_program(variableInputProgram)
         answerSets = handler.start_sync()
 
-        for answerSet in answerSets.get_optimal_answer_sets():
-            print(answerSet)
+        # for answerSet in answerSets.get_optimal_answer_sets():
+        # print(answerSet.get_atoms())
+
 
     except Exception as e:
         print("exception")
