@@ -28,6 +28,7 @@ class Game:
         if Game.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
+            initializeASP()
             self.__player = Player(0, 0)
             self.__enemy = Enemy(15, 0)
             self.__map = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
@@ -136,6 +137,8 @@ class Movements:
 
     @staticmethod
     def move(direction: int, point):
+
+        recallASP()
         oldPoint = copy.deepcopy(point)
 
         if direction in dependance.MOVEMENTS_MATRIX.keys():
@@ -198,15 +201,13 @@ class Enemy(Point):
         super().__init__(i, j, Settings.ENEMY)
 
 
-def getDistanceEP(self) -> int:
-    PI = Game.getInstance().getPlayer().getI()
-    PJ = Game.getInstance().getPlayer().getJ()
-    EI = Game.getInstance().getEnemy().getI()
-    EJ = Game.getInstance().getEnemy().getJ()
+def getDistanceEP(p1: Point, e1: Point) -> int:
+    PI = p1.getI()
+    PJ = p1.getJ()
+    EI = e1.getI()
+    EJ = e1.getJ()
 
-    distance = pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)
-
-    return distance
+    return int(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2))
 
 
 def computeNeighbors(i: int, j: int):
@@ -229,20 +230,18 @@ class Bomb(Thread, Point):
         sleep(2)  # time to explode bomb
         Game.getInstance().explode(self.__listPoints, self)
 
-
-handler = None
-fixedInputProgram = None
-variableInputProgram = None
+global handler
+global fixedInputProgram
+fixedInputProgram = ASPInputProgram()
+global variableInputProgram
+variableInputProgram = ASPInputProgram()
 
 
 def initializeASP():
     try:
-
+        global handler
         handler = DesktopHandler(DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
         ASPMapper.get_instance().register_class(Point)
-        fixedInputProgram = ASPInputProgram()  # rules
-        variableInputProgram = ASPInputProgram()  # map
-
         fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
         for elem in range(6):
             fixedInputProgram.add_program(f"elem({elem}).")
@@ -271,7 +270,13 @@ def recallASP():
 
         # compute neighbors values
         e = Game.getInstance().getEnemy()
-        p = Game.getInstance().getPalayer()
+        p = Game.getInstance().getPlayer()
+
+        listAdjacent = computeNeighbors(e.getI(), e.getJ())
+        for adjacent in listAdjacent:
+            if not Game.getInstance().outBorders(adjacent.getI(), adjacent.getJ()):
+                variableInputProgram.add_program(f"distance({adjacent.getI()}, {adjacent.getJ()}, {getDistanceEP(adjacent, p)}).")
+                print(f"distance({adjacent.getI()}, {adjacent.getJ()}, {getDistanceEP(adjacent, p)}).")
 
         handler.add_program(variableInputProgram)
         answerSets = handler.start_sync()
