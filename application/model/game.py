@@ -210,8 +210,14 @@ def getDistanceEP(p1: Point, e1: Point):
     EI = e1.get_i()
     EJ = e1.get_j()
 
-    print((pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)).float.as_integer_ratio())
-    return (pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)).float.as_integer_ratio()
+    # print(fractions.Fraction(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)))
+    # FLOAT [NOT WORKS] --> return (pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)).float.as_integer_ratio()
+    # FRACTIONS [TOO SLOW] --> return fractions.Fraction(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2))
+
+    # utilizziamo l'int perchè float e frazioni danno numeri troppo strani e non funziona bene. VEDI SOPRA
+
+    print(int(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)))
+    return int(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2))
 
 
 def computeNeighbors(i: int, j: int):
@@ -278,6 +284,9 @@ def recallASP():
 
         listAdjacent = computeNeighbors(e.get_i(), e.get_j())
         for adjacent in listAdjacent:
+
+            # NELLE STAMPE, OLTRE ALLE TUPLE DI DISTANCE, VENGONO STAMPATI ALTRI NUMERI NON SO DA DOVE
+
             if not Game.getInstance().outBorders(adjacent.get_i(), adjacent.get_j()):
                 variableInputProgram.add_program(
                     f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
