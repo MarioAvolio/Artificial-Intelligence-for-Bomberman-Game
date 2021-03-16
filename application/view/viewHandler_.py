@@ -2,8 +2,8 @@ import os
 
 import pygame
 
-from application.settings_ import Settings
 from application.model.game import Game
+from application.settings_ import Settings
 
 
 class Singleton(object):

@@ -28,7 +28,6 @@ class Game:
         if Game.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
-            initializeASP()
             self.__player = Player(0, 0)
             self.__enemy = Enemy(15, 0)
             self.__map = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
@@ -138,7 +137,7 @@ class Movements:
     @staticmethod
     def move(direction: int, point):
 
-        recallASP()
+        DLVSolution.getInstance().recallASP()
         oldPoint = copy.deepcopy(point)
 
         if direction in dependance.MOVEMENTS_MATRIX.keys():
@@ -210,13 +209,6 @@ def getDistanceEP(p1: Point, e1: Point):
     EI = e1.get_i()
     EJ = e1.get_j()
 
-    # print(fractions.Fraction(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)))
-    # FLOAT [NOT WORKS] --> return (pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)).float.as_integer_ratio()
-    # FRACTIONS [TOO SLOW] --> return fractions.Fraction(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2))
-
-    # utilizziamo l'int perchè float e frazioni danno numeri troppo strani e non funziona bene. VEDI SOPRA
-
-    print(int(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2)))
     return int(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2))
 
 
@@ -240,71 +232,74 @@ class Bomb(Thread, Point):
         sleep(2)  # time to explode bomb
         Game.getInstance().explode(self.__listPoints, self)
 
-global handler
-global fixedInputProgram
-fixedInputProgram = ASPInputProgram()
-global variableInputProgram
-variableInputProgram = ASPInputProgram()
 
+###################################### AI WITH DLV2 ######################################
 
-def initializeASP():
-    try:
-        global handler
-        handler = DesktopHandler(DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
-        ASPMapper.get_instance().register_class(Point)
-        fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
-        for elem in range(6):
-            fixedInputProgram.add_program(f"elem({elem}).")
+class DLVSolution:
+    __instance = None
 
-        handler.add_program(fixedInputProgram)
+    @staticmethod
+    def getInstance():
+        """ Static access method. """
+        if DLVSolution.__instance is None:
+            DLVSolution()
+        return DLVSolution.__instance
 
-    except Exception as e:
-        print("exception")
-        print(str(e))
+    def __init__(self):
+        """ Virtually private constructor. """
+        if DLVSolution.__instance is not None:
+            raise Exception("This class is a singleton!")
+        else:
+            try:
+                self.__handler = DesktopHandler(
+                    DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
+                ASPMapper.get_instance().register_class(Point)
+                fixedInputProgram = ASPInputProgram()
+                self.__variableInputProgram = ASPInputProgram()
 
+                fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
+                for elem in range(6):
+                    fixedInputProgram.add_program(f"elem({elem}).")
+                self.__handler.add_program(fixedInputProgram)
 
-def recallASP():
-    try:
-        variableInputProgram.clear_all()  # clear at each call
+            except Exception as e:
+                print(str(e))
+            finally:
+                DLVSolution.__instance = self
 
-        # Example facts: point(I, J, ELEMENT_TYPE)
-        # input matrix as facts
-        size = Game.getInstance().getSize()
-        for i in range(size):
-            for j in range(size):
-                typeNumber = Game.getInstance().getElement(i, j)
-                variableInputProgram.add_program(f"cell({i},{j},{typeNumber}).")
-                # print(f"cell({i},{j},{typeNumber}).", end=' ')
+    def recallASP(self):
+        try:
+            # Example facts: point(I, J, ELEMENT_TYPE)
+            # input matrix as facts
+            size = Game.getInstance().getSize()
+            for i in range(size):
+                for j in range(size):
+                    typeNumber = Game.getInstance().getElement(i, j)
+                    self.__variableInputProgram.add_program(f"cell({i},{j},{typeNumber}).")
+                    # print(f"cell({i},{j},{typeNumber}).", end=' ')
 
-        # print()
+            # compute neighbors values
+            e = Game.getInstance().getEnemy()
+            p = Game.getInstance().getPlayer()
 
-        # compute neighbors values
-        e = Game.getInstance().getEnemy()
-        p = Game.getInstance().getPlayer()
+            listAdjacent = computeNeighbors(e.get_i(), e.get_j())
+            for adjacent in listAdjacent:
+                if not Game.getInstance().outBorders(adjacent.get_i(), adjacent.get_j()):
+                    self.__variableInputProgram.add_program(
+                        f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
+                    # print(f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
 
-        listAdjacent = computeNeighbors(e.get_i(), e.get_j())
-        for adjacent in listAdjacent:
+            self.__handler.add_program(self.__variableInputProgram)
+            answerSets = self.__handler.start_sync()
+            self.__variableInputProgram.clear_all()  # clear at each call
 
-            # NELLE STAMPE, OLTRE ALLE TUPLE DI DISTANCE, VENGONO STAMPATI ALTRI NUMERI NON SO DA DOVE
+            # Problem: index out range --> CODE IS THE SAME OF THE EXAMPLE ON THE SITE
 
-            if not Game.getInstance().outBorders(adjacent.get_i(), adjacent.get_j()):
-                variableInputProgram.add_program(
-                    f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
-                print(f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
+            for answerSet in answerSets.get_optimal_answer_sets():
+                print(answerSet)
+                # for obj in answerSet.get_atoms():
+                #     if isinstance(obj, Point):
+                #         print(obj)
 
-        handler.add_program(variableInputProgram)
-        answerSets = handler.start_sync()
-
-        print("here")
-
-        # Problem: index out range --> CODE IS THE SAME OF THE EXAMPLE ON THE SITE
-
-        for answerSet in answerSets.get_optimal_answer_sets():
-            for obj in answerSet.get_atoms():
-                if isinstance(obj, Point):
-                    print(obj)
-
-
-    except Exception as e:
-        print("exception")
-        print(str(e))
+        except Exception as e:
+            print(str(e))

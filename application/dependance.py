@@ -20,4 +20,3 @@ movements = {
     pygame.K_DOWN: DOWN,
     pygame.K_UP: UP
 }
-
