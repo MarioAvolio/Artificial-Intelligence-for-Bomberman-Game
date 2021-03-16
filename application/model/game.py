@@ -295,8 +295,14 @@ def recallASP():
         handler.add_program(variableInputProgram)
         answerSets = handler.start_sync()
 
-        # for answerSet in answerSets.get_optimal_answer_sets():
-        # print(answerSet.get_atoms())
+        print("here")
+
+        # Problem: index out range --> CODE IS THE SAME OF THE EXAMPLE ON THE SITE
+
+        for answerSet in answerSets.get_optimal_answer_sets():
+            for obj in answerSet.get_atoms():
+                if isinstance(obj, Point):
+                    print(obj)
 
 
     except Exception as e:
