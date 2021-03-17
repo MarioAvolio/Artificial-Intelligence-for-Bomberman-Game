@@ -253,13 +253,13 @@ class DLVSolution:
                 self.__handler = DesktopHandler(
                     DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
                 ASPMapper.get_instance().register_class(Point)
-                # fixedInputProgram = ASPInputProgram()
+                fixedInputProgram = ASPInputProgram()
                 self.__variableInputProgram = ASPInputProgram()
 
-                # fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
-                # for elem in range(6):
-                #     fixedInputProgram.add_program(f"elem({elem}).")
-                # self.__handler.add_program(fixedInputProgram)
+                fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
+                for elem in range(6):
+                    fixedInputProgram.add_program(f"elem({elem}).")
+                self.__handler.add_program(fixedInputProgram)
 
             except Exception as e:
                 print(str(e))
@@ -268,11 +268,6 @@ class DLVSolution:
 
     def recallASP(self):
         try:
-
-            self.__variableInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
-            for elem in range(6):
-                self.__variableInputProgram.add_program(f"elem({elem}).")
-            self.__handler.add_program(self.__variableInputProgram)
 
             # Example facts: point(I, J, ELEMENT_TYPE)
             # input matrix as facts
@@ -298,7 +293,7 @@ class DLVSolution:
             self.__handler.add_program(self.__variableInputProgram)
             answerSets = self.__handler.start_sync()
             self.__variableInputProgram.clear_programs()  # clear at each call
-            self.__handler.remove_all()
+            # self.__handler.remove_all()
 
             # Problem: index out range --> CODE IS THE SAME OF THE EXAMPLE ON THE SITE
 
