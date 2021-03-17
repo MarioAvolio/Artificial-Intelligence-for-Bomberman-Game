@@ -51,6 +51,7 @@ class Game:
             self.__lock = RLock()
             Game.__instance = self
             self.__finish = None
+            ThreadDLV().start()
 
     def outBorders(self, i: int, j: int) -> bool:
         with self.__lock:
@@ -136,8 +137,6 @@ class Movements:
 
     @staticmethod
     def move(direction: int, point):
-
-        DLVSolution.getInstance().recallASP()
         oldPoint = copy.deepcopy(point)
 
         if direction in dependance.MOVEMENTS_MATRIX.keys():
@@ -254,13 +253,13 @@ class DLVSolution:
                 self.__handler = DesktopHandler(
                     DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
                 ASPMapper.get_instance().register_class(Point)
-                fixedInputProgram = ASPInputProgram()
+                # fixedInputProgram = ASPInputProgram()
                 self.__variableInputProgram = ASPInputProgram()
 
-                fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
-                for elem in range(6):
-                    fixedInputProgram.add_program(f"elem({elem}).")
-                self.__handler.add_program(fixedInputProgram)
+                # fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
+                # for elem in range(6):
+                #     fixedInputProgram.add_program(f"elem({elem}).")
+                # self.__handler.add_program(fixedInputProgram)
 
             except Exception as e:
                 print(str(e))
@@ -269,6 +268,12 @@ class DLVSolution:
 
     def recallASP(self):
         try:
+
+            self.__variableInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
+            for elem in range(6):
+                self.__variableInputProgram.add_program(f"elem({elem}).")
+            self.__handler.add_program(self.__variableInputProgram)
+
             # Example facts: point(I, J, ELEMENT_TYPE)
             # input matrix as facts
             size = Game.getInstance().getSize()
@@ -289,17 +294,30 @@ class DLVSolution:
                         f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
                     # print(f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
 
+            # print(f"INPUT: {self.__variableInputProgram.get_programs()}" )
             self.__handler.add_program(self.__variableInputProgram)
             answerSets = self.__handler.start_sync()
-            self.__variableInputProgram.clear_all()  # clear at each call
+            self.__variableInputProgram.clear_programs()  # clear at each call
+            self.__handler.remove_all()
 
             # Problem: index out range --> CODE IS THE SAME OF THE EXAMPLE ON THE SITE
 
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
+                a = answerSet.get_atoms()
                 # for obj in answerSet.get_atoms():
                 #     if isinstance(obj, Point):
                 #         print(obj)
 
         except Exception as e:
             print(str(e))
+
+
+class ThreadDLV(Thread):
+    def __init__(self):
+        super().__init__()
+
+    def run(self) -> None:
+        while True:
+            DLVSolution.getInstance().recallASP()
+            sleep(1)

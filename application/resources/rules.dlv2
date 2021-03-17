@@ -43,3 +43,9 @@ adjacent(X, Y):- adjacent(Y, X).
 
 woodBlockInAdjacent(1) :- adjacent(X, Y), cell(X, Y, 4).
 bomb(X, Y) :- point(X, Y), woodBlockInAdjacent(1). % plant bomb
+
+% SECOND METHOD
+
+
+% idealSwap(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
+% woodBlockInIdealSwap(1) :- idealSwap(X, Y), cell(X, Y, 4).
