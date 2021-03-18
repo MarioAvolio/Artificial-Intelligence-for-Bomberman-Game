@@ -250,8 +250,8 @@ class MoveController(Thread):
                     elif event.key == pygame.K_SPACE:
                         plant()
 
-                # view
-                ViewHandler.getInstance().update()
+            # view
+            ViewHandler.getInstance().update()
 
         pygame.display.quit()
         pygame.quit()
