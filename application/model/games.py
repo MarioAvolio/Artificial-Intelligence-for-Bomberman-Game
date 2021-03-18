@@ -53,12 +53,13 @@ resource_path = os.path.join(current_path, '../resources')  # The resource folde
 
 BLOCK_SIZE = 50
 
+
 # === CLASSES === (CamelCase names)
 
 class Game:
     def __init__(self):
-        self.__player = Point(0, 0)
-        self.__enemy = Point(7, 9)
+        self.__player = PointType(0, 0, PLAYER)
+        self.__enemy = PointType(7, 9, ENEMY)
         self.__map = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                       [4, 0, 0, 0, 0, 0, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0],
@@ -153,27 +154,21 @@ class Game:
             return self.__finish
 
 
-class Point(Predicate):
-    predicate_name = "point"
+class Point:
     I = 0
     J = 1
 
-    def __init__(self, i=None, j=None, t=None):
-        Predicate.__init__(self, [("i", int), ("j", int), ("type", int)])
+    def __int__(self):
+        pass
+
+    def __init__(self, i: int, j: int):
         self.__coordinate = [i, j]  # list
-        self.__type = t
 
     def get_i(self):
         return self.__coordinate[Point.I]
 
     def get_j(self):
         return self.__coordinate[Point.J]
-
-    def get_type(self):
-        return self.__type
-
-    def set_type(self, t: int):
-        self.__type = t
 
     def set_i(self, i: int):
         self.__coordinate[Point.I] = i
@@ -187,13 +182,44 @@ class Point(Predicate):
             self.__coordinate[Point.J] += MOVEMENTS_MATRIX[direction][Point.J]
 
     def __str__(self):
-        return f"Point({self.__coordinate[Point.I]}, {self.__coordinate[Point.J]}) \n"
+        return f"Point [{self.__coordinate[Point.I]}, {self.__coordinate[Point.J]}]."
 
 
-class Bomb(Thread, Point):
+class PointType(Point):
+
+    def __int__(self):
+        pass
+
+    def __init__(self, i: int, j: int, t: int):
+        Point.__init__(self, i, j)
+        self.__t = t
+
+    def get_t(self):
+        return self.__t
+
+    def set_t(self, t: int):
+        self.__t = t
+
+
+class InputPointType(Predicate, PointType):
+    predicate_name = "point"
+
+    def __int__(self):
+        pass
+
+    def __init__(self, i, j, t):
+        Predicate.__init__(self, [("i", int), ("j", int), ("t", int)])
+        PointType.__init__(self, i, j, t)
+
+
+class Bomb(Thread, PointType):
+
+    def __int__(self):
+        pass
+
     def __init__(self, i: int, j: int):
         Thread.__init__(self)
-        Point.__init__(self, i, j)
+        PointType.__init__(self, i, j, BOMB)
         self.__listPoints = computeNeighbors(i, j)
 
     def run(self) -> None:
@@ -201,10 +227,48 @@ class Bomb(Thread, Point):
         gameInstance.explode(self.__listPoints, self)
 
 
+class NoPath(Predicate, Point):
+    predicate_name = "nopath"
+
+    def __int__(self):
+        pass
+
+    def __init__(self, i=None, j=None):
+        Predicate.__init__(self, [("i", int), ("j", int)])
+        Point.__init__(self, i, j)
+
+
+class Path(Predicate, Point):
+    predicate_name = "path"
+
+    def __int__(self):
+        pass
+
+    def __init__(self, i=None, j=None):
+        Predicate.__init__(self, [("i", int), ("j", int)])
+        Point.__init__(self, i, j)
+
+
+class Distance(Predicate, Point):
+    predicate_name = "distance"
+
+    def __int__(self):
+        pass
+
+    def __init__(self, i=None, j=None, d=None):
+        Predicate.__init__(self, [("i", int), ("j", int), ("d", int)])
+        Point.__init__(self, i, j)
+        self.d = d
+
+    def get_d(self):
+        return self.d
+
+    def set_d(self, d: int):
+        self.d = d
+
+
 class HandlerView:
     def __init__(self):
-        gameInstance
-
         # PATH
         terrainPath = os.path.join(resource_path, "terrain")
 
@@ -275,18 +339,21 @@ class DLVSolution:
         try:
             self.__handler = DesktopHandler(
                 DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
-            ASPMapper.get_instance().register_class(Point)
+            ASPMapper.get_instance().register_class(InputPointType)
+            ASPMapper.get_instance().register_class(Path)
+            ASPMapper.get_instance().register_class(NoPath)
+            ASPMapper.get_instance().register_class(Distance)
+
             self.__fixedInputProgram = ASPInputProgram()
 
             self.__fixedInputProgram.add_files_path(os.path.join(resource_path, "rules.dlv2"))
-            for elem in range(6):
-                self.__fixedInputProgram.add_program(f"elem({elem}).")
             self.__handler.add_program(self.__fixedInputProgram)
 
         except Exception as e:
             print(str(e))
 
     def recallASP(self):
+        pass
         try:
             size = gameInstance.getSize()
             variableInputProgram = ASPInputProgram()
@@ -295,7 +362,7 @@ class DLVSolution:
             for i in range(size):
                 for j in range(size):
                     typeNumber = gameInstance.getElement(i, j)
-                    variableInputProgram.add_program(f"cell({i},{j},{typeNumber}).")  # cell(I, J, ELEMENT_TYPE)
+                    variableInputProgram.add_program(f"point({i},{j},{typeNumber}).")  # cell(I, J, ELEMENT_TYPE)
 
             # compute neighbors values
             e = gameInstance.getEnemy()
@@ -314,11 +381,12 @@ class DLVSolution:
             print("#######################################")
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
-                a = answerSet.get_atoms()
-                print(a)
+                # a = answerSet.get_atoms()
+                # print(a)
                 for obj in answerSet.get_atoms():
-                    if isinstance(obj, Point):
-                        print(obj)
+                    # print(obj)
+                    if isinstance(obj, Path):
+                        print(f"Path {obj}")
                 print("#######################################")
 
             self.__handler.remove_program_from_id(index)
@@ -328,9 +396,11 @@ class DLVSolution:
 
 
 is_running = True
+
+
 class DLVThread(Thread):
     def __init__(self):
-        super().__init__()
+        Thread.__init__(self)
         self.__dlv = DLVSolution()
 
     def run(self):
@@ -381,7 +451,7 @@ class Player(pygame.sprite.Sprite):
 
 # === FUNCTIONS === (lower_case names)
 
-def getDistanceEP(p1: Point, e1: Point):
+def getDistanceEP(p1: PointType, e1: PointType):
     PI = p1.get_i()
     PJ = p1.get_j()
     EI = e1.get_i()
@@ -391,7 +461,7 @@ def getDistanceEP(p1: Point, e1: Point):
 
 
 def computeNeighbors(i: int, j: int):
-    listPoints = [Point(i, j) for _ in range(4)]
+    listPoints = [Path(i, j) for _ in range(4)]
     listPoints[0].move(LEFT)
     listPoints[1].move(RIGHT)
     listPoints[2].move(UP)
