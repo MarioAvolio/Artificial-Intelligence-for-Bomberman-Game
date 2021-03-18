@@ -14,7 +14,6 @@ from application import dependance
 from application.settings_ import Settings
 
 global stop
-stop = False
 
 
 class Game:
@@ -32,8 +31,8 @@ class Game:
         if Game.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
-            self.__player = Player(0, 0)
-            self.__enemy = Enemy(15, 0)
+            self.__player = Point(0, 0)
+            self.__enemy = Point(15, 0)
             self.__map = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                           [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                           [4, 0, 0, 0, 0, 0, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0],
@@ -70,7 +69,7 @@ class Game:
             if self.getFinish() is not None:
                 return
 
-            if Movements.collision(i, j):
+            if collision(i, j):
                 return
 
             self.__writeElement(i, j, Settings.BOMB)
@@ -98,7 +97,7 @@ class Game:
                         self.__finish = "Player"  # player win
                     elif self.getElement(point.get_i(), point.get_j()) == Settings.PLAYER:
                         self.__finish = "Enemy"  # enemy win
-                    elif not Movements.collisionBomb(point.get_i(), point.get_j()):
+                    elif not collisionBomb(point.get_i(), point.get_j()):
                         self.__writeElement(point.get_i(), point.get_j(), Settings.GRASS)
 
     # SETTER
@@ -128,34 +127,31 @@ class Game:
             return self.__finish
 
 
-class Movements:
+def collision(i: int, j: int) -> bool:
+    return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) != Settings.GRASS
 
-    @staticmethod
-    def collision(i: int, j: int) -> bool:
-        return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) != Settings.GRASS
 
-    @staticmethod
-    def collisionBomb(i: int, j: int) -> bool:
-        return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) == Settings.BLOCK
+def collisionBomb(i: int, j: int) -> bool:
+    return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) == Settings.BLOCK
 
-    @staticmethod
-    def move(direction: int, point):
-        oldPoint = copy.deepcopy(point)
 
-        if direction in dependance.MOVEMENTS_MATRIX.keys():
-            point.move(direction)
+def move(direction: int, point):
+    oldPoint = copy.deepcopy(point)
 
-        if Movements.collision(point.get_i(), point.get_j()):
-            point.set_i(oldPoint.get_i())
-            point.set_j(oldPoint.get_j())
-        else:
-            Game.getInstance().moveOnMap(point, oldPoint)
+    if direction in dependance.MOVEMENTS_MATRIX.keys():
+        point.move(direction)
 
-    @staticmethod
-    def plant():
-        i = Game.getInstance().getPlayer().get_i() + dependance.lastMovement[Point.I]
-        j = Game.getInstance().getPlayer().get_j() + dependance.lastMovement[Point.J]
-        Game.getInstance().plantBomb(i, j)
+    if collision(point.get_i(), point.get_j()):
+        point.set_i(oldPoint.get_i())
+        point.set_j(oldPoint.get_j())
+    else:
+        Game.getInstance().moveOnMap(point, oldPoint)
+
+
+def plant():
+    i = Game.getInstance().getPlayer().get_i() + dependance.lastMovement[Point.I]
+    j = Game.getInstance().getPlayer().get_j() + dependance.lastMovement[Point.J]
+    Game.getInstance().plantBomb(i, j)
 
 
 class Point(Predicate):
@@ -193,16 +189,6 @@ class Point(Predicate):
 
     def __str__(self):
         return f"Point({self.__coordinate[Point.I]}, {self.__coordinate[Point.J]}) \n"
-
-
-class Player(Point):
-    def __init__(self, i: int, j: int):
-        super().__init__(i, j, Settings.PLAYER)
-
-
-class Enemy(Point):
-    def __init__(self, i: int, j: int):
-        super().__init__(i, j, Settings.ENEMY)
 
 
 def getDistanceEP(p1: Point, e1: Point):
@@ -244,6 +230,8 @@ class MoveController(Thread):
 
     def run(self) -> None:
         global stop
+        stop = False
+
         while not stop:
             sleep(0.1)
 
@@ -258,9 +246,9 @@ class MoveController(Thread):
                     if event.key in dependance.movements:
                         direction = dependance.movements[event.key]
                         dependance.lastMovement = dependance.MOVEMENTS_MATRIX[direction]  # set last movement
-                        Movements.move(direction, Game.getInstance().getPlayer())
+                        move(direction, Game.getInstance().getPlayer())
                     elif event.key == pygame.K_SPACE:
-                        Movements.plant()
+                        plant()
 
                 # view
                 ViewHandler.getInstance().update()
@@ -353,40 +341,16 @@ class ViewHandler:
         self.__printOnScreen()
 
     def __gameOver(self):
-        # INSIDE OF THE GAME LOOP
         self.__screen.blit(self.__imgBackground, (0, 0))
-
-        # REST OF ITEMS ARE BLIT'D TO SCREEN.
-        # define the RGB value for white,
-        #  green, blue colour .
         white = (255, 255, 255)
         green = (0, 255, 0)
         blue = (0, 0, 128)
-
-        # assigning values to X and Y variable
         X = Settings.SIZE // 2
         Y = Settings.SIZE // 2
-
-        # create a font object.
-        # 1st parameter is the font file
-        # which is present in pygame.
-        # 2nd parameter is size of the font
         font = pygame.font.Font('freesansbold.ttf', 32)
-
-        # create a text suface object,
-        # on which text is drawn on it.
         text = font.render(f"{Game.getInstance().getFinish()} Win!", True, green, blue)
-
-        # create a rectangular object for the
-        # text surface object
         textRect = text.get_rect()
-
-        # set the center of the rectangular object.
         textRect.center = (X, Y)
-
-        # copying the text surface object
-        # to the display surface object
-        # at the center coordinate.
         self.__screen.blit(text, textRect)
 
 
@@ -456,7 +420,6 @@ class DLVThread(Thread):
         self.__dlv = DLVSolution()
 
     def run(self):
-        global stop
         while not stop:
             self.__dlv.recallASP()
             sleep(2)
