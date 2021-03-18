@@ -53,48 +53,33 @@ resource_path = os.path.join(current_path, '../resources')  # The resource folde
 
 BLOCK_SIZE = 50
 
-
 # === CLASSES === (CamelCase names)
 
 class Game:
-    __instance = None
-
-    @staticmethod
-    def getInstance():
-        """ Static access method. """
-        if Game.__instance is None:
-            Game()
-        return Game.__instance
-
     def __init__(self):
-        """ Virtually private constructor. """
-        if Game.__instance is not None:
-            raise Exception("This class is a singleton!")
-        else:
-            self.__player = Point(0, 0)
-            self.__enemy = Point(7, 9)
-            self.__map = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                          [4, 0, 0, 0, 0, 0, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 4, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                          [4, 0, 0, 0, 3, 0, 4, 0, 0, 0, 0, 0, 0, 4, 0, 0],
-                          [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 3, 0, 0, 0, 0, 0],
-                          [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0],
-                          [0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 3, 3, 3, 4, 0, 0],
-                          [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0],
-                          [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0],
-                          [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
-                          [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-            self.__size = len(self.__map)
-            global BLOCK_SIZE
-            BLOCK_SIZE = SIZE // self.__size
-            self.__lock = RLock()
-            Game.__instance = self
-            self.__finish = None
+        self.__player = Point(0, 0)
+        self.__enemy = Point(7, 9)
+        self.__map = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+                      [4, 0, 0, 0, 0, 0, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 4, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+                      [4, 0, 0, 0, 3, 0, 4, 0, 0, 0, 0, 0, 0, 4, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 3, 0, 0, 0, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 3, 3, 3, 4, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        self.__size = len(self.__map)
+        global BLOCK_SIZE
+        BLOCK_SIZE = SIZE // self.__size
+        self.__lock = RLock()
+        self.__finish = None
 
     def outBorders(self, i: int, j: int) -> bool:
         with self.__lock:
@@ -213,12 +198,12 @@ class Bomb(Thread, Point):
 
     def run(self) -> None:
         sleep(2)  # time to explode bomb
-        Game.getInstance().explode(self.__listPoints, self)
+        gameInstance.explode(self.__listPoints, self)
 
 
 class HandlerView:
     def __init__(self):
-        Game.getInstance()
+        gameInstance
 
         # PATH
         terrainPath = os.path.join(resource_path, "terrain")
@@ -258,12 +243,12 @@ class HandlerView:
         self.__imgBackground = pygame.transform.scale(img, (SIZE, SIZE))
 
     def __printOnScreen(self, surface):
-        if Game.getInstance().getFinish() is None:
-            for i in range(Game.getInstance().getSize()):
-                for j in range(Game.getInstance().getSize()):
+        if gameInstance.getFinish() is None:
+            for i in range(gameInstance.getSize()):
+                for j in range(gameInstance.getSize()):
 
-                    if Game.getInstance().getElement(i, j) in self.__imgdictionary.keys():
-                        img = self.__imgdictionary[Game.getInstance().getElement(i, j)]
+                    if gameInstance.getElement(i, j) in self.__imgdictionary.keys():
+                        img = self.__imgdictionary[gameInstance.getElement(i, j)]
                         surface.blit(img, (j * BLOCK_SIZE, i * BLOCK_SIZE))
         else:
             self.__gameOver(surface)
@@ -278,7 +263,7 @@ class HandlerView:
         X = SIZE // 2
         Y = SIZE // 2
         font = pygame.font.Font('freesansbold.ttf', 32)
-        text = font.render(f"{Game.getInstance().getFinish()} Win!", True, GREEN, BLUE)
+        text = font.render(f"{gameInstance.getFinish()} Win!", True, GREEN, BLUE)
         textRect = text.get_rect()
         textRect.center = (X, Y)
         surface.blit(text, textRect)
@@ -303,22 +288,22 @@ class DLVSolution:
 
     def recallASP(self):
         try:
-            size = Game.getInstance().getSize()
+            size = gameInstance.getSize()
             variableInputProgram = ASPInputProgram()
 
             # input matrix as facts
             for i in range(size):
                 for j in range(size):
-                    typeNumber = Game.getInstance().getElement(i, j)
+                    typeNumber = gameInstance.getElement(i, j)
                     variableInputProgram.add_program(f"cell({i},{j},{typeNumber}).")  # cell(I, J, ELEMENT_TYPE)
 
             # compute neighbors values
-            e = Game.getInstance().getEnemy()
-            p = Game.getInstance().getPlayer()
+            e = gameInstance.getEnemy()
+            p = gameInstance.getPlayer()
 
             listAdjacent = computeNeighbors(e.get_i(), e.get_j())
             for adjacent in listAdjacent:
-                if not Game.getInstance().outBorders(adjacent.get_i(), adjacent.get_j()):
+                if not gameInstance.outBorders(adjacent.get_i(), adjacent.get_j()):
                     variableInputProgram.add_program(
                         f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
 
@@ -342,13 +327,14 @@ class DLVSolution:
             print(str(e))
 
 
+is_running = True
 class DLVThread(Thread):
     def __init__(self):
         super().__init__()
         self.__dlv = DLVSolution()
 
     def run(self):
-        while True:
+        while is_running:
             self.__dlv.recallASP()
             sleep(2)
 
@@ -415,11 +401,11 @@ def computeNeighbors(i: int, j: int):
 
 
 def collision(i: int, j: int) -> bool:
-    return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) != GRASS
+    return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) != GRASS
 
 
 def collisionBomb(i: int, j: int) -> bool:
-    return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) == BLOCK
+    return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) == BLOCK
 
 
 def move(direction: int, point):
@@ -432,18 +418,19 @@ def move(direction: int, point):
         point.set_i(oldPoint.get_i())
         point.set_j(oldPoint.get_j())
     else:
-        Game.getInstance().moveOnMap(point, oldPoint)
+        gameInstance.moveOnMap(point, oldPoint)
 
 
 def plant():
-    i = Game.getInstance().getPlayer().get_i() + lastMovement[Point.I]
-    j = Game.getInstance().getPlayer().get_j() + lastMovement[Point.J]
-    Game.getInstance().plantBomb(i, j)
+    i = gameInstance.getPlayer().get_i() + lastMovement[Point.I]
+    j = gameInstance.getPlayer().get_j() + lastMovement[Point.J]
+    gameInstance.plantBomb(i, j)
 
 
 # === MAIN === (lower_case names)
 
 # --- (global) variables ---
+gameInstance = Game()
 
 # --- init ---
 
@@ -463,9 +450,8 @@ DLVThread().start()
 # --- mainloop ---
 
 clock = pygame.time.Clock()
-IS_RUNNING = True
 
-while IS_RUNNING:
+while is_running:
 
     # --- events ---
 
@@ -474,17 +460,16 @@ while IS_RUNNING:
         # --- global events ---
 
         if event.type == pygame.QUIT:
-            IS_RUNNING = False
+            is_running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                IS_RUNNING = False
+                is_running = False
             if event.key in movements:
                 direction = movements[event.key]
                 lastMovement = MOVEMENTS_MATRIX[direction]  # set last movement
-                move(direction, Game.getInstance().getPlayer())
+                move(direction, gameInstance.getPlayer())
             elif event.key == pygame.K_SPACE:
                 plant()
-                pass
 
         # --- objects events ---
 
