@@ -3,6 +3,7 @@ import os
 from threading import RLock, Thread
 from time import sleep
 
+import pygame
 from languages.asp.asp_input_program import ASPInputProgram
 from languages.asp.asp_mapper import ASPMapper
 from languages.predicate import Predicate
@@ -11,6 +12,9 @@ from specializations.dlv2.desktop.dlv2_desktop_service import DLV2DesktopService
 
 from application import dependance
 from application.settings_ import Settings
+
+global stop
+stop = False
 
 
 class Game:
@@ -51,7 +55,6 @@ class Game:
             self.__lock = RLock()
             Game.__instance = self
             self.__finish = None
-            ThreadDLV().start()
 
     def outBorders(self, i: int, j: int) -> bool:
         with self.__lock:
@@ -160,10 +163,10 @@ class Point(Predicate):
     I = 0
     J = 1
 
-    def __init__(self, i=None, j=None, type=None):
+    def __init__(self, i=None, j=None, t=None):
         Predicate.__init__(self, [("i", int), ("j", int), ("type", int)])
         self.__coordinate = [i, j]  # list
-        self.__type = type
+        self.__type = t
 
     def get_i(self):
         return self.__coordinate[Point.I]
@@ -174,8 +177,8 @@ class Point(Predicate):
     def get_type(self):
         return self.__type
 
-    def set_type(self, type: int):
-        self.__type = type
+    def set_type(self, t: int):
+        self.__type = t
 
     def set_i(self, i: int):
         self.__coordinate[Point.I] = i
@@ -232,7 +235,162 @@ class Bomb(Thread, Point):
         Game.getInstance().explode(self.__listPoints, self)
 
 
-###################################### AI WITH DLV2 ######################################
+###################################### CONTROLLER ######################################
+
+class MoveController(Thread):
+
+    def __init__(self):
+        super().__init__()
+
+    def run(self) -> None:
+        global stop
+        while not stop:
+            sleep(0.1)
+
+            for event in pygame.event.get():
+
+                if event.type == pygame.QUIT:
+                    print("here")
+                    stop = True
+
+                # controller
+                if event.type == pygame.KEYDOWN:
+                    if event.key in dependance.movements:
+                        direction = dependance.movements[event.key]
+                        dependance.lastMovement = dependance.MOVEMENTS_MATRIX[direction]  # set last movement
+                        Movements.move(direction, Game.getInstance().getPlayer())
+                    elif event.key == pygame.K_SPACE:
+                        Movements.plant()
+
+                # view
+                ViewHandler.getInstance().update()
+
+        pygame.display.quit()
+        pygame.quit()
+
+
+###################################### VIEW ######################################
+
+class ViewHandler:
+    __instance = None
+
+    @staticmethod
+    def getInstance():
+        """ Static access method. """
+        if ViewHandler.__instance is None:
+            ViewHandler()
+        return ViewHandler.__instance
+
+    def __init__(self):
+        """ Virtually private constructor. """
+        if ViewHandler.__instance is not None:
+            raise Exception("This class is a singleton!")
+        else:
+            Game.getInstance()
+            pygame.init()
+            self.__screen = pygame.display.set_mode((Settings.SIZE, Settings.SIZE))
+
+            # set the pygame window name
+            pygame.display.set_caption('BomberFriends')
+
+            # change icon
+            programIcon = pygame.image.load(os.path.join(Settings.resource_path, "icon.png"))
+            pygame.display.set_icon(programIcon)
+
+            # PATH
+            terrainPath = os.path.join(Settings.resource_path, "terrain")
+
+            # IMG DICTIONARY
+            self.__imgdictionary = {}
+
+            # IMG TERRAIN
+            img = pygame.image.load(os.path.join(terrainPath, "block.png"))
+            self.__imgdictionary[Settings.BLOCK] = pygame.transform.scale(img,
+                                                                          (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
+            img = pygame.image.load(os.path.join(terrainPath, "box.png"))
+            self.__imgdictionary[Settings.BOX] = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
+            img = pygame.image.load(os.path.join(terrainPath, "grass.png"))
+            self.__imgdictionary[Settings.GRASS] = pygame.transform.scale(img,
+                                                                          (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
+            # IMG BOMBERMAN
+            img = pygame.image.load(os.path.join(Settings.resource_path, "bomberman.png"))
+            self.__imgdictionary[Settings.PLAYER] = pygame.transform.scale(img,
+                                                                           (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
+            # IMG ENEMY
+            img = pygame.image.load(os.path.join(Settings.resource_path, "enemy.png"))
+            self.__imgdictionary[Settings.ENEMY] = pygame.transform.scale(img,
+                                                                          (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
+            # IMG BOMB
+            img = pygame.image.load(os.path.join(Settings.resource_path, "bomb.png"))
+            self.__imgdictionary[Settings.BOMB] = pygame.transform.scale(img,
+                                                                         (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
+
+            # BACKGROUND
+            img = pygame.image.load(os.path.join(Settings.resource_path, "background.jpg"))
+            self.__imgBackground = pygame.transform.scale(img, (Settings.SIZE, Settings.SIZE))
+
+            ViewHandler.__instance = self
+
+    def __printOnScreen(self):
+        if Game.getInstance().getFinish() is None:
+            for i in range(Game.getInstance().getSize()):
+                for j in range(Game.getInstance().getSize()):
+
+                    if Game.getInstance().getElement(i, j) in self.__imgdictionary.keys():
+                        img = self.__imgdictionary[Game.getInstance().getElement(i, j)]
+                        self.__screen.blit(img, (j * Settings.BLOCK_SIZE, i * Settings.BLOCK_SIZE))
+        else:
+            self.__gameOver()
+
+        pygame.display.update()
+
+    def update(self):
+        self.__printOnScreen()
+
+    def __gameOver(self):
+        # INSIDE OF THE GAME LOOP
+        self.__screen.blit(self.__imgBackground, (0, 0))
+
+        # REST OF ITEMS ARE BLIT'D TO SCREEN.
+        # define the RGB value for white,
+        #  green, blue colour .
+        white = (255, 255, 255)
+        green = (0, 255, 0)
+        blue = (0, 0, 128)
+
+        # assigning values to X and Y variable
+        X = Settings.SIZE // 2
+        Y = Settings.SIZE // 2
+
+        # create a font object.
+        # 1st parameter is the font file
+        # which is present in pygame.
+        # 2nd parameter is size of the font
+        font = pygame.font.Font('freesansbold.ttf', 32)
+
+        # create a text suface object,
+        # on which text is drawn on it.
+        text = font.render(f"{Game.getInstance().getFinish()} Win!", True, green, blue)
+
+        # create a rectangular object for the
+        # text surface object
+        textRect = text.get_rect()
+
+        # set the center of the rectangular object.
+        textRect.center = (X, Y)
+
+        # copying the text surface object
+        # to the display surface object
+        # at the center coordinate.
+        self.__screen.blit(text, textRect)
+
+
+###################################### AI ######################################
 
 class DLVSolution:
 
@@ -272,31 +430,39 @@ class DLVSolution:
                     variableInputProgram.add_program(
                         f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
 
-            id = self.__handler.add_program(variableInputProgram)
+            index = self.__handler.add_program(variableInputProgram)
             answerSets = self.__handler.start_sync()
 
             # Problem: index out range
             print("#######################################")
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
-                # a = answerSet.get_atoms()
-                # for obj in answerSet.get_atoms():
-                #     if isinstance(obj, Point):
-                #         print(obj)
+                a = answerSet.get_atoms()
+                print(a)
+                for obj in answerSet.get_atoms():
+                    if isinstance(obj, Point):
+                        print(obj)
                 print("#######################################")
 
-            self.__handler.remove_program_from_id(id)
+            self.__handler.remove_program_from_id(index)
 
         except Exception as e:
             print(str(e))
 
 
-class ThreadDLV(Thread):
+class DLVThread(Thread):
     def __init__(self):
         super().__init__()
         self.__dlv = DLVSolution()
 
-    def run(self) -> None:
-        while True:
+    def run(self):
+        global stop
+        while not stop:
             self.__dlv.recallASP()
             sleep(2)
+
+
+###################################### MAIN ######################################
+pygame.init()
+MoveController().start()
+DLVThread().start()
