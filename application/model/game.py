@@ -285,7 +285,7 @@ class DLVSolution:
             listAdjacent = computeNeighbors(e.get_i(), e.get_j())
             for adjacent in listAdjacent:
                 if not Game.getInstance().outBorders(adjacent.get_i(), adjacent.get_j()):
-                    self.__variableInputProgram.add_program(
+                    id = self.__variableInputProgram.add_program(
                         f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
                     # print(f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
 
@@ -293,16 +293,19 @@ class DLVSolution:
             self.__handler.add_program(self.__variableInputProgram)
             answerSets = self.__handler.start_sync()
             self.__variableInputProgram.clear_programs()  # clear at each call
-            # self.__handler.remove_all()
+
+            # self.__handler.remove(id)
 
             # Problem: index out range --> CODE IS THE SAME OF THE EXAMPLE ON THE SITE
-
+            print("#######################################")
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
-                a = answerSet.get_atoms()
+                # a = answerSet.get_atoms()
                 # for obj in answerSet.get_atoms():
                 #     if isinstance(obj, Point):
                 #         print(obj)
+                print("#######################################")
+            self.__variableInputProgram.clear_programs()  # clear at each call
 
         except Exception as e:
             print(str(e))
