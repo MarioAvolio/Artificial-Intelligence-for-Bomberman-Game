@@ -348,7 +348,7 @@ class DLVThread(Thread):
         self.__dlv = DLVSolution()
 
     def run(self):
-        while IS_RUNNING:
+        while True:
             self.__dlv.recallASP()
             sleep(2)
 
