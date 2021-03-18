@@ -1,20 +1,60 @@
 import copy
 import os
-from threading import RLock, Thread
+from threading import Thread, RLock
 from time import sleep
 
 import pygame
+# === CONSTANS === (UPPER_CASE names)
 from languages.asp.asp_input_program import ASPInputProgram
 from languages.asp.asp_mapper import ASPMapper
 from languages.predicate import Predicate
 from platforms.desktop.desktop_handler import DesktopHandler
 from specializations.dlv2.desktop.dlv2_desktop_service import DLV2DesktopService
 
-from application import dependance
-from application.settings_ import Settings
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
-global stop
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 
+SIZE = 800
+
+LEFT = 0
+RIGHT = 1
+UP = 2
+DOWN = 3
+
+MOVEMENTS_MATRIX = {  # MOVEMENTS ON THE MATRIX
+    # tuples
+    LEFT: (0, -1),
+    RIGHT: (0, 1),
+    UP: (-1, 0),
+    DOWN: (1, 0)
+}
+
+lastMovement = MOVEMENTS_MATRIX[RIGHT]
+movements = {
+    pygame.K_LEFT: LEFT,
+    pygame.K_RIGHT: RIGHT,
+    pygame.K_DOWN: DOWN,
+    pygame.K_UP: UP
+}
+
+GRASS = 0
+PLAYER = 1
+ENEMY = 2
+BLOCK = 3
+BOX = 4
+BOMB = 5
+
+current_path = os.path.dirname(__file__)  # Where your .py file is located
+resource_path = os.path.join(current_path, '../resources')  # The resource folder path
+
+BLOCK_SIZE = 50
+
+
+# === CLASSES === (CamelCase names)
 
 class Game:
     __instance = None
@@ -50,7 +90,8 @@ class Game:
                           [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
             self.__size = len(self.__map)
-            Settings.BLOCK_SIZE = Settings.SIZE // self.__size
+            global BLOCK_SIZE
+            BLOCK_SIZE = SIZE // self.__size
             self.__lock = RLock()
             Game.__instance = self
             self.__finish = None
@@ -72,7 +113,7 @@ class Game:
             if collision(i, j):
                 return
 
-            self.__writeElement(i, j, Settings.BOMB)
+            self.__writeElement(i, j, BOMB)
             # START THREAD BOMB
             Bomb(i, j).start()
 
@@ -89,16 +130,16 @@ class Game:
                 return
 
             # remove bomb
-            self.__writeElement(coordinateBomb.get_i(), coordinateBomb.get_j(), Settings.GRASS)
+            self.__writeElement(coordinateBomb.get_i(), coordinateBomb.get_j(), GRASS)
 
             for point in listPoints:  # adjacent point
                 if not self.outBorders(point.get_i(), point.get_j()):
-                    if self.getElement(point.get_i(), point.get_j()) == Settings.ENEMY:
+                    if self.getElement(point.get_i(), point.get_j()) == ENEMY:
                         self.__finish = "Player"  # player win
-                    elif self.getElement(point.get_i(), point.get_j()) == Settings.PLAYER:
+                    elif self.getElement(point.get_i(), point.get_j()) == PLAYER:
                         self.__finish = "Enemy"  # enemy win
                     elif not collisionBomb(point.get_i(), point.get_j()):
-                        self.__writeElement(point.get_i(), point.get_j(), Settings.GRASS)
+                        self.__writeElement(point.get_i(), point.get_j(), GRASS)
 
     # SETTER
     def __writeElement(self, i: int, j: int, elem):
@@ -125,33 +166,6 @@ class Game:
     def getFinish(self):
         with self.__lock:
             return self.__finish
-
-
-def collision(i: int, j: int) -> bool:
-    return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) != Settings.GRASS
-
-
-def collisionBomb(i: int, j: int) -> bool:
-    return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) == Settings.BLOCK
-
-
-def move(direction: int, point):
-    oldPoint = copy.deepcopy(point)
-
-    if direction in dependance.MOVEMENTS_MATRIX.keys():
-        point.move(direction)
-
-    if collision(point.get_i(), point.get_j()):
-        point.set_i(oldPoint.get_i())
-        point.set_j(oldPoint.get_j())
-    else:
-        Game.getInstance().moveOnMap(point, oldPoint)
-
-
-def plant():
-    i = Game.getInstance().getPlayer().get_i() + dependance.lastMovement[Point.I]
-    j = Game.getInstance().getPlayer().get_j() + dependance.lastMovement[Point.J]
-    Game.getInstance().plantBomb(i, j)
 
 
 class Point(Predicate):
@@ -183,31 +197,12 @@ class Point(Predicate):
         self.__coordinate[Point.J] = j
 
     def move(self, direction: int):
-        if direction in dependance.MOVEMENTS_MATRIX.keys():
-            self.__coordinate[Point.I] += dependance.MOVEMENTS_MATRIX[direction][Point.I]
-            self.__coordinate[Point.J] += dependance.MOVEMENTS_MATRIX[direction][Point.J]
+        if direction in MOVEMENTS_MATRIX.keys():
+            self.__coordinate[Point.I] += MOVEMENTS_MATRIX[direction][Point.I]
+            self.__coordinate[Point.J] += MOVEMENTS_MATRIX[direction][Point.J]
 
     def __str__(self):
         return f"Point({self.__coordinate[Point.I]}, {self.__coordinate[Point.J]}) \n"
-
-
-def getDistanceEP(p1: Point, e1: Point):
-    PI = p1.get_i()
-    PJ = p1.get_j()
-    EI = e1.get_i()
-    EJ = e1.get_j()
-
-    return int(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2))
-
-
-def computeNeighbors(i: int, j: int):
-    listPoints = [Point(i, j) for _ in range(4)]
-    listPoints[0].move(dependance.LEFT)
-    listPoints[1].move(dependance.RIGHT)
-    listPoints[2].move(dependance.UP)
-    listPoints[3].move(dependance.DOWN)
-
-    return listPoints
 
 
 class Bomb(Thread, Point):
@@ -221,150 +216,84 @@ class Bomb(Thread, Point):
         Game.getInstance().explode(self.__listPoints, self)
 
 
-###################################### CONTROLLER ######################################
-
-class MoveController(Thread):
-
+class HandlerView:
     def __init__(self):
-        super().__init__()
+        Game.getInstance()
 
-    def run(self) -> None:
-        global stop
-        stop = False
+        # PATH
+        terrainPath = os.path.join(resource_path, "terrain")
 
-        while not stop:
-            sleep(0.1)
+        # IMG DICTIONARY
+        self.__imgdictionary = {}
 
-            for event in pygame.event.get():
+        # IMG TERRAIN
+        img = pygame.image.load(os.path.join(terrainPath, "block.png"))
+        self.__imgdictionary[BLOCK] = pygame.transform.scale(img,
+                                                             (BLOCK_SIZE, BLOCK_SIZE))
 
-                if event.type == pygame.QUIT:
-                    print("here")
-                    stop = True
+        img = pygame.image.load(os.path.join(terrainPath, "box.png"))
+        self.__imgdictionary[BOX] = pygame.transform.scale(img, (BLOCK_SIZE, BLOCK_SIZE))
 
-                # controller
-                if event.type == pygame.KEYDOWN:
-                    if event.key in dependance.movements:
-                        direction = dependance.movements[event.key]
-                        dependance.lastMovement = dependance.MOVEMENTS_MATRIX[direction]  # set last movement
-                        move(direction, Game.getInstance().getPlayer())
-                    elif event.key == pygame.K_SPACE:
-                        plant()
+        img = pygame.image.load(os.path.join(terrainPath, "grass.png"))
+        self.__imgdictionary[GRASS] = pygame.transform.scale(img,
+                                                             (BLOCK_SIZE, BLOCK_SIZE))
 
-            # view
-            ViewHandler.getInstance().update()
+        # IMG BOMBERMAN
+        img = pygame.image.load(os.path.join(resource_path, "bomberman.png"))
+        self.__imgdictionary[PLAYER] = pygame.transform.scale(img,
+                                                              (BLOCK_SIZE, BLOCK_SIZE))
 
-        pygame.display.quit()
-        pygame.quit()
+        # IMG ENEMY
+        img = pygame.image.load(os.path.join(resource_path, "enemy.png"))
+        self.__imgdictionary[ENEMY] = pygame.transform.scale(img,
+                                                             (BLOCK_SIZE, BLOCK_SIZE))
 
+        # IMG BOMB
+        img = pygame.image.load(os.path.join(resource_path, "bomb.png"))
+        self.__imgdictionary[BOMB] = pygame.transform.scale(img,
+                                                            (BLOCK_SIZE, BLOCK_SIZE))
 
-###################################### VIEW ######################################
+        # BACKGROUND
+        img = pygame.image.load(os.path.join(resource_path, "background.jpg"))
+        self.__imgBackground = pygame.transform.scale(img, (SIZE, SIZE))
 
-class ViewHandler:
-    __instance = None
-
-    @staticmethod
-    def getInstance():
-        """ Static access method. """
-        if ViewHandler.__instance is None:
-            ViewHandler()
-        return ViewHandler.__instance
-
-    def __init__(self):
-        """ Virtually private constructor. """
-        if ViewHandler.__instance is not None:
-            raise Exception("This class is a singleton!")
-        else:
-            Game.getInstance()
-            pygame.init()
-            self.__screen = pygame.display.set_mode((Settings.SIZE, Settings.SIZE))
-
-            # set the pygame window name
-            pygame.display.set_caption('BomberFriends')
-
-            # change icon
-            programIcon = pygame.image.load(os.path.join(Settings.resource_path, "icon.png"))
-            pygame.display.set_icon(programIcon)
-
-            # PATH
-            terrainPath = os.path.join(Settings.resource_path, "terrain")
-
-            # IMG DICTIONARY
-            self.__imgdictionary = {}
-
-            # IMG TERRAIN
-            img = pygame.image.load(os.path.join(terrainPath, "block.png"))
-            self.__imgdictionary[Settings.BLOCK] = pygame.transform.scale(img,
-                                                                          (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
-
-            img = pygame.image.load(os.path.join(terrainPath, "box.png"))
-            self.__imgdictionary[Settings.BOX] = pygame.transform.scale(img, (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
-
-            img = pygame.image.load(os.path.join(terrainPath, "grass.png"))
-            self.__imgdictionary[Settings.GRASS] = pygame.transform.scale(img,
-                                                                          (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
-
-            # IMG BOMBERMAN
-            img = pygame.image.load(os.path.join(Settings.resource_path, "bomberman.png"))
-            self.__imgdictionary[Settings.PLAYER] = pygame.transform.scale(img,
-                                                                           (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
-
-            # IMG ENEMY
-            img = pygame.image.load(os.path.join(Settings.resource_path, "enemy.png"))
-            self.__imgdictionary[Settings.ENEMY] = pygame.transform.scale(img,
-                                                                          (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
-
-            # IMG BOMB
-            img = pygame.image.load(os.path.join(Settings.resource_path, "bomb.png"))
-            self.__imgdictionary[Settings.BOMB] = pygame.transform.scale(img,
-                                                                         (Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
-
-            # BACKGROUND
-            img = pygame.image.load(os.path.join(Settings.resource_path, "background.jpg"))
-            self.__imgBackground = pygame.transform.scale(img, (Settings.SIZE, Settings.SIZE))
-
-            ViewHandler.__instance = self
-
-    def __printOnScreen(self):
+    def __printOnScreen(self, surface):
         if Game.getInstance().getFinish() is None:
             for i in range(Game.getInstance().getSize()):
                 for j in range(Game.getInstance().getSize()):
 
                     if Game.getInstance().getElement(i, j) in self.__imgdictionary.keys():
                         img = self.__imgdictionary[Game.getInstance().getElement(i, j)]
-                        self.__screen.blit(img, (j * Settings.BLOCK_SIZE, i * Settings.BLOCK_SIZE))
+                        surface.blit(img, (j * BLOCK_SIZE, i * BLOCK_SIZE))
         else:
-            self.__gameOver()
+            self.__gameOver(surface)
 
         pygame.display.update()
 
-    def update(self):
-        self.__printOnScreen()
+    def update(self, surface):
+        self.__printOnScreen(surface)
 
-    def __gameOver(self):
-        self.__screen.blit(self.__imgBackground, (0, 0))
-        green = (0, 255, 0)
-        blue = (0, 0, 128)
-        X = Settings.SIZE // 2
-        Y = Settings.SIZE // 2
+    def __gameOver(self, surface):
+        surface.blit(self.__imgBackground, (0, 0))
+        X = SIZE // 2
+        Y = SIZE // 2
         font = pygame.font.Font('freesansbold.ttf', 32)
-        text = font.render(f"{Game.getInstance().getFinish()} Win!", True, green, blue)
+        text = font.render(f"{Game.getInstance().getFinish()} Win!", True, GREEN, BLUE)
         textRect = text.get_rect()
         textRect.center = (X, Y)
-        self.__screen.blit(text, textRect)
+        surface.blit(text, textRect)
 
-
-###################################### AI ######################################
 
 class DLVSolution:
 
     def __init__(self):
         try:
             self.__handler = DesktopHandler(
-                DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
+                DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
             ASPMapper.get_instance().register_class(Point)
             self.__fixedInputProgram = ASPInputProgram()
 
-            self.__fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
+            self.__fixedInputProgram.add_files_path(os.path.join(resource_path, "rules.dlv2"))
             for elem in range(6):
                 self.__fixedInputProgram.add_program(f"elem({elem}).")
             self.__handler.add_program(self.__fixedInputProgram)
@@ -419,16 +348,171 @@ class DLVThread(Thread):
         self.__dlv = DLVSolution()
 
     def run(self):
-        while not stop:
+        while IS_RUNNING:
             self.__dlv.recallASP()
             sleep(2)
 
 
-###################################### MAIN ######################################
-def main():
-    pygame.init()
-    MoveController().start()
-    DLVThread().start()
+'''
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
+        self.image.fill(GREEN)
+        self.rect = self.image.get_rect()
+        self.rect.center = screen_rect.center
+        self.move_x = 0
+        self.move_y = 0
+        self.gravity = 1
+        self.jump = 0
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+    def update(self):
+        self.rect.x += self.move_x
+        self.rect.y += self.move_y
+        self.jump -= self.gravity
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                self.move_x -= 10
+            elif event.key == pygame.K_RIGHT:
+                self.move_x += 10
+            elif event.key == pygame.K_UP:
+                self.move_y -= 10
+            elif event.key == pygame.K_DOWN:
+                self.move_y += 10
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+               self.move_x += 10
+            elif event.key == pygame.K_RIGHT:
+                self.move_x -= 10
+            elif event.key == pygame.K_UP:
+                self.move_y += 10
+            elif event.key == pygame.K_DOWN:
+                self.move_y -= 10
+'''
 
-if __name__ == '__main__':
-    main()
+
+# === FUNCTIONS === (lower_case names)
+
+def getDistanceEP(p1: Point, e1: Point):
+    PI = p1.get_i()
+    PJ = p1.get_j()
+    EI = e1.get_i()
+    EJ = e1.get_j()
+
+    return int(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2))
+
+
+def computeNeighbors(i: int, j: int):
+    listPoints = [Point(i, j) for _ in range(4)]
+    listPoints[0].move(LEFT)
+    listPoints[1].move(RIGHT)
+    listPoints[2].move(UP)
+    listPoints[3].move(DOWN)
+
+    return listPoints
+
+
+def collision(i: int, j: int) -> bool:
+    return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) != GRASS
+
+
+def collisionBomb(i: int, j: int) -> bool:
+    return Game.getInstance().outBorders(i, j) or Game.getInstance().getElement(i, j) == BLOCK
+
+
+def move(direction: int, point):
+    oldPoint = copy.deepcopy(point)
+
+    if direction in MOVEMENTS_MATRIX.keys():
+        point.move(direction)
+
+    if collision(point.get_i(), point.get_j()):
+        point.set_i(oldPoint.get_i())
+        point.set_j(oldPoint.get_j())
+    else:
+        Game.getInstance().moveOnMap(point, oldPoint)
+
+
+def plant():
+    i = Game.getInstance().getPlayer().get_i() + lastMovement[Point.I]
+    j = Game.getInstance().getPlayer().get_j() + lastMovement[Point.J]
+    Game.getInstance().plantBomb(i, j)
+
+
+# === MAIN === (lower_case names)
+
+# --- (global) variables ---
+
+# --- init ---
+
+pygame.init()
+
+screen = pygame.display.set_mode((SIZE, SIZE))
+screen_rect = screen.get_rect()
+pygame.display.set_caption('BomberFriends')
+programIcon = pygame.image.load(os.path.join(resource_path, "icon.png"))
+pygame.display.set_icon(programIcon)
+
+# --- objects ---
+
+handler = HandlerView()
+DLVThread().start()
+
+# --- mainloop ---
+
+clock = pygame.time.Clock()
+IS_RUNNING = True
+
+while IS_RUNNING:
+
+    # --- events ---
+
+    for event in pygame.event.get():
+
+        # --- global events ---
+
+        if event.type == pygame.QUIT:
+            IS_RUNNING = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                IS_RUNNING = False
+            if event.key in movements:
+                direction = movements[event.key]
+                lastMovement = MOVEMENTS_MATRIX[direction]  # set last movement
+                move(direction, Game.getInstance().getPlayer())
+            elif event.key == pygame.K_SPACE:
+                plant()
+                pass
+
+        # --- objects events ---
+
+        '''
+        player.handle_event(event)
+        '''
+
+    # --- updates ---
+
+    '''
+    player.update()
+    '''
+
+    # --- draws ---
+
+    screen.fill(BLACK)
+
+    '''
+    player.draw(screen)
+    '''
+    handler.update(screen)
+
+    pygame.display.update()
+
+    # --- FPS ---
+
+    clock.tick(25)
+
+# --- the end ---
+
+pygame.quit()

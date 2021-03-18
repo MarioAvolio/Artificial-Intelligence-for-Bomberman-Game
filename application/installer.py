@@ -1,7 +1,6 @@
 import os
 
 import pip
-
 from application.settings_ import Settings
 
 
