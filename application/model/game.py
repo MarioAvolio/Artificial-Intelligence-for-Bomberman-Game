@@ -235,48 +235,32 @@ class Bomb(Thread, Point):
 ###################################### AI WITH DLV2 ######################################
 
 class DLVSolution:
-    __instance = None
-
-    @staticmethod
-    def getInstance():
-        """ Static access method. """
-        if DLVSolution.__instance is None:
-            DLVSolution()
-        return DLVSolution.__instance
 
     def __init__(self):
-        """ Virtually private constructor. """
-        if DLVSolution.__instance is not None:
-            raise Exception("This class is a singleton!")
-        else:
-            try:
-                self.__handler = DesktopHandler(
-                    DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
-                ASPMapper.get_instance().register_class(Point)
-                fixedInputProgram = ASPInputProgram()
-                self.__variableInputProgram = ASPInputProgram()
+        try:
+            self.__handler = DesktopHandler(
+                DLV2DesktopService(os.path.join(Settings.resource_path, "../../lib/DLV2.exe")))
+            ASPMapper.get_instance().register_class(Point)
+            self.__fixedInputProgram = ASPInputProgram()
 
-                fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
-                for elem in range(6):
-                    fixedInputProgram.add_program(f"elem({elem}).")
-                self.__handler.add_program(fixedInputProgram)
+            self.__fixedInputProgram.add_files_path(os.path.join(Settings.resource_path, "rules.dlv2"))
+            for elem in range(6):
+                self.__fixedInputProgram.add_program(f"elem({elem}).")
+            self.__handler.add_program(self.__fixedInputProgram)
 
-            except Exception as e:
-                print(str(e))
-            finally:
-                DLVSolution.__instance = self
+        except Exception as e:
+            print(str(e))
 
     def recallASP(self):
         try:
-
-            # Example facts: point(I, J, ELEMENT_TYPE)
-            # input matrix as facts
             size = Game.getInstance().getSize()
+            variableInputProgram = ASPInputProgram()
+
+            # input matrix as facts
             for i in range(size):
                 for j in range(size):
                     typeNumber = Game.getInstance().getElement(i, j)
-                    self.__variableInputProgram.add_program(f"cell({i},{j},{typeNumber}).")
-                    # print(f"cell({i},{j},{typeNumber}).", end=' ')
+                    variableInputProgram.add_program(f"cell({i},{j},{typeNumber}).")  # cell(I, J, ELEMENT_TYPE)
 
             # compute neighbors values
             e = Game.getInstance().getEnemy()
@@ -285,18 +269,13 @@ class DLVSolution:
             listAdjacent = computeNeighbors(e.get_i(), e.get_j())
             for adjacent in listAdjacent:
                 if not Game.getInstance().outBorders(adjacent.get_i(), adjacent.get_j()):
-                    id = self.__variableInputProgram.add_program(
+                    variableInputProgram.add_program(
                         f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
-                    # print(f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
 
-            # print(f"INPUT: {self.__variableInputProgram.get_programs()}" )
-            self.__handler.add_program(self.__variableInputProgram)
+            id = self.__handler.add_program(variableInputProgram)
             answerSets = self.__handler.start_sync()
-            self.__variableInputProgram.clear_programs()  # clear at each call
 
-            # self.__handler.remove(id)
-
-            # Problem: index out range --> CODE IS THE SAME OF THE EXAMPLE ON THE SITE
+            # Problem: index out range
             print("#######################################")
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
@@ -305,7 +284,8 @@ class DLVSolution:
                 #     if isinstance(obj, Point):
                 #         print(obj)
                 print("#######################################")
-            self.__variableInputProgram.clear_programs()  # clear at each call
+
+            self.__handler.remove_program_from_id(id)
 
         except Exception as e:
             print(str(e))
@@ -314,8 +294,9 @@ class DLVSolution:
 class ThreadDLV(Thread):
     def __init__(self):
         super().__init__()
+        self.__dlv = DLVSolution()
 
     def run(self) -> None:
         while True:
-            DLVSolution.getInstance().recallASP()
-            sleep(1)
+            self.__dlv.recallASP()
+            sleep(2)
