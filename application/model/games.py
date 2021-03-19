@@ -1,4 +1,5 @@
 import copy
+import datetime
 import os
 from threading import Thread, RLock
 from time import sleep
@@ -50,6 +51,7 @@ BOMB = 5
 
 current_path = os.path.dirname(__file__)  # Where your .py file is located
 resource_path = os.path.join(current_path, '../resources')  # The resource folder path
+logs_path = os.path.join(resource_path, 'logs')
 
 BLOCK_SIZE = 50
 
@@ -342,6 +344,8 @@ class HandlerView:
 class DLVSolution:
 
     def __init__(self):
+        self.__countlogs = 0
+        self.__dir = None
         try:
             self.__handler = DesktopHandler(
                 DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
@@ -351,6 +355,7 @@ class DLVSolution:
             ASPMapper.get_instance().register_class(Distance)
 
             self.__fixedInputProgram = ASPInputProgram()
+            self.__variableInputProgram = None
 
             self.__fixedInputProgram.add_files_path(os.path.join(resource_path, "rules.dlv2"))
             self.__handler.add_program(self.__fixedInputProgram)
@@ -358,18 +363,34 @@ class DLVSolution:
         except Exception as e:
             print(str(e))
 
+    # DEBUG
+
+    def __log_program(self):
+        if self.__countlogs == 0:
+            timestamp = datetime.datetime.now()
+            self.__dir = f"{timestamp.hour}-{timestamp.minute}-{timestamp.second}"
+            os.mkdir(f"{logs_path}/{self.__dir}")
+        with open(f"{logs_path}/{self.__dir}/BomberFriend-{self.__countlogs}.log", "w") as f:
+            f.write(f"Variable: \n"
+                    f"{self.__variableInputProgram.get_programs()} \n\n\n"
+                    f"Fixed:\n"
+                    f"{self.__fixedInputProgram.get_programs()}")
+        self.__countlogs += 1
+
+    # END DEBUG
+
     def recallASP(self):
         pass
         try:
             size = gameInstance.getSize()
-            variableInputProgram = ASPInputProgram()
+            self.__variableInputProgram = ASPInputProgram()
 
             # input matrix as facts
             for i in range(size):
                 for j in range(size):
                     typeNumber = gameInstance.getElement(i, j)
                     p = InputPointType(i, j, typeNumber)
-                    variableInputProgram.add_object_input(p)  # point(I, J, ELEMENT_TYPE)
+                    self.__variableInputProgram.add_object_input(p)  # point(I, J, ELEMENT_TYPE)
 
             # compute neighbors values
             e = gameInstance.getEnemy()
@@ -380,9 +401,9 @@ class DLVSolution:
                 if not gameInstance.outBorders(adjacent.get_i(), adjacent.get_j()):
                     distance = getDistanceEP(adjacent, p)
                     d = Distance(adjacent.get_i(), adjacent.get_j(), distance)
-                    variableInputProgram.add_object_input(d)
+                    self.__variableInputProgram.add_object_input(d)
 
-            index = self.__handler.add_program(variableInputProgram)
+            index = self.__handler.add_program(self.__variableInputProgram)
             answerSets = self.__handler.start_sync()
 
             print("#######################################")
@@ -395,6 +416,7 @@ class DLVSolution:
 
                 print("#######################################")
 
+            self.__log_program()
             self.__handler.remove_program_from_id(index)
 
         except Exception as e:
