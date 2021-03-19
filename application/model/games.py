@@ -374,7 +374,7 @@ class DLVSolution:
             f.write(f"Variable: \n"
                     f"{self.__variableInputProgram.get_programs()} \n\n\n"
                     f"Fixed:\n"
-                    f"{self.__fixedInputProgram.get_programs()}")
+                    f"{self.__fixedInputProgram.get_files_paths()}")
         self.__countlogs += 1
 
     # END DEBUG
