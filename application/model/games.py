@@ -56,10 +56,41 @@ BLOCK_SIZE = 50
 
 # === CLASSES === (CamelCase names)
 
+class Point:
+    I = 0
+    J = 1
+
+    def __int__(self):
+        pass
+
+    def __init__(self, i: int, j: int):
+        self.__coordinate = [i, j]  # list
+
+    def get_i(self):
+        return self.__coordinate[Point.I]
+
+    def get_j(self):
+        return self.__coordinate[Point.J]
+
+    def set_i(self, i: int):
+        self.__coordinate[Point.I] = i
+
+    def set_j(self, j: int):
+        self.__coordinate[Point.J] = j
+
+    def move(self, directions: int):
+        if directions in MOVEMENTS_MATRIX.keys():
+            self.__coordinate[Point.I] += MOVEMENTS_MATRIX[directions][Point.I]
+            self.__coordinate[Point.J] += MOVEMENTS_MATRIX[directions][Point.J]
+
+    def __str__(self):
+        return f"Point [{self.__coordinate[Point.I]}, {self.__coordinate[Point.J]}]."
+
+
 class Game:
     def __init__(self):
         self.__player = PointType(0, 0, PLAYER)
-        self.__enemy = PointType(7, 9, ENEMY)
+        self.__enemy = PointType(15, 0, ENEMY)
         self.__map = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                       [4, 0, 0, 0, 0, 0, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0],
@@ -69,13 +100,13 @@ class Game:
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 3, 0, 0, 0, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 3, 3, 3, 4, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 4, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+                      [2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
         self.__size = len(self.__map)
         global BLOCK_SIZE
         BLOCK_SIZE = SIZE // self.__size
@@ -103,12 +134,18 @@ class Game:
             # START THREAD BOMB
             Bomb(i, j).start()
 
-    def moveOnMap(self, newPoint, oldPoint):
+    def moveOnMap(self, newPoint: Point, oldPoint: Point):
         with self.__lock:
             if self.getFinish() is not None:
                 return
 
             self.__swap(oldPoint.get_i(), oldPoint.get_j(), newPoint.get_i(), newPoint.get_j())
+
+    def moveEnemy(self, point: Point):
+        with self.__lock:
+            self.moveOnMap(point, self.__enemy)
+            self.__enemy.set_j(point.get_j())
+            self.__enemy.set_i(point.get_i())
 
     def explode(self, listPoints, coordinateBomb):
         with self.__lock:
@@ -152,37 +189,6 @@ class Game:
     def getFinish(self):
         with self.__lock:
             return self.__finish
-
-
-class Point:
-    I = 0
-    J = 1
-
-    def __int__(self):
-        pass
-
-    def __init__(self, i: int, j: int):
-        self.__coordinate = [i, j]  # list
-
-    def get_i(self):
-        return self.__coordinate[Point.I]
-
-    def get_j(self):
-        return self.__coordinate[Point.J]
-
-    def set_i(self, i: int):
-        self.__coordinate[Point.I] = i
-
-    def set_j(self, j: int):
-        self.__coordinate[Point.J] = j
-
-    def move(self, direction: int):
-        if direction in MOVEMENTS_MATRIX.keys():
-            self.__coordinate[Point.I] += MOVEMENTS_MATRIX[direction][Point.I]
-            self.__coordinate[Point.J] += MOVEMENTS_MATRIX[direction][Point.J]
-
-    def __str__(self):
-        return f"Point [{self.__coordinate[Point.I]}, {self.__coordinate[Point.J]}]."
 
 
 class PointType(Point):
@@ -362,7 +368,8 @@ class DLVSolution:
             for i in range(size):
                 for j in range(size):
                     typeNumber = gameInstance.getElement(i, j)
-                    variableInputProgram.add_program(f"point({i},{j},{typeNumber}).")  # cell(I, J, ELEMENT_TYPE)
+                    p = InputPointType(i, j, typeNumber)
+                    variableInputProgram.add_object_input(p)  # point(I, J, ELEMENT_TYPE)
 
             # compute neighbors values
             e = gameInstance.getEnemy()
@@ -371,22 +378,21 @@ class DLVSolution:
             listAdjacent = computeNeighbors(e.get_i(), e.get_j())
             for adjacent in listAdjacent:
                 if not gameInstance.outBorders(adjacent.get_i(), adjacent.get_j()):
-                    variableInputProgram.add_program(
-                        f"distance({adjacent.get_i()}, {adjacent.get_j()}, {getDistanceEP(adjacent, p)}).")
+                    distance = getDistanceEP(adjacent, p)
+                    d = Distance(adjacent.get_i(), adjacent.get_j(), distance)
+                    variableInputProgram.add_object_input(d)
 
             index = self.__handler.add_program(variableInputProgram)
             answerSets = self.__handler.start_sync()
 
-            # Problem: index out range
             print("#######################################")
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
-                # a = answerSet.get_atoms()
-                # print(a)
                 for obj in answerSet.get_atoms():
-                    # print(obj)
                     if isinstance(obj, Path):
                         print(f"Path {obj}")
+                        gameInstance.moveEnemy(obj)
+
                 print("#######################################")
 
             self.__handler.remove_program_from_id(index)
@@ -451,7 +457,7 @@ class Player(pygame.sprite.Sprite):
 
 # === FUNCTIONS === (lower_case names)
 
-def getDistanceEP(p1: PointType, e1: PointType):
+def getDistanceEP(p1: Point, e1: Point) -> int:
     PI = p1.get_i()
     PJ = p1.get_j()
     EI = e1.get_i()
@@ -478,11 +484,11 @@ def collisionBomb(i: int, j: int) -> bool:
     return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) == BLOCK
 
 
-def move(direction: int, point):
+def move(directions: int, point):
     oldPoint = copy.deepcopy(point)
 
-    if direction in MOVEMENTS_MATRIX.keys():
-        point.move(direction)
+    if directions in MOVEMENTS_MATRIX.keys():
+        point.move(directions)
 
     if collision(point.get_i(), point.get_j()):
         point.set_i(oldPoint.get_i())
