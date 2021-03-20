@@ -366,6 +366,8 @@ class DLVSolution:
     # DEBUG
 
     def __log_program(self):
+        if not os.path.exists(logs_path):
+            os.mkdir(f"{logs_path}")
         if self.__countlogs == 0:
             timestamp = datetime.datetime.now()
             self.__dir = f"{timestamp.hour}-{timestamp.minute}-{timestamp.second}"
