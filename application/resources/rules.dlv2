@@ -3,6 +3,7 @@
 % elem(0). elem(1). elem(2). elem(3). elem(4). elem(5).
 
 #show path/2.
+#show bomb/2.
 
 % distance(0,1,2).
 % distance(0,2,12).
@@ -23,11 +24,15 @@
 path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
 :- path(X,Y), point(X,Y,T), T!=0.
 :- #count{X,Y : path(X,Y)} > 1.
+:- path(X,Y), adjacent(X,Y).
 
 
 % dodge Bomb
-% bombAroundMe(1) :- distance(X, Y, _), point(X, Y, 5).
-% TODO
+% bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
+adjacentBomb(X, Y1):- bomb(X, Y), Y1 = Y + 1.
+adjacentBomb(X1, Y):- bomb(X, Y), X1 = X + 1.
+adjacentBomb(X, Y):- adjacentBomb(Y, X).
+
 
 
 % minimze distance between player and enemy

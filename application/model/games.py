@@ -221,6 +221,7 @@ class InputPointType(Predicate, PointType):
 
 
 class Bomb(Thread, PointType):
+    TIME_LIMIT = 2
 
     def __int__(self):
         pass
@@ -231,8 +232,19 @@ class Bomb(Thread, PointType):
         self.__listPoints = computeNeighbors(i, j)
 
     def run(self) -> None:
-        sleep(2)  # time to explode bomb
+        sleep(Bomb.TIME_LIMIT)  # time to explode bomb
         gameInstance.explode(self.__listPoints, self)
+
+
+class InputBomb(Predicate, Point):
+    predicate_name = "bomb"
+
+    def __int__(self):
+        pass
+
+    def __init__(self, i=None, j=None):
+        Point.__init__(self, i, j)
+        Predicate.__init__(self, [("i", int), ("j", int)])
 
 
 class NoPath(Predicate, Point):
@@ -344,8 +356,9 @@ class HandlerView:
 class DLVSolution:
 
     def __init__(self):
-        self.__countlogs = 0
+        self.__countLogs = 0
         self.__dir = None
+        self.__bombs = []
         try:
             self.__handler = DesktopHandler(
                 DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
@@ -353,6 +366,7 @@ class DLVSolution:
             ASPMapper.get_instance().register_class(Path)
             ASPMapper.get_instance().register_class(NoPath)
             ASPMapper.get_instance().register_class(Distance)
+            ASPMapper.get_instance().register_class(InputBomb)
 
             self.__fixedInputProgram = ASPInputProgram()
             self.__variableInputProgram = None
@@ -368,16 +382,16 @@ class DLVSolution:
     def __log_program(self):
         if not os.path.exists(logs_path):
             os.mkdir(f"{logs_path}")
-        if self.__countlogs == 0:
+        if self.__countLogs == 0:
             timestamp = datetime.datetime.now()
             self.__dir = f"{timestamp.hour}-{timestamp.minute}-{timestamp.second}"
             os.mkdir(f"{logs_path}/{self.__dir}")
-        with open(f"{logs_path}/{self.__dir}/BomberFriend-{self.__countlogs}.log", "w") as f:
+        with open(f"{logs_path}/{self.__dir}/BomberFriend-{self.__countLogs}.log", "w") as f:
             f.write(f"Variable: \n"
                     f"{self.__variableInputProgram.get_programs()} \n\n\n"
                     f"Fixed:\n"
                     f"{self.__fixedInputProgram.get_files_paths()}")
-        self.__countlogs += 1
+        self.__countLogs += 1
 
     # END DEBUG
 
@@ -405,6 +419,12 @@ class DLVSolution:
                     d = Distance(adjacent.get_i(), adjacent.get_j(), distance)
                     self.__variableInputProgram.add_object_input(d)
 
+
+            # adding bombs
+
+            for bomb in self.__bombs:
+                self.__variableInputProgram.add_object_input(bomb)
+
             index = self.__handler.add_program(self.__variableInputProgram)
             answerSets = self.__handler.start_sync()
 
@@ -413,8 +433,12 @@ class DLVSolution:
                 print(answerSet)
                 for obj in answerSet.get_atoms():
                     if isinstance(obj, Path):
-                        print(f"Path {obj}")
+                        # print(f"Path {obj}")
                         gameInstance.moveEnemy(obj)
+                    if isinstance(obj, InputBomb):
+                        # print(f"Bomb {obj}")
+                        self.__bombs.append(obj)
+                        # cb = CheckBomb(self.__bombs, obj)
 
                 print("#######################################")
 
@@ -436,47 +460,24 @@ class DLVThread(Thread):
     def run(self):
         while is_running:
             self.__dlv.recallASP()
-            sleep(2)
+            sleep(0.5)
 
 
-'''
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
-        self.image.fill(GREEN)
-        self.rect = self.image.get_rect()
-        self.rect.center = screen_rect.center
-        self.move_x = 0
-        self.move_y = 0
-        self.gravity = 1
-        self.jump = 0
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-    def update(self):
-        self.rect.x += self.move_x
-        self.rect.y += self.move_y
-        self.jump -= self.gravity
-    def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                self.move_x -= 10
-            elif event.key == pygame.K_RIGHT:
-                self.move_x += 10
-            elif event.key == pygame.K_UP:
-                self.move_y -= 10
-            elif event.key == pygame.K_DOWN:
-                self.move_y += 10
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT:
-               self.move_x += 10
-            elif event.key == pygame.K_RIGHT:
-                self.move_x -= 10
-            elif event.key == pygame.K_UP:
-                self.move_y += 10
-            elif event.key == pygame.K_DOWN:
-                self.move_y -= 10
-'''
+class CheckBomb(Thread):
+
+    def __int__(self, listBomb, bomb: InputBomb):
+        super(CheckBomb, self).__init__()
+        self.__bombs = listBomb
+        self.__bomb = bomb
+
+    def run(self) -> None:
+        stop = False
+        while not stop:
+            print("here")
+            if gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS:
+                self.__bombs.remove(self.__bombs)
+                stop = True
+                print(f"remove {self.__bomb}")
 
 
 # === FUNCTIONS === (lower_case names)
@@ -573,23 +574,11 @@ while is_running:
 
         # --- objects events ---
 
-        '''
-        player.handle_event(event)
-        '''
-
     # --- updates ---
-
-    '''
-    player.update()
-    '''
 
     # --- draws ---
 
     screen.fill(BLACK)
-
-    '''
-    player.draw(screen)
-    '''
     handler.update(screen)
 
     pygame.display.update()
