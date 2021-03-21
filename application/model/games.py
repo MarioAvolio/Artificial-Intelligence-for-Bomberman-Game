@@ -250,6 +250,28 @@ class Bomb(Thread, PointType):
         gameInstance.explode(self.__listPoints, self)
 
 
+class EnemyBomb(Predicate, Point):
+    predicate_name = "enemybomb"
+
+    def __int__(self):
+        pass
+
+    def __init__(self, i=None, j=None):
+        Predicate.__init__(self, [("i", int), ("j", int)])
+        Point.__init__(self, i, j)
+
+
+class NoEnemyBomb(Predicate, Point):
+    predicate_name = "noenemybomb"
+
+    def __int__(self):
+        pass
+
+    def __init__(self, i=None, j=None):
+        Predicate.__init__(self, [("i", int), ("j", int)])
+        Point.__init__(self, i, j)
+
+
 class InputBomb(Predicate, Point):
     predicate_name = "bomb"
 
@@ -394,6 +416,8 @@ class DLVSolution:
             ASPMapper.get_instance().register_class(NoPath)
             ASPMapper.get_instance().register_class(Distance)
             ASPMapper.get_instance().register_class(InputBomb)
+            ASPMapper.get_instance().register_class(EnemyBomb)
+            ASPMapper.get_instance().register_class(NoEnemyBomb)
 
             self.__fixedInputProgram = ASPInputProgram()
             self.__variableInputProgram = None
@@ -468,6 +492,14 @@ class DLVSolution:
                             # print(f"Aggiungo bomba {obj}")
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
+                            '''
+                        if isinstance(obj, EnemyBomb):
+                            eb = InputBomb(obj.get_i(), obj.get_j())
+                            if eb not in self.__bombs:
+                                # print(f"Aggiungo bomba {obj}")
+                                self.__bombs.append(obj)
+                                CheckBomb(self.__bombs, obj).start()
+                            '''
 
             print("#######################################")
             if movePath is not None:
