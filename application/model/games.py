@@ -66,27 +66,38 @@ class Point:
         pass
 
     def __init__(self, i: int, j: int):
-        self.__coordinate = [i, j]  # list
+        self._coordinate = [i, j]  # list
 
     def get_i(self):
-        return self.__coordinate[Point.I]
+        return self._coordinate[Point.I]
 
     def get_j(self):
-        return self.__coordinate[Point.J]
+        return self._coordinate[Point.J]
 
     def set_i(self, i: int):
-        self.__coordinate[Point.I] = i
+        self._coordinate[Point.I] = i
 
     def set_j(self, j: int):
-        self.__coordinate[Point.J] = j
+        self._coordinate[Point.J] = j
 
     def move(self, directions: int):
         if directions in MOVEMENTS_MATRIX.keys():
-            self.__coordinate[Point.I] += MOVEMENTS_MATRIX[directions][Point.I]
-            self.__coordinate[Point.J] += MOVEMENTS_MATRIX[directions][Point.J]
+            self._coordinate[Point.I] += MOVEMENTS_MATRIX[directions][Point.I]
+            self._coordinate[Point.J] += MOVEMENTS_MATRIX[directions][Point.J]
 
     def __str__(self):
-        return f"Point [{self.__coordinate[Point.I]}, {self.__coordinate[Point.J]}]."
+        return f"Point [{self._coordinate[Point.I]}, {self._coordinate[Point.J]}]."
+
+    # def __key(self):
+    #     return self.get_i(), self.get_j()
+    #
+    # def __eq__(self, other):
+    #     if isinstance(other, Point):
+    #         return self.__key() == other.__key()
+    #     return NotImplemented
+    #
+    # def __hash__(self):
+    #     return hash(self.__key())
 
 
 class Game:
@@ -208,6 +219,9 @@ class PointType(Point):
     def set_t(self, t: int):
         self.__t = t
 
+    # def __key(self):
+    #     return self.get_i(), self.get_j(), self.get_t()
+
 
 class InputPointType(Predicate, PointType):
     predicate_name = "point"
@@ -221,7 +235,7 @@ class InputPointType(Predicate, PointType):
 
 
 class Bomb(Thread, PointType):
-    TIME_LIMIT = 2
+    TIME_LIMIT = 5
 
     def __int__(self):
         pass
@@ -245,6 +259,17 @@ class InputBomb(Predicate, Point):
     def __init__(self, i=None, j=None):
         Point.__init__(self, i, j)
         Predicate.__init__(self, [("i", int), ("j", int)])
+
+    def __key(self):
+        return self.get_i(), self.get_j()
+
+    def __eq__(self, other):
+        if isinstance(other, InputBomb):
+            return self.__key() == other.__key()
+        return NotImplemented
+
+    def __hash__(self):
+        return hash(self.__key())
 
 
 class NoPath(Predicate, Point):
@@ -353,6 +378,8 @@ class HandlerView:
         surface.blit(text, textRect)
 
 
+# --- AI ---
+
 class DLVSolution:
 
     def __init__(self):
@@ -422,6 +449,7 @@ class DLVSolution:
             # adding bombs
 
             for bomb in self.__bombs:
+                print(f"bomba piazzata in {bomb}")
                 self.__variableInputProgram.add_object_input(bomb)
 
             index = self.__handler.add_program(self.__variableInputProgram)
@@ -435,13 +463,14 @@ class DLVSolution:
                         # print(f"Path {obj}")
                         gameInstance.moveEnemy(obj)
                     if isinstance(obj, InputBomb):
-                        # print(f"Bomb {obj}")
-                        self.__bombs.append(obj)
-                        CheckBomb(self.__bombs, obj).start()
+                        if obj not in self.__bombs:
+                            # print(f"Aggiungo bomba {obj}")
+                            self.__bombs.append(obj)
+                            CheckBomb(self.__bombs, obj).start()
 
                 print("#######################################")
 
-            self.__log_program()
+            # self.__log_program()
             self.__handler.remove_program_from_id(index)
 
         except Exception as e:
@@ -459,7 +488,7 @@ class DLVThread(Thread):
     def run(self):
         while is_running:
             self.__dlv.recallASP()
-            sleep(0.2)
+            sleep(1)
 
 
 class CheckBomb(Thread):
@@ -472,9 +501,10 @@ class CheckBomb(Thread):
     def run(self) -> None:
         stop = False
         while not stop:
-            if gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS:
+            if gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) != BOMB:
                 self.__bombs.remove(self.__bomb)
                 stop = True
+                print(f"STOP!")
 
 
 # === FUNCTIONS === (lower_case names)
