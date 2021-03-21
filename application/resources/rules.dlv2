@@ -24,11 +24,11 @@
 path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
 :- path(X,Y), point(X,Y,T), T!=0.
 :- #count{X,Y : path(X,Y)} > 1.
-:- path(X,Y), adjacent(X,Y).
+:- path(X,Y), adjacentBomb(X, Y).
 
 
 % dodge Bomb
-% bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
+bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
 adjacentBomb(X, Y1):- bomb(X, Y), Y1 = Y + 1.
 adjacentBomb(X1, Y):- bomb(X, Y), X1 = X + 1.
 adjacentBomb(X, Y):- adjacentBomb(Y, X).

@@ -419,7 +419,6 @@ class DLVSolution:
                     d = Distance(adjacent.get_i(), adjacent.get_j(), distance)
                     self.__variableInputProgram.add_object_input(d)
 
-
             # adding bombs
 
             for bomb in self.__bombs:
@@ -438,7 +437,7 @@ class DLVSolution:
                     if isinstance(obj, InputBomb):
                         # print(f"Bomb {obj}")
                         self.__bombs.append(obj)
-                        # cb = CheckBomb(self.__bombs, obj)
+                        CheckBomb(self.__bombs, obj).start()
 
                 print("#######################################")
 
@@ -460,24 +459,22 @@ class DLVThread(Thread):
     def run(self):
         while is_running:
             self.__dlv.recallASP()
-            sleep(0.5)
+            sleep(0.2)
 
 
 class CheckBomb(Thread):
 
-    def __int__(self, listBomb, bomb: InputBomb):
-        super(CheckBomb, self).__init__()
+    def __init__(self, listBomb=None, bomb=None):
+        Thread.__init__(self)
         self.__bombs = listBomb
         self.__bomb = bomb
 
     def run(self) -> None:
         stop = False
         while not stop:
-            print("here")
             if gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS:
-                self.__bombs.remove(self.__bombs)
+                self.__bombs.remove(self.__bomb)
                 stop = True
-                print(f"remove {self.__bomb}")
 
 
 # === FUNCTIONS === (lower_case names)
