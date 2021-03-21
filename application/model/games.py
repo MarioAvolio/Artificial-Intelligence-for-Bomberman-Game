@@ -455,22 +455,25 @@ class DLVSolution:
             index = self.__handler.add_program(self.__variableInputProgram)
             answerSets = self.__handler.start_sync()
 
+            movePath = None
             print("#######################################")
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
                 for obj in answerSet.get_atoms():
                     if isinstance(obj, Path):
                         # print(f"Path {obj}")
-                        gameInstance.moveEnemy(obj)
+                        movePath = obj
                     if isinstance(obj, InputBomb):
                         if obj not in self.__bombs:
                             # print(f"Aggiungo bomba {obj}")
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
 
-                print("#######################################")
+            print("#######################################")
+            if movePath is not None:
+                gameInstance.moveEnemy(movePath)
 
-            # self.__log_program()
+            self.__log_program()
             self.__handler.remove_program_from_id(index)
 
         except Exception as e:
@@ -488,7 +491,7 @@ class DLVThread(Thread):
     def run(self):
         while is_running:
             self.__dlv.recallASP()
-            sleep(1)
+            sleep(0.5)
 
 
 class CheckBomb(Thread):
@@ -501,7 +504,7 @@ class CheckBomb(Thread):
     def run(self) -> None:
         stop = False
         while not stop:
-            if gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) != BOMB:
+            if gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS:
                 self.__bombs.remove(self.__bomb)
                 stop = True
                 print(f"STOP!")
