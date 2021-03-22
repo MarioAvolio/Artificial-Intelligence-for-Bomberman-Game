@@ -62,9 +62,6 @@ class Point:
     I = 0
     J = 1
 
-    def __int__(self):
-        pass
-
     def __init__(self, i: int, j: int):
         self._coordinate = [i, j]  # list
 
@@ -212,9 +209,6 @@ class Game:
 
 class PointType(Point):
 
-    def __int__(self):
-        pass
-
     def __init__(self, i: int, j: int, t: int):
         Point.__init__(self, i, j)
         self.__t = t
@@ -232,9 +226,6 @@ class PointType(Point):
 class InputPointType(Predicate, PointType):
     predicate_name = "point"
 
-    def __int__(self):
-        pass
-
     def __init__(self, i, j, t):
         Predicate.__init__(self, [("i", int), ("j", int), ("t", int)])
         PointType.__init__(self, i, j, t)
@@ -242,9 +233,6 @@ class InputPointType(Predicate, PointType):
 
 class Bomb(Thread, PointType):
     TIME_LIMIT = 5
-
-    def __int__(self):
-        pass
 
     def __init__(self, i: int, j: int):
         Thread.__init__(self)
@@ -259,9 +247,6 @@ class Bomb(Thread, PointType):
 class EnemyBomb(Predicate, Point):
     predicate_name = "enemybomb"
 
-    def __int__(self):
-        pass
-
     def __init__(self, i=None, j=None):
         Predicate.__init__(self, [("i", int), ("j", int)])
         Point.__init__(self, i, j)
@@ -270,9 +255,6 @@ class EnemyBomb(Predicate, Point):
 class NoEnemyBomb(Predicate, Point):
     predicate_name = "noenemybomb"
 
-    def __int__(self):
-        pass
-
     def __init__(self, i=None, j=None):
         Predicate.__init__(self, [("i", int), ("j", int)])
         Point.__init__(self, i, j)
@@ -280,9 +262,6 @@ class NoEnemyBomb(Predicate, Point):
 
 class InputBomb(Predicate, Point):
     predicate_name = "bomb"
-
-    def __int__(self):
-        pass
 
     def __init__(self, i=None, j=None):
         Point.__init__(self, i, j)
@@ -303,9 +282,6 @@ class InputBomb(Predicate, Point):
 class NoPath(Predicate, Point):
     predicate_name = "nopath"
 
-    def __int__(self):
-        pass
-
     def __init__(self, i=None, j=None):
         Predicate.__init__(self, [("i", int), ("j", int)])
         Point.__init__(self, i, j)
@@ -314,9 +290,6 @@ class NoPath(Predicate, Point):
 class Path(Predicate, Point):
     predicate_name = "path"
 
-    def __int__(self):
-        pass
-
     def __init__(self, i=None, j=None):
         Predicate.__init__(self, [("i", int), ("j", int)])
         Point.__init__(self, i, j)
@@ -324,9 +297,6 @@ class Path(Predicate, Point):
 
 class Distance(Predicate, Point):
     predicate_name = "distance"
-
-    def __int__(self):
-        pass
 
     def __init__(self, i=None, j=None, d=None):
         Predicate.__init__(self, [("i", int), ("j", int), ("d", int)])
