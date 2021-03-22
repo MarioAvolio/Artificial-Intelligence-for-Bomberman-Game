@@ -416,6 +416,7 @@ class DLVSolution:
         self.__lastPositionPlayer = None
         self.__lastPositionEnemy = []
         self.__bombs = []
+        self.__nMovements = 0
         try:
             self.__handler = DesktopHandler(
                 DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
@@ -522,9 +523,15 @@ class DLVSolution:
                 gameInstance.moveEnemy(movePath)
                 # print(f"movePath: {movePath} ---- enemy: {self.__lastPositionEnemy}")
                 self.__lastPositionPlayer = copy.deepcopy(gameInstance.getPlayer())
+                self.__nMovements += 1
 
-            if self.__lastPositionPlayer.not_equals(gameInstance.getPlayer()):
-                print("CLEAR!")
+            # if self.__lastPositionPlayer.not_equals(gameInstance.getPlayer()):
+            #     print("CLEAR!")
+            #     self.__lastPositionEnemy.clear()
+
+            # TODO: THIS IS VERY STUPID!
+            if self.__nMovements > 5:
+                self.__nMovements = 0
                 self.__lastPositionEnemy.clear()
 
             self.__log_program()

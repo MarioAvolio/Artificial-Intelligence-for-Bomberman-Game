@@ -34,7 +34,7 @@ adjacentBomb(X, Y1):- bomb(X, Y), Y1 = Y - 1.
 
 path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
 :- path(X,Y), point(X,Y,T), T!=0.
-:- #count{X,Y : path(X,Y)} > 1.
+:- #count{X,Y : path( X,Y)} > 1.
 :- path(X,Y), adjacentBomb(X, Y).
 
 % if my player is stopped and the future enemy position is equals to him last position
