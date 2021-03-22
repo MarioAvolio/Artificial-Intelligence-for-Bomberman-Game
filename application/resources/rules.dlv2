@@ -3,8 +3,12 @@
 % elem(0). elem(1). elem(2). elem(3). elem(4). elem(5).
 
 #show path/2.
-#show bomb/2.
-#show adjacentBomb/2.
+#show lastPositionEnemy/2.
+#show player/2.
+#show lastPositionPlayer/2.
+
+%#show bomb/2.
+%#show adjacentBomb/2.
 
 % distance(0,1,2).
 % distance(0,2,12).
@@ -18,8 +22,8 @@
 % BOX = 4
 % BOMB = 5
 
-% player(X, Y) :- point(X, Y, 1).
-% enemy(X, Y) :- point(X, Y, 2).
+player(X, Y) :- point(X, Y, 1).
+enemy(X, Y) :- point(X, Y, 2).
 
 % dodge Bomb
 bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
@@ -33,6 +37,8 @@ path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
 :- #count{X,Y : path(X,Y)} > 1.
 :- path(X,Y), adjacentBomb(X, Y).
 
+% if my player is stopped and the future enemy position is equals to him last position
+:- path(X,Y), lastPositionEnemy(X,Y), lastPositionPlayer(A,B), player(A,B).
 
 % minimze distance between player and enemy
 :~ path(X,Y), distance(X,Y,D). [D@1,X,Y,D]

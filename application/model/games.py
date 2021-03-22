@@ -99,6 +99,12 @@ class Point:
     # def __hash__(self):
     #     return hash(self.__key())
 
+    def equals(self, other) -> bool:
+        return isinstance(other, Point) and self.get_i() == other.get_i() and self.get_j() == other.get_j()
+
+    def not_equals(self, other) -> bool:
+        return not self.equals(other)
+
 
 class Game:
     def __init__(self):
@@ -407,6 +413,8 @@ class DLVSolution:
     def __init__(self):
         self.__countLogs = 0
         self.__dir = None
+        self.__lastPositionPlayer = None
+        self.__lastPositionEnemy = []
         self.__bombs = []
         try:
             self.__handler = DesktopHandler(
@@ -459,7 +467,7 @@ class DLVSolution:
                     p = InputPointType(i, j, typeNumber)
                     self.__variableInputProgram.add_object_input(p)  # point(I, J, ELEMENT_TYPE)
 
-            # compute neighbors values
+            # compute neighbors values ai
             e = gameInstance.getEnemy()
             p = gameInstance.getPlayer()
 
@@ -470,8 +478,17 @@ class DLVSolution:
                     d = Distance(adjacent.get_i(), adjacent.get_j(), distance)
                     self.__variableInputProgram.add_object_input(d)
 
-            # adding bombs
+            # adding last position
+            if self.__lastPositionPlayer is not None and len(self.__lastPositionEnemy) != 0:
 
+                for enemy in self.__lastPositionEnemy:
+                    self.__variableInputProgram.add_program(
+                        f"lastPositionEnemy({enemy.get_i()}, {enemy.get_j()}).")
+
+                self.__variableInputProgram.add_program(
+                    f"lastPositionPlayer({self.__lastPositionPlayer.get_i()}, {self.__lastPositionPlayer.get_j()}).")
+
+            # adding bombs ai
             for bomb in self.__bombs:
                 print(f"bomba piazzata in {bomb}")
                 self.__variableInputProgram.add_object_input(bomb)
@@ -492,18 +509,23 @@ class DLVSolution:
                             # print(f"Aggiungo bomba {obj}")
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
-                            '''
-                        if isinstance(obj, EnemyBomb):
-                            eb = InputBomb(obj.get_i(), obj.get_j())
-                            if eb not in self.__bombs:
-                                # print(f"Aggiungo bomba {obj}")
-                                self.__bombs.append(obj)
-                                CheckBomb(self.__bombs, obj).start()
-                            '''
+                    # if isinstance(obj, EnemyBomb):
+                    #     eb = InputBomb(obj.get_i(), obj.get_j())
+                    #     if eb not in self.__bombs:
+                    #         # print(f"Aggiungo bomba {obj}")
+                    #         self.__bombs.append(obj)
+                    #         CheckBomb(self.__bombs, obj).start()
 
             print("#######################################")
             if movePath is not None:
+                self.__lastPositionEnemy.append(copy.deepcopy(gameInstance.getEnemy()))
                 gameInstance.moveEnemy(movePath)
+                # print(f"movePath: {movePath} ---- enemy: {self.__lastPositionEnemy}")
+                self.__lastPositionPlayer = copy.deepcopy(gameInstance.getPlayer())
+
+            if self.__lastPositionPlayer.not_equals(gameInstance.getPlayer()):
+                print("CLEAR!")
+                self.__lastPositionEnemy.clear()
 
             self.__log_program()
             self.__handler.remove_program_from_id(index)
