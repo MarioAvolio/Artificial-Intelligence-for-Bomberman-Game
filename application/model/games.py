@@ -85,22 +85,16 @@ class Point:
     def __str__(self):
         return f"Point [{self._coordinate[Point.I]}, {self._coordinate[Point.J]}]."
 
-    # def __key(self):
-    #     return self.get_i(), self.get_j()
-    #
-    # def __eq__(self, other):
-    #     if isinstance(other, Point):
-    #         return self.__key() == other.__key()
-    #     return NotImplemented
-    #
-    # def __hash__(self):
-    #     return hash(self.__key())
+    def __key(self):
+        return self.get_i(), self.get_j()
 
-    def equals(self, other) -> bool:
-        return isinstance(other, Point) and self.get_i() == other.get_i() and self.get_j() == other.get_j()
+    def __eq__(self, other):
+        if isinstance(other, Point):
+            return self.__key() == other.__key()
+        return NotImplemented
 
-    def not_equals(self, other) -> bool:
-        return not self.equals(other)
+    def __hash__(self):
+        return hash(self.__key())
 
 
 class Game:
@@ -235,8 +229,8 @@ class Bomb(Thread, PointType):
     TIME_LIMIT = 5
 
     def __init__(self, i: int, j: int):
-        Thread.__init__(self)
         PointType.__init__(self, i, j, BOMB)
+        Thread.__init__(self)
         self.__listPoints = computeNeighbors(i, j)
 
     def run(self) -> None:
@@ -266,17 +260,6 @@ class InputBomb(Predicate, Point):
     def __init__(self, i=None, j=None):
         Point.__init__(self, i, j)
         Predicate.__init__(self, [("i", int), ("j", int)])
-
-    def __key(self):
-        return self.get_i(), self.get_j()
-
-    def __eq__(self, other):
-        if isinstance(other, InputBomb):
-            return self.__key() == other.__key()
-        return NotImplemented
-
-    def __hash__(self):
-        return hash(self.__key())
 
 
 class NoPath(Predicate, Point):
