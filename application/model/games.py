@@ -406,8 +406,8 @@ class DLVSolution:
     # END DEBUG
 
     def recallASP(self):
-        pass
         try:
+            self.__nMovements += 1  # increase movements
             size = gameInstance.getSize()
             self.__variableInputProgram = ASPInputProgram()
 
@@ -477,10 +477,10 @@ class DLVSolution:
                 gameInstance.moveEnemy(movePath)
                 # print(f"movePath: {movePath} ---- enemy: {self.__lastPositionEnemy}")
                 self.__lastPositionPlayer = copy.deepcopy(gameInstance.getPlayer())
-                self.__nMovements += 1
 
             # TODO: THIS IS VERY STUPID!
             if self.__nMovements > 5:
+                print("CLEAR")
                 self.__nMovements = 0
                 self.__lastPositionEnemy.clear()
 
