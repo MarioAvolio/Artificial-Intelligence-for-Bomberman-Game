@@ -460,16 +460,8 @@ class DLVSolution:
                             # print(f"Aggiungo bomba {obj}")
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
-                    # if isinstance(obj, EnemyBomb):
-                    #     eb = InputBomb(obj.get_i(), obj.get_j())
-                    #     if eb not in self.__bombs:
-                    #         # print(f"Aggiungo bomba {obj}")
-                    #         self.__bombs.append(obj)
-                    #         CheckBomb(self.__bombs, obj).start()
-
-            #
-            # TODO: USE def plantBomb(self, i: int, j: int): in Game plasse to plant a bomb!
-            #
+                    if isinstance(obj, EnemyBomb):
+                        gameInstance.plantBomb(obj.get_i(), obj.get_j())
 
             print("#######################################")
             if movePath is not None:

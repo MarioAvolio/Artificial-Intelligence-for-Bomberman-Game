@@ -8,6 +8,7 @@
 #show lastPositionPlayer/2.
 #show bomb/2.
 #show adjacentBomb/2.
+#show enemybomb/2.
 
 % distance(0,1,2).
 % distance(0,2,12).
@@ -45,18 +46,20 @@ path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
 % maximize movement, otherwise the player would always be seated
 :~ nopath(X,Y). [1@2,X,Y]
 
-%PLANT BOMB
+%%%%%%%%%%%%%% NON CONSIDERARE %%%%%%%%%%%%%%%%%%
 %enemybomb(X,Y):- distance(X,Y,D), D < 2.
 %:- enemybomb(X,Y), path(X,Y).
 %:- enemybomb(X1,Y1), enemybomb(X2,Y2), X1 != X2, Y1 != Y2.
 %count(C) :- #count{X,Y: enemybomb(X,Y)} = C.
 %:~ count(C) = 0. [1@3,X,Y]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
-%:- enemybomb(X,Y), distance(X,Y,D), D > 1.
-%:- #count{X,Y : enemybomb(X,Y)} > 1.
-%:- enemybomb(X,Y), path(X,Y).
-%:~ noenemybomb(X,Y). [1@3,X,Y]
+%PLANT BOMB
+enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
+:- enemybomb(X,Y), distance(X,Y,D), D > 1.
+:- #count{X,Y : enemybomb(X,Y)} > 1.
+:- enemybomb(X,Y), path(X,Y).
+:~ noenemybomb(X,Y). [1@3,X,Y]
 
 
 % plant bomb
