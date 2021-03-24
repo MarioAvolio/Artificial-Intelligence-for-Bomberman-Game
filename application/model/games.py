@@ -213,9 +213,6 @@ class PointType(Point):
     def set_t(self, t: int):
         self.__t = t
 
-    # def __key(self):
-    #     return self.get_i(), self.get_j(), self.get_t()
-
 
 class InputPointType(Predicate, PointType):
     predicate_name = "point"
@@ -470,6 +467,10 @@ class DLVSolution:
                     #         self.__bombs.append(obj)
                     #         CheckBomb(self.__bombs, obj).start()
 
+            #
+            # TODO: USE def plantBomb(self, i: int, j: int): in Game plasse to plant a bomb!
+            #
+
             print("#######################################")
             if movePath is not None:
                 self.__lastPositionEnemy.append(copy.deepcopy(gameInstance.getEnemy()))
@@ -477,10 +478,6 @@ class DLVSolution:
                 # print(f"movePath: {movePath} ---- enemy: {self.__lastPositionEnemy}")
                 self.__lastPositionPlayer = copy.deepcopy(gameInstance.getPlayer())
                 self.__nMovements += 1
-
-            # if self.__lastPositionPlayer.not_equals(gameInstance.getPlayer()):
-            #     print("CLEAR!")
-            #     self.__lastPositionEnemy.clear()
 
             # TODO: THIS IS VERY STUPID!
             if self.__nMovements > 5:
