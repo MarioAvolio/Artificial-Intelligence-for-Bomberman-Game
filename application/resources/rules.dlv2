@@ -6,9 +6,8 @@
 #show lastPositionEnemy/2.
 #show player/2.
 #show lastPositionPlayer/2.
-
-%#show bomb/2.
-%#show adjacentBomb/2.
+#show bomb/2.
+#show adjacentBomb/2.
 
 % distance(0,1,2).
 % distance(0,2,12).
