@@ -3,12 +3,10 @@
 % elem(0). elem(1). elem(2). elem(3). elem(4). elem(5).
 
 #show path/2.
-#show lastPositionEnemy/2.
-#show player/2.
-#show lastPositionPlayer/2.
 #show bomb/2.
-#show adjacentBomb/2.
 #show enemybomb/2.
+#adjacentPlayerAndEnemy/2.
+
 
 % distance(0,1,2).
 % distance(0,2,12).
@@ -22,43 +20,49 @@
 % BOX = 4
 % BOMB = 5
 
+% UTILITY
 player(X, Y) :- point(X, Y, 1).
 enemy(X, Y) :- point(X, Y, 2).
 
-% dodge Bomb
-bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
 adjacentBomb(X, Y1):- bomb(X, Y), Y1 = Y + 1.
 adjacentBomb(X1, Y):- bomb(X, Y), X1 = X + 1.
 adjacentBomb(X1, Y):- bomb(X, Y), X1 = X - 1.
 adjacentBomb(X, Y1):- bomb(X, Y), Y1 = Y - 1.
-
-path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
-:- path(X,Y), point(X,Y,T), T!=0.
-:- #count{X,Y : path( X,Y)} > 1.
-:- path(X,Y), adjacentBomb(X, Y).
-
-% if my player is stopped and the future enemy position is equals to him last position
-:- path(X,Y), lastPositionEnemy(X,Y), lastPositionPlayer(A,B), player(A,B).
-
-% minimze distance between player and enemy
-:~ path(X,Y), distance(X,Y,D). [D@1,X,Y,D]
-
-% maximize movement, otherwise the player would always be seated
-:~ nopath(X,Y). [1@3,X,Y]
-
-
-%PLANT BOMB
 
 adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y + 1.
 adjacentPlayer(X1, Y):- player(X, Y), X1 = X + 1.
 adjacentPlayer(X1, Y):- player(X, Y), X1 = X - 1.
 adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y - 1.
 
+adjacentPlayerAndEnemy(X, Y) :- enemy(X, Y), adjacentPlayer(X, Y).
 
+
+% dodge Bomb
+bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
+
+% move
+path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
+:- path(X,Y), point(X,Y,T), T!=0.
+:- #count{X,Y : path( X,Y)} > 1.
+:- path(X,Y), adjacentBomb(X, Y).
+
+
+% don't go in last position
+:~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@3, X, Y]
+
+% minimize distance between player and enemy
+:~ path(X,Y), distance(X,Y,D). [D@1,X,Y,D]
+
+% maximize movement, otherwise the player would always be seated
+:~ nopath(X,Y). [1@4,X,Y]
+
+
+%PLANT BOMB
 enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
 :- enemybomb(X,Y), distance(X,Y,D), D > 1.
 :- #count{X,Y : enemybomb(X,Y)} > 1.
 :- enemybomb(X,Y), path(X,Y).
+:- enemybomb(X,Y), point(X, Y, Z), Z!=0.
 % :~ noenemybomb(X,Y). [1@3,X,Y]
 :~ noenemybomb(X,Y), adjacentPlayer(X, Y). [1@2,X,Y]
 

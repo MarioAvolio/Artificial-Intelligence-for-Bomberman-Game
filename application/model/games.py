@@ -275,6 +275,14 @@ class Path(Predicate, Point):
         Point.__init__(self, i, j)
 
 
+class AdjacentPlayerAndEnemy(Predicate, Point):
+    predicate_name = "adjacentPlayerAndEnemy"
+
+    def __init__(self, i=None, j=None):
+        Predicate.__init__(self, [("i", int), ("j", int)])
+        Point.__init__(self, i, j)
+
+
 class Distance(Predicate, Point):
     predicate_name = "distance"
 
@@ -363,8 +371,7 @@ class DLVSolution:
     def __init__(self):
         self.__countLogs = 0
         self.__dir = None
-        self.__lastPositionPlayer = None
-        self.__lastPositionEnemy = []
+        self.__lastPositionsEnemy = {}
         self.__bombs = []
         self.__nMovements = 0
         try:
@@ -407,7 +414,7 @@ class DLVSolution:
 
     def recallASP(self):
         try:
-            self.__nMovements += 1  # increase movements
+            # self.__nMovements += 1  # increase movements
             size = gameInstance.getSize()
             self.__variableInputProgram = ASPInputProgram()
 
@@ -430,14 +437,10 @@ class DLVSolution:
                     self.__variableInputProgram.add_object_input(d)
 
             # adding last position
-            if self.__lastPositionPlayer is not None and len(self.__lastPositionEnemy) != 0:
-
-                for enemy in self.__lastPositionEnemy:
+            if len(self.__lastPositionsEnemy) != 0:
+                for enemy in self.__lastPositionsEnemy:
                     self.__variableInputProgram.add_program(
-                        f"lastPositionEnemy({enemy.get_i()}, {enemy.get_j()}).")
-
-                self.__variableInputProgram.add_program(
-                    f"lastPositionPlayer({self.__lastPositionPlayer.get_i()}, {self.__lastPositionPlayer.get_j()}).")
+                        f"lastPositionEnemy({enemy.get_i()}, {enemy.get_j()}, {self.__lastPositionsEnemy[enemy]}).")
 
             # adding bombs ai
             for bomb in self.__bombs:
@@ -448,6 +451,7 @@ class DLVSolution:
             answerSets = self.__handler.start_sync()
 
             movePath = None
+            adjacent = None
             print("#######################################")
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
@@ -455,26 +459,28 @@ class DLVSolution:
                     if isinstance(obj, Path):
                         # print(f"Path {obj}")
                         movePath = obj
-                    if isinstance(obj, InputBomb):
+                    elif isinstance(obj, InputBomb):
                         if obj not in self.__bombs:
                             # print(f"Aggiungo bomba {obj}")
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
-                    if isinstance(obj, EnemyBomb):
+                    elif isinstance(obj, EnemyBomb):
                         gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                    elif isinstance(obj, AdjacentPlayerAndEnemy):
+                        adjacent = obj
 
             print("#######################################")
             if movePath is not None:
-                self.__lastPositionEnemy.append(copy.deepcopy(gameInstance.getEnemy()))
+                enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
+                if enemyLastPositionTmp not in self.__lastPositionsEnemy:
+                    self.__lastPositionsEnemy[enemyLastPositionTmp] = 0
+                else:
+                    self.__lastPositionsEnemy[enemyLastPositionTmp] += 1
                 gameInstance.moveEnemy(movePath)
-                # print(f"movePath: {movePath} ---- enemy: {self.__lastPositionEnemy}")
-                self.__lastPositionPlayer = copy.deepcopy(gameInstance.getPlayer())
 
-            # TODO: THIS IS VERY STUPID!
-            if self.__nMovements > 5:
+            if adjacent is not None:
                 print("CLEAR")
-                self.__nMovements = 0
-                self.__lastPositionEnemy.clear()
+                self.__lastPositionsEnemy.clear()
 
             self.__log_program()
             self.__handler.remove_program_from_id(index)
