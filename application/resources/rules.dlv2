@@ -46,13 +46,6 @@ path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
 % maximize movement, otherwise the player would always be seated
 :~ nopath(X,Y). [1@2,X,Y]
 
-%%%%%%%%%%%%%% NON CONSIDERARE %%%%%%%%%%%%%%%%%%
-%enemybomb(X,Y):- distance(X,Y,D), D < 2.
-%:- enemybomb(X,Y), path(X,Y).
-%:- enemybomb(X1,Y1), enemybomb(X2,Y2), X1 != X2, Y1 != Y2.
-%count(C) :- #count{X,Y: enemybomb(X,Y)} = C.
-%:~ count(C) = 0. [1@3,X,Y]
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %PLANT BOMB
 enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
@@ -62,6 +55,12 @@ enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
 :~ noenemybomb(X,Y). [1@3,X,Y]
 
 
+%BREAK WOODEN BLOCKS
+%movesavailable(C) :- #count{X,Y : nopath(X,Y)} = C.
+%enemybomb(A,B) :- movesavailable(0), nopath(X,Y), point(X,Y,4). continuare...
+
+
+%%%%%%%%%%%%% NON CONSIDERARE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % plant bomb
 % adjacent(X, Y1):- path(X, Y), point(X, Y1, _), Y1 = Y + 1.
 % adjacent(X1, Y):- path(X, Y), point(X1, Y, _), X1 = X + 1.
@@ -75,3 +74,4 @@ enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
 
 % idealSwap(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
 % woodBlockInIdealSwap(1) :- idealSwap(X, Y), point(X, Y, 4).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
