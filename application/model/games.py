@@ -1,4 +1,5 @@
 import copy
+import datetime
 import os
 from threading import Thread, RLock
 from time import sleep
@@ -116,6 +117,9 @@ class Game:
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+        # self.__map = dlvThread.dlv.getMatrix()
+        # print(self.__map)
         self.__size = len(self.__map)
         global BLOCK_SIZE
         BLOCK_SIZE = SIZE // self.__size
@@ -385,30 +389,56 @@ class DLVSolution:
             ASPMapper.get_instance().register_class(NoEnemyBomb)
             ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
 
+            self.__matrix = self.calculateMatrix()
+            # print(self.__matrix)
+
             self.__fixedInputProgram = ASPInputProgram()
             self.__variableInputProgram = None
 
-            self.__fixedInputProgram.add_files_path(os.path.join(resource_path, "rules.dlv2"))
+            self.__fixedInputProgram.add_files_path(os.path.join(resource_path, "enemyRules.dlv2"))
             self.__handler.add_program(self.__fixedInputProgram)
 
         except Exception as e:
             print(str(e))
+    #
+    # def getMatrix(self):
+    #     return self.__matrix
+
+    def calculateMatrix(self):
+        h = DesktopHandler(
+            DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
+        ASPMapper.get_instance().register_class(InputPointType)
+        matrixInputProgram = ASPInputProgram()
+        matrixInputProgram.add_files_path(os.path.join(resource_path, "map.dlv2"))
+        index = h.add_program(matrixInputProgram)
+        answerSets = h.start_sync()
+        matrix = [[0 for x in range(SIZE)] for y in range(SIZE)]
+
+        print("~~~~~~~~~~~~~~~~~~~~~~  MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
+        for answerSet in answerSets.get_optimal_answer_sets():
+            print(answerSet)
+            for obj in answerSet.get_atoms():
+                if isinstance(obj, InputPointType):
+                    matrix[obj.get_i()][obj.get_j()] = obj.get_t()
+
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        return matrix
 
     # DEBUG
 
-    # def __log_program(self):
-    #     if not os.path.exists(logs_path):
-    #         os.mkdir(f"{logs_path}")
-    #     if self.__countLogs == 0:
-    #         timestamp = datetime.datetime.now()
-    #         self.__dir = f"{timestamp.hour}-{timestamp.minute}-{timestamp.second}"
-    #         os.mkdir(f"{logs_path}/{self.__dir}")
-    #     with open(f"{logs_path}/{self.__dir}/BomberFriend-{self.__countLogs}.log", "w") as f:
-    #         f.write(f"Variable: \n"
-    #                 f"{self.__variableInputProgram.get_programs()} \n\n\n"
-    #                 f"Fixed:\n"
-    #                 f"{self.__fixedInputProgram.get_files_paths()}")
-    #     self.__countLogs += 1
+    def __log_program(self):
+        if not os.path.exists(logs_path):
+            os.mkdir(f"{logs_path}")
+        if self.__countLogs == 0:
+            timestamp = datetime.datetime.now()
+            self.__dir = f"{timestamp.hour}-{timestamp.minute}-{timestamp.second}"
+            os.mkdir(f"{logs_path}/{self.__dir}")
+        with open(f"{logs_path}/{self.__dir}/BomberFriend-{self.__countLogs}.log", "w") as f:
+            f.write(f"Variable: \n"
+                    f"{self.__variableInputProgram.get_programs()} \n\n\n"
+                    f"Fixed:\n"
+                    f"{self.__fixedInputProgram.get_files_paths()}")
+        self.__countLogs += 1
 
     # END DEBUG
 
@@ -477,7 +507,7 @@ class DLVSolution:
                     self.__lastPositionsEnemy[enemyLastPositionTmp] += 1
                 gameInstance.moveEnemy(movePath)
 
-            # self.__log_program()
+            self.__log_program()
             self.__handler.remove_program_from_id(index)
 
         except Exception as e:
@@ -488,13 +518,14 @@ is_running = True
 
 
 class DLVThread(Thread):
+
     def __init__(self):
         Thread.__init__(self)
-        self.__dlv = DLVSolution()
+        self.dlv = DLVSolution()
 
     def run(self):
         while is_running and gameInstance.getFinish() is None:
-            self.__dlv.recallASP()
+            self.dlv.recallASP()
             sleep(0.5)
 
 
@@ -565,6 +596,7 @@ def plant():
 # === MAIN === (lower_case names)
 
 # --- (global) variables ---
+dlvThread = DLVThread()
 gameInstance = Game()
 
 # --- init ---
@@ -580,7 +612,7 @@ pygame.display.set_icon(programIcon)
 # --- objects ---
 
 handler = HandlerView()
-DLVThread().start()
+dlvThread.start()
 
 # --- mainloop ---
 

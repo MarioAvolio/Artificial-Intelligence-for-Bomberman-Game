@@ -1,0 +1,53 @@
+#show point/3.
+
+n(0..15). % columns and rows
+minN(X) :- #min{Y : n(Y)} = X.
+maxN(X) :- #max{Y : n(Y)} = X.
+
+% calculate 4 vertex of matrix
+vertexNumber(X) :- minN(X).
+vertexNumber(X) :- maxN(X).
+vertexCell(X, Y) :- vertexNumber(X), vertexNumber(Y).
+
+elem(0). elem(1). elem(2). elem(3). elem(4).
+% GRASS = 0
+% PLAYER = 1
+% ENEMY = 2
+% BLOCK = 3
+% BOX = 4
+
+
+cell(X, Y) :- n(X), n(Y).
+
+point(X, Y, Z) | notpoint(X, Y, Z) :- cell(X, Y), elem(Z).
+:- #count{X, Y : point(X, Y, 1)} != 1. % only one player
+:- #count{X, Y : point(X, Y, 2)} != 1. % only one enemy
+:- point(X, Y, Z1), point(X, Y, Z2), Z1!=Z2. % no differnt element in the same cell
+
+% the same cell
+chooseCell(X, Y) :- point(X, Y, _).
+:- cell(X, Y), not chooseCell(X, Y).
+
+% enemy and player on one of the 4 vertex of matrix.
+:- point(X, Y, 1), not vertexCell(X, Y).
+:- point(X, Y, 2), not vertexCell(X, Y).
+
+
+% A wall must be "continuous", without hole.
+:- point(X, Y1, Z), point(X, Y2, Z), Y1<Y2, not point(X, Y3, Z), Y3 = Y1+1, Z = 3.
+:- point(X1, Y, Z), point(X2, Y, Z), X1<X2, not point(X3, Y, Z), X3 = X1+1, Z = 3.
+
+% not to much wall
+%numberBlock(K) :- #count{X, Y : point(X, Y, 3)} = K.
+%:- numberBlock(K), K < 15.
+%:- numberBlock(K), K > 21.
+
+% maximize grass
+:~ notpoint(X, Y, 0). [1@1, X, Y]
+
+% adjacent(X, Y, X, Y1):- cell(X, Y), cell(X, Y1), Y1 = Y + 1.
+% adjacent(X, Y, X1, Y):- cell(X, Y), cell(X1, Y), X1 = X + 1.
+% adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y + 1.
+% adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y - 1.
+% adjacent(X, Y, X1, Y1):- adjacent(X1, Y1, X, Y).
+
