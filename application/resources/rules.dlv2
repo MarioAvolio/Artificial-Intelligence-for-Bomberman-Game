@@ -5,7 +5,7 @@
 #show path/2.
 #show bomb/2.
 #show enemybomb/2.
-#adjacentPlayerAndEnemy/2.
+#show adjacentPlayerAndEnemy/2.
 
 
 % distance(0,1,2).

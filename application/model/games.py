@@ -1,5 +1,4 @@
 import copy
-import datetime
 import os
 from threading import Thread, RLock
 from time import sleep
@@ -384,6 +383,7 @@ class DLVSolution:
             ASPMapper.get_instance().register_class(InputBomb)
             ASPMapper.get_instance().register_class(EnemyBomb)
             ASPMapper.get_instance().register_class(NoEnemyBomb)
+            ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
 
             self.__fixedInputProgram = ASPInputProgram()
             self.__variableInputProgram = None
@@ -396,19 +396,19 @@ class DLVSolution:
 
     # DEBUG
 
-    def __log_program(self):
-        if not os.path.exists(logs_path):
-            os.mkdir(f"{logs_path}")
-        if self.__countLogs == 0:
-            timestamp = datetime.datetime.now()
-            self.__dir = f"{timestamp.hour}-{timestamp.minute}-{timestamp.second}"
-            os.mkdir(f"{logs_path}/{self.__dir}")
-        with open(f"{logs_path}/{self.__dir}/BomberFriend-{self.__countLogs}.log", "w") as f:
-            f.write(f"Variable: \n"
-                    f"{self.__variableInputProgram.get_programs()} \n\n\n"
-                    f"Fixed:\n"
-                    f"{self.__fixedInputProgram.get_files_paths()}")
-        self.__countLogs += 1
+    # def __log_program(self):
+    #     if not os.path.exists(logs_path):
+    #         os.mkdir(f"{logs_path}")
+    #     if self.__countLogs == 0:
+    #         timestamp = datetime.datetime.now()
+    #         self.__dir = f"{timestamp.hour}-{timestamp.minute}-{timestamp.second}"
+    #         os.mkdir(f"{logs_path}/{self.__dir}")
+    #     with open(f"{logs_path}/{self.__dir}/BomberFriend-{self.__countLogs}.log", "w") as f:
+    #         f.write(f"Variable: \n"
+    #                 f"{self.__variableInputProgram.get_programs()} \n\n\n"
+    #                 f"Fixed:\n"
+    #                 f"{self.__fixedInputProgram.get_files_paths()}")
+    #     self.__countLogs += 1
 
     # END DEBUG
 
@@ -451,7 +451,6 @@ class DLVSolution:
             answerSets = self.__handler.start_sync()
 
             movePath = None
-            adjacent = None
             print("#######################################")
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
@@ -467,7 +466,7 @@ class DLVSolution:
                     elif isinstance(obj, EnemyBomb):
                         gameInstance.plantBomb(obj.get_i(), obj.get_j())
                     elif isinstance(obj, AdjacentPlayerAndEnemy):
-                        adjacent = obj
+                        self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player
 
             print("#######################################")
             if movePath is not None:
@@ -478,11 +477,7 @@ class DLVSolution:
                     self.__lastPositionsEnemy[enemyLastPositionTmp] += 1
                 gameInstance.moveEnemy(movePath)
 
-            if adjacent is not None:
-                print("CLEAR")
-                self.__lastPositionsEnemy.clear()
-
-            self.__log_program()
+            # self.__log_program()
             self.__handler.remove_program_from_id(index)
 
         except Exception as e:
@@ -498,7 +493,7 @@ class DLVThread(Thread):
         self.__dlv = DLVSolution()
 
     def run(self):
-        while is_running:
+        while is_running and gameInstance.getFinish() is None:
             self.__dlv.recallASP()
             sleep(0.5)
 
