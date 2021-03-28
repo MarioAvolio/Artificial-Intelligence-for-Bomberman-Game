@@ -3,6 +3,7 @@
 #show path/2.
 #show bomb/2.
 #show enemybomb/2.
+#show breakbomb/2.
 #show adjacentPlayerAndEnemy/2.
 
 
@@ -66,11 +67,13 @@ enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
 
 
 %BREAK WOODEN BLOCKS
-%movesavailable(C) :- #count{X,Y : nopath(X,Y)} = C.
-%enemybomb(A,B) :- movesavailable(0), nopath(X,Y), point(X,Y,4). continuare...
+%movesavailable(C) :- #count{X,Y : path(X,Y)} = C.
+
+%IF LAST POSITION OF ENEMY IS ONLY PATH AVAILABLE, HE GO BACK AND PLACE A BOMB IN CURRENT POSITION
+breakbomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_), point(C,D,4).
 
 
-%%%%%%%%%%%%% NON CONSIDERARE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%% NON CONSIDERARE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % plant bomb
 % adjacent(X, Y1):- path(X, Y), point(X, Y1, _), Y1 = Y + 1.
 % adjacent(X1, Y):- path(X, Y), point(X1, Y, _), X1 = X + 1.
@@ -80,7 +83,6 @@ enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
 % bomb(X, Y) :- path(X, Y), woodBlockInAdjacent(1). % plant bomb
 
 % SECOND METHOD
-
 
 % idealSwap(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
 % woodBlockInIdealSwap(1) :- idealSwap(X, Y), point(X, Y, 4).

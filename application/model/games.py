@@ -114,8 +114,8 @@ class Game:
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [4, 4, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
+                      [0, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
         # self.__map = dlvThread.dlv.getMatrix()
@@ -240,6 +240,14 @@ class Bomb(Thread, PointType):
 
 class EnemyBomb(Predicate, Point):
     predicate_name = "enemybomb"
+
+    def __init__(self, i=None, j=None):
+        Predicate.__init__(self, [("i", int), ("j", int)])
+        Point.__init__(self, i, j)
+
+
+class BreakBomb(Predicate, Point):
+    predicate_name = "breakbomb"
 
     def __init__(self, i=None, j=None):
         Predicate.__init__(self, [("i", int), ("j", int)])
@@ -387,9 +395,10 @@ class DLVSolution:
             ASPMapper.get_instance().register_class(InputBomb)
             ASPMapper.get_instance().register_class(EnemyBomb)
             ASPMapper.get_instance().register_class(NoEnemyBomb)
+            ASPMapper.get_instance().register_class(BreakBomb)
             ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
 
-            self.__matrix = self.calculateMatrix()
+            # self.__matrix = self.calculateMatrix()
             # print(self.__matrix)
 
             self.__fixedInputProgram = ASPInputProgram()
@@ -403,6 +412,7 @@ class DLVSolution:
     #
     # def getMatrix(self):
     #     return self.__matrix
+
 
     def calculateMatrix(self):
         h = DesktopHandler(
@@ -488,12 +498,15 @@ class DLVSolution:
                     if isinstance(obj, Path):
                         # print(f"Path {obj}")
                         movePath = obj
+                        sleep(4)
                     elif isinstance(obj, InputBomb):
                         if obj not in self.__bombs:
                             # print(f"Aggiungo bomba {obj}")
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
                     elif isinstance(obj, EnemyBomb):
+                        gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                    elif isinstance(obj, BreakBomb):
                         gameInstance.plantBomb(obj.get_i(), obj.get_j())
                     elif isinstance(obj, AdjacentPlayerAndEnemy):
                         self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player

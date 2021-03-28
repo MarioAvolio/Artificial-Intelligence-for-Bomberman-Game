@@ -1,8 +1,11 @@
 #show point/3.
 
 n(0..15). % columns and rows
-minN(X) :- #min{Y : n(Y)} = X.
-maxN(X) :- #max{Y : n(Y)} = X.
+%minN(X) :- #min{Y : n(Y)} = X.
+%maxN(X) :- #max{Y : n(Y)} = X.
+
+minN(0).
+maxN(15).
 
 % calculate 4 vertex of matrix
 vertexNumber(X) :- minN(X).
