@@ -65,6 +65,9 @@ class Point:
     def __init__(self, i: int, j: int):
         self._coordinate = [i, j]  # list
 
+    def __init__(self):
+        self._coordinate = [0, 0]
+
     def get_i(self):
         return self._coordinate[Point.I]
 
@@ -114,8 +117,8 @@ class Game:
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0],
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                      [4, 4, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
-                      [0, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
+                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
         # self.__map = dlvThread.dlv.getMatrix()
@@ -211,6 +214,9 @@ class PointType(Point):
         Point.__init__(self, i, j)
         self.__t = t
 
+    def __init__(self):
+        Point.__init__(self)
+
     def get_t(self):
         return self.__t
 
@@ -224,6 +230,10 @@ class InputPointType(Predicate, PointType):
     def __init__(self, i, j, t):
         Predicate.__init__(self, [("i", int), ("j", int), ("t", int)])
         PointType.__init__(self, i, j, t)
+
+    def __init__(self):
+        Predicate.__init__(self, [("i", int), ("j", int), ("t", int)])
+        PointType.__init__(self)
 
 
 class Bomb(Thread, PointType):
@@ -285,6 +295,10 @@ class Path(Predicate, Point):
     def __init__(self, i=None, j=None):
         Predicate.__init__(self, [("i", int), ("j", int)])
         Point.__init__(self, i, j)
+
+    def __init__(self):
+        Predicate.__init__(self, [("i", int), ("j", int)])
+        Point.__init__(self)
 
 
 class AdjacentPlayerAndEnemy(Predicate, Point):
@@ -492,6 +506,7 @@ class DLVSolution:
             answerSets = self.__handler.start_sync()
 
             print("#######################################")
+            print(answerSets.get_answer_sets_string())
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
                 for obj in answerSet.get_atoms():

@@ -10,7 +10,7 @@ def install_whl(path):
 
 
 def main():
-    install_whl(os.path.join(current_path, "EmbASP-7.4.0-py2.py3-none-any.whl"))  # EMBASP INSTALLER
+    install_whl(os.path.join(current_path, "EmbASP-7.3.0-py2.py3-none-any.whl"))  # EMBASP INSTALLER
 
 
 if __name__ == '__main__':
