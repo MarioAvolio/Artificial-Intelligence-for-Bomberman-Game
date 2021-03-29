@@ -141,6 +141,7 @@ class Game:
                 return
 
             if collision(i, j):
+                print(self.getElement(i, j))
                 return
 
             self.__writeElement(i, j, BOMB)
@@ -409,10 +410,10 @@ class DLVSolution:
 
         except Exception as e:
             print(str(e))
+
     #
     # def getMatrix(self):
     #     return self.__matrix
-
 
     def calculateMatrix(self):
         h = DesktopHandler(
@@ -490,18 +491,19 @@ class DLVSolution:
             index = self.__handler.add_program(self.__variableInputProgram)
             answerSets = self.__handler.start_sync()
 
-            movePath = None
             print("#######################################")
             for answerSet in answerSets.get_optimal_answer_sets():
                 print(answerSet)
                 for obj in answerSet.get_atoms():
                     if isinstance(obj, Path):
-                        # print(f"Path {obj}")
-                        movePath = obj
-                        sleep(4)
+                        enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
+                        if enemyLastPositionTmp not in self.__lastPositionsEnemy:
+                            self.__lastPositionsEnemy[enemyLastPositionTmp] = 0
+                        else:
+                            self.__lastPositionsEnemy[enemyLastPositionTmp] += 1
+                        gameInstance.moveEnemy(obj)
                     elif isinstance(obj, InputBomb):
                         if obj not in self.__bombs:
-                            # print(f"Aggiungo bomba {obj}")
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
                     elif isinstance(obj, EnemyBomb):
@@ -512,13 +514,6 @@ class DLVSolution:
                         self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player
 
             print("#######################################")
-            if movePath is not None:
-                enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
-                if enemyLastPositionTmp not in self.__lastPositionsEnemy:
-                    self.__lastPositionsEnemy[enemyLastPositionTmp] = 0
-                else:
-                    self.__lastPositionsEnemy[enemyLastPositionTmp] += 1
-                gameInstance.moveEnemy(movePath)
 
             self.__log_program()
             self.__handler.remove_program_from_id(index)
