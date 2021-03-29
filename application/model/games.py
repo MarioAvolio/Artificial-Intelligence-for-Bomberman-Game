@@ -155,7 +155,7 @@ class Game:
 
             self.__swap(oldPoint.get_i(), oldPoint.get_j(), newPoint.get_i(), newPoint.get_j())
 
-    def moveEnemy(self, point):
+    def moveEnemy(self, point: Point):
         with self.__lock:
             self.moveOnMap(point, self.__enemy)
             self.__enemy.set_j(point.get_j())
@@ -205,14 +205,11 @@ class Game:
             return self.__finish
 
 
-class PointType(Predicate):
-    predicate_name = "point"
+class PointType(Point):
 
     def __init__(self, i=None, j=None, t=None):
-        Predicate.__init__(self, [("i", int), ("j", int), ("t", int)])
+        Point.__init__(self, i, j)
         self.__t = t
-        self.__i = i
-        self.__j = j
 
     def get_t(self):
         return self.__t
@@ -220,31 +217,13 @@ class PointType(Predicate):
     def set_t(self, t: int):
         self.__t = t
 
-    def get_i(self):
-        return self.__i
 
-    def get_j(self):
-        return self.__j
+class InputPointType(Predicate, PointType):
+    predicate_name = "point"
 
-    def set_i(self, i: int):
-        self.__i = i
-
-    def set_j(self, j: int):
-        self.__j = j
-
-    def __str__(self):
-        return f"PointType [{self.__i}, {self.__j}]."
-
-    def __key(self):
-        return self.get_i(), self.get_j()
-
-    def __eq__(self, other):
-        if isinstance(other, PointType):
-            return self.__key() == other.__key()
-        return NotImplemented
-
-    def __hash__(self):
-        return hash(self.__key())
+    def __init__(self, i=None, j=None, t=None):
+        Predicate.__init__(self, [("i", int), ("j", int), ("t", int)])
+        PointType.__init__(self, i, j, t)
 
 
 class Bomb(Thread, PointType):
@@ -410,7 +389,7 @@ class DLVSolution:
         try:
             self.__handler = DesktopHandler(
                 DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
-            ASPMapper.get_instance().register_class(PointType)
+            ASPMapper.get_instance().register_class(InputPointType)
             ASPMapper.get_instance().register_class(Path)
             ASPMapper.get_instance().register_class(NoPath)
             ASPMapper.get_instance().register_class(Distance)
@@ -484,58 +463,58 @@ class DLVSolution:
             for i in range(size):
                 for j in range(size):
                     typeNumber = gameInstance.getElement(i, j)
-                    p = PointType(i, j, typeNumber)
+                    p = InputPointType(i, j, typeNumber)
                     self.__variableInputProgram.add_object_input(p)  # point(I, J, ELEMENT_TYPE)
-            #
-            # # compute neighbors values ai
-            # e = gameInstance.getEnemy()
-            # p = gameInstance.getPlayer()
-            #
-            # listAdjacent = computeNeighbors(e.get_i(), e.get_j())
-            # for adjacent in listAdjacent:
-            #     if not gameInstance.outBorders(adjacent.get_i(), adjacent.get_j()):
-            #         distance = getDistanceEP(adjacent, p)
-            #         d = Distance(adjacent.get_i(), adjacent.get_j(), distance)
-            #         self.__variableInputProgram.add_object_input(d)
-            #
-            # # adding last position
-            # if len(self.__lastPositionsEnemy) != 0:
-            #     for enemy in self.__lastPositionsEnemy:
-            #         self.__variableInputProgram.add_program(
-            #             f"lastPositionEnemy({enemy.get_i()}, {enemy.get_j()}, {self.__lastPositionsEnemy[enemy]}).")
-            #
-            # # adding bombs ai
-            # for bomb in self.__bombs:
-            #     print(f"bomba piazzata in {bomb}")
-            #     self.__variableInputProgram.add_object_input(bomb)
+
+            # compute neighbors values ai
+            e = gameInstance.getEnemy()
+            p = gameInstance.getPlayer()
+
+            listAdjacent = computeNeighbors(e.get_i(), e.get_j())
+            for adjacent in listAdjacent:
+                if not gameInstance.outBorders(adjacent.get_i(), adjacent.get_j()):
+                    distance = getDistanceEP(adjacent, p)
+                    d = Distance(adjacent.get_i(), adjacent.get_j(), distance)
+                    self.__variableInputProgram.add_object_input(d)
+
+            # adding last position
+            if len(self.__lastPositionsEnemy) != 0:
+                for enemy in self.__lastPositionsEnemy:
+                    self.__variableInputProgram.add_program(
+                        f"lastPositionEnemy({enemy.get_i()}, {enemy.get_j()}, {self.__lastPositionsEnemy[enemy]}).")
+
+            # adding bombs ai
+            for bomb in self.__bombs:
+                print(f"bomba piazzata in {bomb}")
+                self.__variableInputProgram.add_object_input(bomb)
 
             index = self.__handler.add_program(self.__variableInputProgram)
             answerSets = self.__handler.start_sync()
 
             print("#######################################")
             print(answerSets.get_answer_sets_string())
-            # for answerSet in answerSets.get_optimal_answer_sets():
-            #     print(answerSet)
-            #     for obj in answerSet.get_atoms():
-            #         if isinstance(obj, Path):
-            #             enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
-            #             if enemyLastPositionTmp not in self.__lastPositionsEnemy:
-            #                 self.__lastPositionsEnemy[enemyLastPositionTmp] = 0
-            #             else:
-            #                 self.__lastPositionsEnemy[enemyLastPositionTmp] += 1
-            #             gameInstance.moveEnemy(obj)
-            #         elif isinstance(obj, InputBomb):
-            #             if obj not in self.__bombs:
-            #                 self.__bombs.append(obj)
-            #                 CheckBomb(self.__bombs, obj).start()
-            #         elif isinstance(obj, EnemyBomb):
-            #             gameInstance.plantBomb(obj.get_i(), obj.get_j())
-            #         elif isinstance(obj, BreakBomb):
-            #             gameInstance.plantBomb(obj.get_i(), obj.get_j())
-            #         elif isinstance(obj, AdjacentPlayerAndEnemy):
-            #             self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player
-            #
-            # print("#######################################")
+            for answerSet in answerSets.get_optimal_answer_sets():
+                print(answerSet)
+                for obj in answerSet.get_atoms():
+                    if isinstance(obj, Path):
+                        enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
+                        if enemyLastPositionTmp not in self.__lastPositionsEnemy:
+                            self.__lastPositionsEnemy[enemyLastPositionTmp] = 0
+                        else:
+                            self.__lastPositionsEnemy[enemyLastPositionTmp] += 1
+                        gameInstance.moveEnemy(obj)
+                    elif isinstance(obj, InputBomb):
+                        if obj not in self.__bombs:
+                            self.__bombs.append(obj)
+                            CheckBomb(self.__bombs, obj).start()
+                    elif isinstance(obj, EnemyBomb):
+                        gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                    elif isinstance(obj, BreakBomb):
+                        gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                    elif isinstance(obj, AdjacentPlayerAndEnemy):
+                        self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player
+
+            print("#######################################")
 
             self.__log_program()
             self.__handler.remove_program_from_id(index)
