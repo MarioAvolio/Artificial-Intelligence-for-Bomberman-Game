@@ -62,11 +62,8 @@ class Point:
     I = 0
     J = 1
 
-    def __init__(self, i: int, j: int):
+    def __init__(self, i=None, j=None):
         self._coordinate = [i, j]  # list
-
-    def __init__(self):
-        self._coordinate = [0, 0]
 
     def get_i(self):
         return self._coordinate[Point.I]
@@ -210,12 +207,9 @@ class Game:
 
 class PointType(Point):
 
-    def __init__(self, i: int, j: int, t: int):
+    def __init__(self, i=None, j=None, t=None):
         Point.__init__(self, i, j)
         self.__t = t
-
-    def __init__(self):
-        Point.__init__(self)
 
     def get_t(self):
         return self.__t
@@ -227,19 +221,15 @@ class PointType(Point):
 class InputPointType(Predicate, PointType):
     predicate_name = "point"
 
-    def __init__(self, i, j, t):
+    def __init__(self, i=None, j=None, t=None):
         Predicate.__init__(self, [("i", int), ("j", int), ("t", int)])
         PointType.__init__(self, i, j, t)
-
-    def __init__(self):
-        Predicate.__init__(self, [("i", int), ("j", int), ("t", int)])
-        PointType.__init__(self)
 
 
 class Bomb(Thread, PointType):
     TIME_LIMIT = 5
 
-    def __init__(self, i: int, j: int):
+    def __init__(self, i=None, j=None):
         PointType.__init__(self, i, j, BOMB)
         Thread.__init__(self)
         self.__listPoints = computeNeighbors(i, j)
@@ -295,10 +285,6 @@ class Path(Predicate, Point):
     def __init__(self, i=None, j=None):
         Predicate.__init__(self, [("i", int), ("j", int)])
         Point.__init__(self, i, j)
-
-    def __init__(self):
-        Predicate.__init__(self, [("i", int), ("j", int)])
-        Point.__init__(self)
 
 
 class AdjacentPlayerAndEnemy(Predicate, Point):
@@ -428,26 +414,26 @@ class DLVSolution:
     #
     # def getMatrix(self):
     #     return self.__matrix
-
-    def calculateMatrix(self):
-        h = DesktopHandler(
-            DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
-        ASPMapper.get_instance().register_class(InputPointType)
-        matrixInputProgram = ASPInputProgram()
-        matrixInputProgram.add_files_path(os.path.join(resource_path, "map.dlv2"))
-        index = h.add_program(matrixInputProgram)
-        answerSets = h.start_sync()
-        matrix = [[0 for x in range(SIZE)] for y in range(SIZE)]
-
-        print("~~~~~~~~~~~~~~~~~~~~~~  MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
-        for answerSet in answerSets.get_optimal_answer_sets():
-            print(answerSet)
-            for obj in answerSet.get_atoms():
-                if isinstance(obj, InputPointType):
-                    matrix[obj.get_i()][obj.get_j()] = obj.get_t()
-
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        return matrix
+    #
+    # def calculateMatrix(self):
+    #     h = DesktopHandler(
+    #         DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
+    #     ASPMapper.get_instance().register_class(InputPointType)
+    #     matrixInputProgram = ASPInputProgram()
+    #     matrixInputProgram.add_files_path(os.path.join(resource_path, "map.dlv2"))
+    #     index = h.add_program(matrixInputProgram)
+    #     answerSets = h.start_sync()
+    #     matrix = [[0 for x in range(SIZE)] for y in range(SIZE)]
+    #
+    #     print("~~~~~~~~~~~~~~~~~~~~~~  MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
+    #     for answerSet in answerSets.get_optimal_answer_sets():
+    #         print(answerSet)
+    #         for obj in answerSet.get_atoms():
+    #             if isinstance(obj, InputPointType):
+    #                 matrix[obj.get_i()][obj.get_j()] = obj.get_t()
+    #
+    #     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    #     return matrix
 
     # DEBUG
 
