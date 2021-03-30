@@ -485,7 +485,6 @@ class DLVSolution:
 
             # adding bombs ai
             for bomb in self.__bombs:
-                print(f"bomba piazzata in {bomb}")
                 self.__variableInputProgram.add_object_input(bomb)
 
             index = self.__handler.add_program(self.__variableInputProgram)
@@ -551,7 +550,6 @@ class CheckBomb(Thread):
             if gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS:
                 self.__bombs.remove(self.__bomb)
                 stop = True
-                print(f"STOP!")
 
 
 # === FUNCTIONS === (lower_case names)

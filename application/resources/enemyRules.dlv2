@@ -73,6 +73,10 @@ enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
 breakbomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_), point(C,D,4).
 
 
+% PATH != BOMB
+% TODO: A VOLTE IL PATH COINCIDE CON LA BOMBA CHE POSIZIONI!
+%:- path(X, Y), enemybomb(X,Y), breakbomb(X, Y).
+
 %%%%%%%%%%%%% NON CONSIDERARE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % plant bomb
 % adjacent(X, Y1):- path(X, Y), point(X, Y1, _), Y1 = Y + 1.
