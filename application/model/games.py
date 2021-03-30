@@ -8,9 +8,10 @@ import pygame
 # === CONSTANS === (UPPER_CASE names)
 from languages.asp.asp_input_program import ASPInputProgram
 from languages.asp.asp_mapper import ASPMapper
-from languages.predicate import Predicate
 from platforms.desktop.desktop_handler import DesktopHandler
 from specializations.dlv2.desktop.dlv2_desktop_service import DLV2DesktopService
+
+from application.model.pointClass import *
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -57,45 +58,6 @@ BLOCK_SIZE = 50
 
 
 # === CLASSES === (CamelCase names)
-
-class Point:
-    I = 0
-    J = 1
-
-    def __init__(self, i=None, j=None):
-        self._coordinate = [i, j]  # list
-
-    def get_i(self):
-        return self._coordinate[Point.I]
-
-    def get_j(self):
-        return self._coordinate[Point.J]
-
-    def set_i(self, i: int):
-        self._coordinate[Point.I] = i
-
-    def set_j(self, j: int):
-        self._coordinate[Point.J] = j
-
-    def move(self, directions: int):
-        if directions in MOVEMENTS_MATRIX.keys():
-            self._coordinate[Point.I] += MOVEMENTS_MATRIX[directions][Point.I]
-            self._coordinate[Point.J] += MOVEMENTS_MATRIX[directions][Point.J]
-
-    def __str__(self):
-        return f"Point [{self._coordinate[Point.I]}, {self._coordinate[Point.J]}]."
-
-    def __key(self):
-        return self.get_i(), self.get_j()
-
-    def __eq__(self, other):
-        if isinstance(other, Point):
-            return self.__key() == other.__key()
-        return NotImplemented
-
-    def __hash__(self):
-        return hash(self.__key())
-
 
 class Game:
     def __init__(self):
@@ -146,7 +108,7 @@ class Game:
 
             self.__writeElement(i, j, BOMB)
             # START THREAD BOMB
-            Bomb(i, j).start()
+            BombThread(i, j).start()
 
     def moveOnMap(self, newPoint: Point, oldPoint: Point):
         with self.__lock:
@@ -203,111 +165,6 @@ class Game:
     def getFinish(self):
         with self.__lock:
             return self.__finish
-
-
-class PointType(Point):
-
-    def __init__(self, i=None, j=None, t=None):
-        Point.__init__(self, i, j)
-        self.__t = t
-
-    def get_t(self):
-        return self.__t
-
-    def set_t(self, t: int):
-        self.__t = t
-
-
-class InputPointType(Predicate, PointType):
-    predicate_name = "point"
-
-    def __init__(self, i=None, j=None, t=None):
-        Predicate.__init__(self, [("i", int), ("j", int), ("t", int)])
-        PointType.__init__(self, i, j, t)
-
-
-class Bomb(Thread, PointType):
-    TIME_LIMIT = 5
-
-    def __init__(self, i=None, j=None):
-        PointType.__init__(self, i, j, BOMB)
-        Thread.__init__(self)
-        self.__listPoints = computeNeighbors(i, j)
-
-    def run(self) -> None:
-        sleep(Bomb.TIME_LIMIT)  # time to explode bomb
-        gameInstance.explode(self.__listPoints, self)
-
-
-class EnemyBomb(Predicate, Point):
-    predicate_name = "enemybomb"
-
-    def __init__(self, i=None, j=None):
-        Predicate.__init__(self, [("i", int), ("j", int)])
-        Point.__init__(self, i, j)
-
-
-class BreakBomb(Predicate, Point):
-    predicate_name = "breakbomb"
-
-    def __init__(self, i=None, j=None):
-        Predicate.__init__(self, [("i", int), ("j", int)])
-        Point.__init__(self, i, j)
-
-
-class NoEnemyBomb(Predicate, Point):
-    predicate_name = "noenemybomb"
-
-    def __init__(self, i=None, j=None):
-        Predicate.__init__(self, [("i", int), ("j", int)])
-        Point.__init__(self, i, j)
-
-
-class InputBomb(Predicate, Point):
-    predicate_name = "bomb"
-
-    def __init__(self, i=None, j=None):
-        Point.__init__(self, i, j)
-        Predicate.__init__(self, [("i", int), ("j", int)])
-
-
-class NoPath(Predicate, Point):
-    predicate_name = "nopath"
-
-    def __init__(self, i=None, j=None):
-        Predicate.__init__(self, [("i", int), ("j", int)])
-        Point.__init__(self, i, j)
-
-
-class Path(Predicate, Point):
-    predicate_name = "path"
-
-    def __init__(self, i=None, j=None):
-        Predicate.__init__(self, [("i", int), ("j", int)])
-        Point.__init__(self, i, j)
-
-
-class AdjacentPlayerAndEnemy(Predicate, Point):
-    predicate_name = "adjacentPlayerAndEnemy"
-
-    def __init__(self, i=None, j=None):
-        Predicate.__init__(self, [("i", int), ("j", int)])
-        Point.__init__(self, i, j)
-
-
-class Distance(Predicate, Point):
-    predicate_name = "distance"
-
-    def __init__(self, i=None, j=None, d=None):
-        Predicate.__init__(self, [("i", int), ("j", int), ("d", int)])
-        Point.__init__(self, i, j)
-        self.d = d
-
-    def get_d(self):
-        return self.d
-
-    def set_d(self, d: int):
-        self.d = d
 
 
 class HandlerView:
@@ -376,6 +233,19 @@ class HandlerView:
         surface.blit(text, textRect)
 
 
+class BombThread(Thread, PointType):
+    TIME_LIMIT = 5
+
+    def __init__(self, i=None, j=None):
+        PointType.__init__(self, i, j, BOMB)
+        Thread.__init__(self)
+        self.__listPoints = computeNeighbors(i, j)
+
+    def run(self) -> None:
+        sleep(BombThread.TIME_LIMIT)  # time to explode bomb
+        gameInstance.explode(self.__listPoints, self)
+
+
 # --- AI ---
 
 class DLVSolution:
@@ -391,11 +261,11 @@ class DLVSolution:
                 DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
             ASPMapper.get_instance().register_class(InputPointType)
             ASPMapper.get_instance().register_class(Path)
-            ASPMapper.get_instance().register_class(NoPath)
+            # ASPMapper.get_instance().register_class(NoPath)
             ASPMapper.get_instance().register_class(Distance)
             ASPMapper.get_instance().register_class(InputBomb)
             ASPMapper.get_instance().register_class(EnemyBomb)
-            ASPMapper.get_instance().register_class(NoEnemyBomb)
+            # ASPMapper.get_instance().register_class(NoEnemyBomb)
             ASPMapper.get_instance().register_class(BreakBomb)
             ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
 
@@ -554,6 +424,12 @@ class CheckBomb(Thread):
 
 # === FUNCTIONS === (lower_case names)
 
+def movePoint(point: Point, directions: int):
+    if directions in MOVEMENTS_MATRIX.keys():
+        point.increase_i(MOVEMENTS_MATRIX[directions][Point.I])
+        point.increase_j(MOVEMENTS_MATRIX[directions][Point.J])
+
+
 def getDistanceEP(p1: Point, e1: Point) -> int:
     PI = p1.get_i()
     PJ = p1.get_j()
@@ -565,10 +441,10 @@ def getDistanceEP(p1: Point, e1: Point) -> int:
 
 def computeNeighbors(i: int, j: int):
     listPoints = [Path(i, j) for _ in range(4)]
-    listPoints[0].move(LEFT)
-    listPoints[1].move(RIGHT)
-    listPoints[2].move(UP)
-    listPoints[3].move(DOWN)
+    movePoint(listPoints[0], LEFT)
+    movePoint(listPoints[1], RIGHT)
+    movePoint(listPoints[2], UP)
+    movePoint(listPoints[3], DOWN)
 
     return listPoints
 
@@ -585,7 +461,7 @@ def move(directions: int, point):
     oldPoint = copy.deepcopy(point)
 
     if directions in MOVEMENTS_MATRIX.keys():
-        point.move(directions)
+        movePoint(point, directions)
 
     if collision(point.get_i(), point.get_j()):
         point.set_i(oldPoint.get_i())

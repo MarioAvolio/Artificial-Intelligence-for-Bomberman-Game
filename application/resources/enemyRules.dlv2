@@ -36,7 +36,7 @@ adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y - 1.
 adjacentPlayerAndEnemy(X, Y) :- enemy(X, Y), adjacentPlayer(X, Y).
 
 
-% dodge Bomb
+% dodge BombThread
 bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
 
 % move
