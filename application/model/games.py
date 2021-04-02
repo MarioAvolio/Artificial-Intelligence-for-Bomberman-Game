@@ -55,9 +55,11 @@ resource_path = os.path.join(current_path, '../resources')  # The resource folde
 logs_path = os.path.join(resource_path, 'logs')
 
 BLOCK_SIZE = 50
+MAP_SIZE = 16
 
 
 # === CLASSES === (CamelCase names)
+
 
 class Game:
     def __init__(self):
@@ -80,8 +82,6 @@ class Game:
                       [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-        # self.__map = dlvThread.dlv.getMatrix()
-        # print(self.__map)
         self.__size = len(self.__map)
         global BLOCK_SIZE
         BLOCK_SIZE = SIZE // self.__size
@@ -144,6 +144,18 @@ class Game:
     def __writeElement(self, i: int, j: int, elem):
         with self.__lock:
             self.__map[i][j] = elem
+
+    def setMap(self, w: list[list[int]]):
+        with self.__lock:
+            self.__map = w
+            self.__size = len(self.__map)
+            playerCoordinates = [(index, row.index(PLAYER)) for index, row in enumerate(self.__map) if
+                                 PLAYER in row]  # set player
+            setCharacter(self.__player, playerCoordinates[0])
+
+            enemyCoordinates = [(index, row.index(ENEMY)) for index, row in enumerate(self.__map) if
+                                ENEMY in row]  # set enemy
+            setCharacter(self.__enemy, enemyCoordinates[0])
 
     # GETTER
     def getElement(self, i: int, j: int):
@@ -248,29 +260,47 @@ class BombThread(Thread, PointType):
 
 # --- AI ---
 
+# this thread build matrix game world
+class MatrixBuilder:
+    def __init__(self):
+        self.__handler = DesktopHandler(
+            DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
+        self.__inputProgram = ASPInputProgram()
+        self.__inputProgram.add_files_path(os.path.join(resource_path, "map.dlv2"))
+        self.__handler.add_program(self.__inputProgram)
+
+    def build(self) -> list[list[int]]:
+        answerSets = self.__handler.start_sync()
+        worldMap = [[0 for x in range(MAP_SIZE)] for y in range(MAP_SIZE)]
+
+        print("~~~~~~~~~~~~~~~~~~~~~~  MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
+        # print(answerSets.get_answer_sets_string())
+        for answerSet in answerSets.get_answer_sets():
+            print(answerSet)
+            for obj in answerSet.get_atoms():
+                if isinstance(obj, InputPointType):
+                    worldMap[obj.get_i()][obj.get_j()] = obj.get_t()
+
+        for row in worldMap:
+            print(row)
+
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+        self.__handler.remove_all()
+        return worldMap
+
+
 class DLVSolution:
 
     def __init__(self):
-        self.__countLogs = 0
-        self.__dir = None
-        self.__lastPositionsEnemy = {}
-        self.__bombs = []
-        self.__nMovements = 0
+        self.__countLogs = 0  # count for debug
+        self.__dir = None  # log directory for debug
+        self.__lastPositionsEnemy = {}  # check all last position of enemy
+        self.__bombs = []  # list of bomb already placed
+
         try:
             self.__handler = DesktopHandler(
                 DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
-            ASPMapper.get_instance().register_class(InputPointType)
-            ASPMapper.get_instance().register_class(Path)
-            # ASPMapper.get_instance().register_class(NoPath)
-            ASPMapper.get_instance().register_class(Distance)
-            ASPMapper.get_instance().register_class(InputBomb)
-            ASPMapper.get_instance().register_class(EnemyBomb)
-            # ASPMapper.get_instance().register_class(NoEnemyBomb)
-            ASPMapper.get_instance().register_class(BreakBomb)
-            ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
-
-            # self.__matrix = self.calculateMatrix()
-            # print(self.__matrix)
 
             self.__fixedInputProgram = ASPInputProgram()
             self.__variableInputProgram = None
@@ -280,30 +310,6 @@ class DLVSolution:
 
         except Exception as e:
             print(str(e))
-
-    #
-    # def getMatrix(self):
-    #     return self.__matrix
-    #
-    # def calculateMatrix(self):
-    #     h = DesktopHandler(
-    #         DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
-    #     ASPMapper.get_instance().register_class(InputPointType)
-    #     matrixInputProgram = ASPInputProgram()
-    #     matrixInputProgram.add_files_path(os.path.join(resource_path, "map.dlv2"))
-    #     index = h.add_program(matrixInputProgram)
-    #     answerSets = h.start_sync()
-    #     matrix = [[0 for x in range(SIZE)] for y in range(SIZE)]
-    #
-    #     print("~~~~~~~~~~~~~~~~~~~~~~  MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
-    #     for answerSet in answerSets.get_optimal_answer_sets():
-    #         print(answerSet)
-    #         for obj in answerSet.get_atoms():
-    #             if isinstance(obj, InputPointType):
-    #                 matrix[obj.get_i()][obj.get_j()] = obj.get_t()
-    #
-    #     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    #     return matrix
 
     # DEBUG
 
@@ -424,6 +430,15 @@ class CheckBomb(Thread):
 
 # === FUNCTIONS === (lower_case names)
 
+ASPMapper.get_instance().register_class(InputPointType)
+ASPMapper.get_instance().register_class(Path)
+ASPMapper.get_instance().register_class(Distance)
+ASPMapper.get_instance().register_class(InputBomb)
+ASPMapper.get_instance().register_class(EnemyBomb)
+ASPMapper.get_instance().register_class(BreakBomb)
+ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
+
+
 def movePoint(point: Point, directions: int):
     if directions in MOVEMENTS_MATRIX.keys():
         point.increase_i(MOVEMENTS_MATRIX[directions][Point.I])
@@ -447,6 +462,11 @@ def computeNeighbors(i: int, j: int):
     movePoint(listPoints[3], DOWN)
 
     return listPoints
+
+
+def setCharacter(character: Point, coordinate: tuple):
+    character.set_i(coordinate[0])
+    character.set_j(coordinate[1])
 
 
 def collision(i: int, j: int) -> bool:
@@ -479,8 +499,11 @@ def plant():
 # === MAIN === (lower_case names)
 
 # --- (global) variables ---
+buildMatrix = MatrixBuilder()
+world = buildMatrix.build()
 dlvThread = DLVThread()
 gameInstance = Game()
+gameInstance.setMap(world)
 
 # --- init ---
 
