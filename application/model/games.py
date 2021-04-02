@@ -372,15 +372,15 @@ class DLVSolution:
                         else:
                             self.__lastPositionsEnemy[enemyLastPositionTmp] += 1
                         gameInstance.moveEnemy(obj)
-                    elif isinstance(obj, InputBomb):
+                    if isinstance(obj, InputBomb):
                         if obj not in self.__bombs:
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
-                    elif isinstance(obj, EnemyBomb):
+                    if isinstance(obj, EnemyBomb):
                         gameInstance.plantBomb(obj.get_i(), obj.get_j())
-                    elif isinstance(obj, BreakBomb):
+                    if isinstance(obj, BreakBomb):
                         gameInstance.plantBomb(obj.get_i(), obj.get_j())
-                    elif isinstance(obj, AdjacentPlayerAndEnemy):
+                    if isinstance(obj, AdjacentPlayerAndEnemy):
                         self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player
 
             print("#######################################")

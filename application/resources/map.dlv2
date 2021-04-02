@@ -41,16 +41,25 @@ chooseCell(X, Y) :- point(X, Y, _).
 :- point(X1, Y, Z), point(X2, Y, Z), X1<X2, not point(X3, Y, Z), X3 = X1+1, Z = 3.
 
 % not to much wall
-%numberBlock(K) :- #count{X, Y : point(X, Y, 3)} = K.
-%:- numberBlock(K), K < 15.
-%:- numberBlock(K), K > 21.
+numberWall(K) :- #count{X, Y : point(X, Y, 3)} = K.
+:- numberWall(K), K < 15.
+:- numberWall(K), K > 21.
 
-% maximize grass
-:~ notpoint(X, Y, 0). [1@1, X, Y]
+%not to much wood
+numberWood(K) :- #count{X, Y : point(X, Y, 4)} = K.
+:- numberWood(K), K < 10.
+:- numberWood(K), K > 16.
+
+% maximize grass --> Io non lo metterei, altrimenti diminuisce la randomicità della mappa
+%:~ notpoint(X, Y, 0). [1@1, X, Y]
 
 % adjacent(X, Y, X, Y1):- cell(X, Y), cell(X, Y1), Y1 = Y + 1.
 % adjacent(X, Y, X1, Y):- cell(X, Y), cell(X1, Y), X1 = X + 1.
 % adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y + 1.
 % adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y - 1.
 % adjacent(X, Y, X1, Y1):- adjacent(X1, Y1, X, Y).
+
+%wood lines
+%lenghtWoodLine(W):- count{}
+
 
