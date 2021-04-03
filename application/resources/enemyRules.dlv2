@@ -74,6 +74,9 @@ free(C) :- #count{X,Y : distance(X,Y,Z)}= C, point(X,Y,0).
 %IF LAST POSITION OF ENEMY IS ONLY PATH AVAILABLE, HE GO BACK AND PLACE A BOMB IN CURRENT POSITION
 breakbomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_), point(C,D,4).
 
+idealPath(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
+breakbomb(A,B) :- idealPath(X, Y), point(X, Y, 4), enemy(A,B).
+
 
 %%%%%%%%%%%%% NON CONSIDERARE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % plant bomb
