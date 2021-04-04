@@ -49,6 +49,7 @@ ENEMY = 2
 BLOCK = 3
 BOX = 4
 BOMB = 5
+ERROR = -1
 
 current_path = os.path.dirname(__file__)  # Where your .py file is located
 resource_path = os.path.join(current_path, '../resources')  # The resource folder path
@@ -127,7 +128,7 @@ class Game:
         self.__enemy.set_j(point.get_j())
         self.__enemy.set_i(point.get_i())
 
-    def explode(self, listPoints, coordinateBomb):
+    def explode(self, listPoints: list[Point], coordinateBomb: Point):
         if self.getFinish() is not None:
             return
 
@@ -159,22 +160,22 @@ class Game:
         setCharacter(self.__enemy, enemyCoordinates[0])
 
     # GETTER
-    def getElement(self, i: int, j: int):
+    def getElement(self, i: int, j: int) -> int:
         try:
             return self.__map[i][j]
         except:
-            return GRASS
+            return ERROR
 
-    def getPlayer(self):
+    def getPlayer(self) -> Point:
         return self.__player
 
-    def getEnemy(self):
+    def getEnemy(self) -> Point:
         return self.__enemy
 
-    def getSize(self):
+    def getSize(self) -> int:
         return self.__size
 
-    def getFinish(self):
+    def getFinish(self) -> str:
         return self.__finish
 
 
@@ -217,7 +218,7 @@ class HandlerView:
         img = pygame.image.load(os.path.join(resource_path, "background.jpg"))
         self.__imgBackground = pygame.transform.scale(img, (SIZE, SIZE))
 
-    def __printOnScreen(self, surface):
+    def __printOnScreen(self, surface) -> None:
         gameInstance.acquireLock()
 
         if gameInstance.getFinish() is None:
@@ -234,10 +235,10 @@ class HandlerView:
 
         gameInstance.releaseLock()
 
-    def update(self, surface):
+    def update(self, surface) -> None:
         self.__printOnScreen(surface)
 
-    def __gameOver(self, surface):
+    def __gameOver(self, surface) -> None:
         surface.blit(self.__imgBackground, (0, 0))
         X = SIZE // 2
         Y = SIZE // 2
@@ -321,7 +322,7 @@ class DLVSolution:
 
     # DEBUG
 
-    def __log_program(self):
+    def __log_program(self) -> None:
         if not os.path.exists(logs_path):
             os.mkdir(f"{logs_path}")
         if self.__countLogs == 0:
@@ -337,7 +338,7 @@ class DLVSolution:
 
     # END DEBUG
 
-    def recallASP(self):
+    def recallASP(self) -> None:
         gameInstance.acquireLock()
         try:
 
@@ -389,10 +390,10 @@ class DLVSolution:
                         if obj not in self.__bombs:
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
-                    # elif isinstance(obj, EnemyBomb):
-                    #     gameInstance.plantBomb(obj.get_i(), obj.get_j())
-                    # elif isinstance(obj, BreakBomb):
-                    #     gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                    elif isinstance(obj, EnemyBomb):
+                        gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                    elif isinstance(obj, BreakBomb):
+                        gameInstance.plantBomb(obj.get_i(), obj.get_j())
                     elif isinstance(obj, AdjacentPlayerAndEnemy):
                         self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player
 
@@ -415,7 +416,7 @@ class DLVThread(Thread):
         Thread.__init__(self)
         self.dlv = DLVSolution()
 
-    def run(self):
+    def run(self) -> None:
         while is_running:
             gameInstance.acquireLock()
             finish = gameInstance.getFinish()
@@ -455,7 +456,7 @@ ASPMapper.get_instance().register_class(BreakBomb)
 ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
 
 
-def moveEnemyFromPath(path: Path, lastPositionsEnemy: dict):
+def moveEnemyFromPath(path: Path, lastPositionsEnemy: dict) -> None:
     gameInstance.acquireLock()
     enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
     if enemyLastPositionTmp not in lastPositionsEnemy:
@@ -466,22 +467,22 @@ def moveEnemyFromPath(path: Path, lastPositionsEnemy: dict):
     gameInstance.releaseLock()
 
 
-def movePoint(point: Point, directions: int):
+def movePoint(point: Point, directions: int) -> None:
     if directions in MOVEMENTS_MATRIX.keys():
         point.increase_i(MOVEMENTS_MATRIX[directions][Point.I])
         point.increase_j(MOVEMENTS_MATRIX[directions][Point.J])
 
 
 def getDistanceEP(p1: Point, e1: Point) -> int:
-    PI = p1.get_i()
-    PJ = p1.get_j()
-    EI = e1.get_i()
-    EJ = e1.get_j()
+    pI = p1.get_i()
+    pJ = p1.get_j()
+    eI = e1.get_i()
+    eJ = e1.get_j()
 
-    return int(pow(pow(EI - PI, 2) + pow(EJ - PJ, 2), 1 / 2))
+    return int(pow(pow(eI - pI, 2) + pow(eJ - pJ, 2), 1 / 2))
 
 
-def computeNeighbors(i: int, j: int):
+def computeNeighbors(i: int, j: int) -> list[Point]:
     listPoints = [Path(i, j) for _ in range(4)]
     movePoint(listPoints[0], LEFT)
     movePoint(listPoints[1], RIGHT)
@@ -491,7 +492,7 @@ def computeNeighbors(i: int, j: int):
     return listPoints
 
 
-def setCharacter(character: Point, coordinate: tuple):
+def setCharacter(character: Point, coordinate: tuple) -> None:
     character.set_i(coordinate[0])
     character.set_j(coordinate[1])
 
@@ -512,7 +513,8 @@ def collisionBomb(i: int, j: int) -> bool:
         gameInstance.releaseLock()
 
 
-def move(directions: int, point):
+def move(directions: int, point) -> None:
+    gameInstance.acquireLock()
     oldPoint = copy.deepcopy(point)
 
     if directions in MOVEMENTS_MATRIX.keys():
@@ -522,12 +524,11 @@ def move(directions: int, point):
         point.set_i(oldPoint.get_i())
         point.set_j(oldPoint.get_j())
     else:
-        gameInstance.acquireLock()
         gameInstance.moveOnMap(point, oldPoint)
-        gameInstance.releaseLock()
+    gameInstance.releaseLock()
 
 
-def plant():
+def plant() -> None:
     gameInstance.acquireLock()
     i = gameInstance.getPlayer().get_i() + lastMovement[Point.I]
     j = gameInstance.getPlayer().get_j() + lastMovement[Point.J]
