@@ -88,9 +88,15 @@ class Game:
         self.__lock = RLock()
         self.__finish = None
 
+    # LOCK MANAGEMENT
+    def acquireLock(self):
+        self.__lock.acquire()
+
+    def releaseLock(self):
+        self.__lock.release()
+
     def outBorders(self, i: int, j: int) -> bool:
-        with self.__lock:
-            return i < 0 or j < 0 or i >= self.__size or j >= self.__size
+        return i < 0 or j < 0 or i >= self.__size or j >= self.__size
 
     def __swap(self, oldI: int, oldJ: int, newI: int, newJ: int):
         self.__map[oldI][oldJ], self.__map[newI][newJ] = \
@@ -98,89 +104,78 @@ class Game:
             self.__map[oldI][oldJ]
 
     def plantBomb(self, i: int, j: int):
-        with self.__lock:
-            if self.getFinish() is not None:
-                return
+        if self.getFinish() is not None:
+            return
 
-            if collision(i, j):
-                print(self.getElement(i, j))
-                return
+        if collision(i, j):
+            print(self.getElement(i, j))
+            return
 
-            self.__writeElement(i, j, BOMB)
-            # START THREAD BOMB
-            BombThread(i, j).start()
+        self.__writeElement(i, j, BOMB)
+        # START THREAD BOMB
+        BombThread(i, j).start()
 
     def moveOnMap(self, newPoint: Point, oldPoint: Point):
-        with self.__lock:
-            if self.getFinish() is not None:
-                return
+        if self.getFinish() is not None:
+            return
             # print(f"swap {newPoint} and {oldPoint}")
-            self.__swap(oldPoint.get_i(), oldPoint.get_j(), newPoint.get_i(), newPoint.get_j())
+        self.__swap(oldPoint.get_i(), oldPoint.get_j(), newPoint.get_i(), newPoint.get_j())
 
     def moveEnemy(self, point: Point):
-        with self.__lock:
-            # print(f"muovo il nemico in {point} dalla precedente posizione {self.__enemy}")
-            self.moveOnMap(point, self.__enemy)
-            self.__enemy.set_j(point.get_j())
-            self.__enemy.set_i(point.get_i())
+        # print(f"muovo il nemico in {point} dalla precedente posizione {self.__enemy}")
+        self.moveOnMap(point, self.__enemy)
+        self.__enemy.set_j(point.get_j())
+        self.__enemy.set_i(point.get_i())
 
     def explode(self, listPoints, coordinateBomb):
-        with self.__lock:
-            if self.getFinish() is not None:
-                return
+        if self.getFinish() is not None:
+            return
 
             # remove bomb
-            self.__writeElement(coordinateBomb.get_i(), coordinateBomb.get_j(), GRASS)
+        self.__writeElement(coordinateBomb.get_i(), coordinateBomb.get_j(), GRASS)
 
-            for point in listPoints:  # adjacent point
-                if not self.outBorders(point.get_i(), point.get_j()):
-                    if self.getElement(point.get_i(), point.get_j()) == ENEMY:
-                        self.__finish = "Player"  # player win
-                    elif self.getElement(point.get_i(), point.get_j()) == PLAYER:
-                        self.__finish = "Enemy"  # enemy win
-                    elif not collisionBomb(point.get_i(), point.get_j()):
-                        self.__writeElement(point.get_i(), point.get_j(), GRASS)
+        for point in listPoints:  # adjacent point
+            if not self.outBorders(point.get_i(), point.get_j()):
+                if self.getElement(point.get_i(), point.get_j()) == ENEMY:
+                    self.__finish = "Player"  # player win
+                elif self.getElement(point.get_i(), point.get_j()) == PLAYER:
+                    self.__finish = "Enemy"  # enemy win
+                elif not collisionBomb(point.get_i(), point.get_j()):
+                    self.__writeElement(point.get_i(), point.get_j(), GRASS)
 
     # SETTER
     def __writeElement(self, i: int, j: int, elem):
-        with self.__lock:
-            self.__map[i][j] = elem
+        self.__map[i][j] = elem
 
     def setMap(self, w: list[list[int]]):
-        with self.__lock:
-            self.__map = w
-            self.__size = len(self.__map)
-            playerCoordinates = [(index, row.index(PLAYER)) for index, row in enumerate(self.__map) if
-                                 PLAYER in row]  # set player
-            setCharacter(self.__player, playerCoordinates[0])
+        self.__map = w
+        self.__size = len(self.__map)
+        playerCoordinates = [(index, row.index(PLAYER)) for index, row in enumerate(self.__map) if
+                             PLAYER in row]  # set player
+        setCharacter(self.__player, playerCoordinates[0])
 
-            enemyCoordinates = [(index, row.index(ENEMY)) for index, row in enumerate(self.__map) if
-                                ENEMY in row]  # set enemy
-            setCharacter(self.__enemy, enemyCoordinates[0])
+        enemyCoordinates = [(index, row.index(ENEMY)) for index, row in enumerate(self.__map) if
+                            ENEMY in row]  # set enemy
+        setCharacter(self.__enemy, enemyCoordinates[0])
 
     # GETTER
     def getElement(self, i: int, j: int):
-        with self.__lock:
-            try:
-                return self.__map[i][j]
-            except Exception:
-                return GRASS
+        try:
+            return self.__map[i][j]
+        except:
+            return GRASS
 
     def getPlayer(self):
-        with self.__lock:
-            return self.__player
+        return self.__player
 
     def getEnemy(self):
-        with self.__lock:
-            return self.__enemy
+        return self.__enemy
 
     def getSize(self):
-        with self.__lock:
-            return self.__size
+        return self.__size
 
     def getFinish(self):
-        with self.__lock:
-            return self.__finish
+        return self.__finish
 
 
 class HandlerView:
@@ -223,6 +218,8 @@ class HandlerView:
         self.__imgBackground = pygame.transform.scale(img, (SIZE, SIZE))
 
     def __printOnScreen(self, surface):
+        gameInstance.acquireLock()
+
         if gameInstance.getFinish() is None:
             for i in range(gameInstance.getSize()):
                 for j in range(gameInstance.getSize()):
@@ -234,6 +231,8 @@ class HandlerView:
             self.__gameOver(surface)
 
         pygame.display.update()
+
+        gameInstance.releaseLock()
 
     def update(self, surface):
         self.__printOnScreen(surface)
@@ -259,7 +258,10 @@ class BombThread(Thread, PointType):
 
     def run(self) -> None:
         sleep(BombThread.TIME_LIMIT)  # time to explode bomb
+
+        gameInstance.acquireLock()
         gameInstance.explode(self.__listPoints, self)
+        gameInstance.releaseLock()
 
 
 # --- AI ---
@@ -336,6 +338,7 @@ class DLVSolution:
     # END DEBUG
 
     def recallASP(self):
+        gameInstance.acquireLock()
         try:
 
             print(f" ENEMY: {gameInstance.getEnemy()} \n "
@@ -400,6 +403,7 @@ class DLVSolution:
 
         except Exception as e:
             print(str(e))
+        gameInstance.releaseLock()
 
 
 is_running = True
@@ -412,7 +416,12 @@ class DLVThread(Thread):
         self.dlv = DLVSolution()
 
     def run(self):
-        while is_running and gameInstance.getFinish() is None:
+        while is_running:
+            gameInstance.acquireLock()
+            finish = gameInstance.getFinish()
+            gameInstance.releaseLock()
+            if finish is not None:
+                break
             self.dlv.recallASP()
             sleep(0.5)
 
@@ -427,7 +436,10 @@ class CheckBomb(Thread):
     def run(self) -> None:
         stop = False
         while not stop:
-            if gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS:
+            gameInstance.acquireLock()
+            isGrass = gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS
+            gameInstance.releaseLock()
+            if isGrass:
                 self.__bombs.remove(self.__bomb)
                 stop = True
 
@@ -443,13 +455,15 @@ ASPMapper.get_instance().register_class(BreakBomb)
 ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
 
 
-def moveEnemyFromPath(path: Path, lastPositionsEnemy: list[int]):
+def moveEnemyFromPath(path: Path, lastPositionsEnemy: dict):
+    gameInstance.acquireLock()
     enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
     if enemyLastPositionTmp not in lastPositionsEnemy:
         lastPositionsEnemy[enemyLastPositionTmp] = 0
     else:
         lastPositionsEnemy[enemyLastPositionTmp] += 1
     gameInstance.moveEnemy(path)
+    gameInstance.releaseLock()
 
 
 def movePoint(point: Point, directions: int):
@@ -483,11 +497,19 @@ def setCharacter(character: Point, coordinate: tuple):
 
 
 def collision(i: int, j: int) -> bool:
-    return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) != GRASS
+    gameInstance.acquireLock()
+    try:
+        return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) != GRASS
+    finally:
+        gameInstance.releaseLock()
 
 
 def collisionBomb(i: int, j: int) -> bool:
-    return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) == BLOCK
+    gameInstance.acquireLock()
+    try:
+        return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) == BLOCK
+    finally:
+        gameInstance.releaseLock()
 
 
 def move(directions: int, point):
@@ -500,13 +522,17 @@ def move(directions: int, point):
         point.set_i(oldPoint.get_i())
         point.set_j(oldPoint.get_j())
     else:
+        gameInstance.acquireLock()
         gameInstance.moveOnMap(point, oldPoint)
+        gameInstance.releaseLock()
 
 
 def plant():
+    gameInstance.acquireLock()
     i = gameInstance.getPlayer().get_i() + lastMovement[Point.I]
     j = gameInstance.getPlayer().get_j() + lastMovement[Point.J]
     gameInstance.plantBomb(i, j)
+    gameInstance.releaseLock()
 
 
 # === MAIN === (lower_case names)
@@ -516,7 +542,10 @@ buildMatrix = MatrixBuilder()
 world = buildMatrix.build()
 dlvThread = DLVThread()
 gameInstance = Game()
+
+gameInstance.acquireLock()
 gameInstance.setMap(world)
+gameInstance.releaseLock()
 
 # --- init ---
 
@@ -553,7 +582,10 @@ while is_running:
             if event.key in movements:
                 direction = movements[event.key]
                 lastMovement = MOVEMENTS_MATRIX[direction]  # set last movement
-                move(direction, gameInstance.getPlayer())
+                gameInstance.acquireLock()
+                player = gameInstance.getPlayer()
+                gameInstance.releaseLock()
+                move(direction, player)
             elif event.key == pygame.K_SPACE:
                 plant()
 
