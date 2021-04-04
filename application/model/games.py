@@ -114,11 +114,12 @@ class Game:
         with self.__lock:
             if self.getFinish() is not None:
                 return
-
+            # print(f"swap {newPoint} and {oldPoint}")
             self.__swap(oldPoint.get_i(), oldPoint.get_j(), newPoint.get_i(), newPoint.get_j())
 
     def moveEnemy(self, point: Point):
         with self.__lock:
+            # print(f"muovo il nemico in {point} dalla precedente posizione {self.__enemy}")
             self.moveOnMap(point, self.__enemy)
             self.__enemy.set_j(point.get_j())
             self.__enemy.set_i(point.get_i())
@@ -160,7 +161,10 @@ class Game:
     # GETTER
     def getElement(self, i: int, j: int):
         with self.__lock:
-            return self.__map[i][j]
+            try:
+                return self.__map[i][j]
+            except Exception:
+                return GRASS
 
     def getPlayer(self):
         with self.__lock:
@@ -270,6 +274,8 @@ class MatrixBuilder:
         self.__handler.add_program(self.__inputProgram)
 
     def build(self) -> list[list[int]]:
+
+        print("I am building the World...")
         answerSets = self.__handler.start_sync()
         worldMap = [[0 for x in range(MAP_SIZE)] for y in range(MAP_SIZE)]
 
@@ -331,6 +337,9 @@ class DLVSolution:
 
     def recallASP(self):
         try:
+
+            print(f" ENEMY: {gameInstance.getEnemy()} \n "
+                  f"PLAYER: {gameInstance.getPlayer()}")
             # self.__nMovements += 1  # increase movements
             size = gameInstance.getSize()
             self.__variableInputProgram = ASPInputProgram()
@@ -372,21 +381,16 @@ class DLVSolution:
                 print(answerSet)
                 for obj in answerSet.get_atoms():
                     if isinstance(obj, Path):
-                        enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
-                        if enemyLastPositionTmp not in self.__lastPositionsEnemy:
-                            self.__lastPositionsEnemy[enemyLastPositionTmp] = 0
-                        else:
-                            self.__lastPositionsEnemy[enemyLastPositionTmp] += 1
-                        gameInstance.moveEnemy(obj)
-                    if isinstance(obj, InputBomb):
+                        moveEnemyFromPath(obj, self.__lastPositionsEnemy)
+                    elif isinstance(obj, InputBomb):
                         if obj not in self.__bombs:
                             self.__bombs.append(obj)
                             CheckBomb(self.__bombs, obj).start()
-                    if isinstance(obj, EnemyBomb):
-                        gameInstance.plantBomb(obj.get_i(), obj.get_j())
-                    if isinstance(obj, BreakBomb):
-                        gameInstance.plantBomb(obj.get_i(), obj.get_j())
-                    if isinstance(obj, AdjacentPlayerAndEnemy):
+                    # elif isinstance(obj, EnemyBomb):
+                    #     gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                    # elif isinstance(obj, BreakBomb):
+                    #     gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                    elif isinstance(obj, AdjacentPlayerAndEnemy):
                         self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player
 
             print("#######################################")
@@ -437,6 +441,15 @@ ASPMapper.get_instance().register_class(InputBomb)
 ASPMapper.get_instance().register_class(EnemyBomb)
 ASPMapper.get_instance().register_class(BreakBomb)
 ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
+
+
+def moveEnemyFromPath(path: Path, lastPositionsEnemy: list[int]):
+    enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
+    if enemyLastPositionTmp not in lastPositionsEnemy:
+        lastPositionsEnemy[enemyLastPositionTmp] = 0
+    else:
+        lastPositionsEnemy[enemyLastPositionTmp] += 1
+    gameInstance.moveEnemy(path)
 
 
 def movePoint(point: Point, directions: int):
