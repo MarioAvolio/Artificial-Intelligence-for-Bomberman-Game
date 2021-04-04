@@ -132,17 +132,35 @@ class Game:
         if self.getFinish() is not None:
             return
 
-            # remove bomb
-        self.__writeElement(coordinateBomb.get_i(), coordinateBomb.get_j(), GRASS)
-
         for point in listPoints:  # adjacent point
             if not self.outBorders(point.get_i(), point.get_j()):
                 if self.getElement(point.get_i(), point.get_j()) == ENEMY:
+
+                    # debug
+                    print(coordinateBomb)
+                    for point2 in listPoints:
+                        print(point2)
+
+                    for row in self.__map:
+                        print(row)
+
                     self.__finish = "Player"  # player win
                 elif self.getElement(point.get_i(), point.get_j()) == PLAYER:
+
+                    # debug
+                    print(coordinateBomb)
+                    for point2 in listPoints:
+                        print(point2)
+
+                    for row in self.__map:
+                        print(row)
+
                     self.__finish = "Enemy"  # enemy win
                 elif not collisionBomb(point.get_i(), point.get_j()):
                     self.__writeElement(point.get_i(), point.get_j(), GRASS)
+
+            # remove bomb
+        self.__writeElement(coordinateBomb.get_i(), coordinateBomb.get_j(), GRASS)
 
     # SETTER
     def __writeElement(self, i: int, j: int, elem):
@@ -250,7 +268,7 @@ class HandlerView:
 
 
 class BombThread(Thread, PointType):
-    TIME_LIMIT = 5
+    TIME_LIMIT = 3
 
     def __init__(self, i=None, j=None):
         PointType.__init__(self, i, j, BOMB)
@@ -387,13 +405,13 @@ class DLVSolution:
                     if isinstance(obj, Path):
                         moveEnemyFromPath(obj, self.__lastPositionsEnemy)
                     elif isinstance(obj, InputBomb):
-                        if obj not in self.__bombs:
-                            self.__bombs.append(obj)
-                            CheckBomb(self.__bombs, obj).start()
+                        addBombEnemy(self.__bombs, obj)
                     elif isinstance(obj, EnemyBomb):
                         gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                        addBombEnemy(self.__bombs, obj)
                     elif isinstance(obj, BreakBomb):
                         gameInstance.plantBomb(obj.get_i(), obj.get_j())
+                        addBombEnemy(self.__bombs, obj)
                     elif isinstance(obj, AdjacentPlayerAndEnemy):
                         self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player
 
@@ -424,7 +442,7 @@ class DLVThread(Thread):
             if finish is not None:
                 break
             self.dlv.recallASP()
-            sleep(0.5)
+            sleep(1)
 
 
 class CheckBomb(Thread):
@@ -454,6 +472,12 @@ ASPMapper.get_instance().register_class(InputBomb)
 ASPMapper.get_instance().register_class(EnemyBomb)
 ASPMapper.get_instance().register_class(BreakBomb)
 ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
+
+
+def addBombEnemy(bombs: list[Point], bomb: Point) -> None:
+    if bomb not in bombs:
+        bombs.append(bomb)
+        CheckBomb(bombs, bomb).start()
 
 
 def moveEnemyFromPath(path: Path, lastPositionsEnemy: dict) -> None:
