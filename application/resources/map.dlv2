@@ -27,7 +27,6 @@ point(X, Y, Z) | notpoint(X, Y, Z) :- cell(X, Y), elem(Z).
 :- #count{X, Y : point(X, Y, 2)} != 1. % only one enemy
 :- point(X, Y, Z1), point(X, Y, Z2), Z1!=Z2. % no differnt element in the same cell
 
-:- #count{X, Y : point(X, Y, 2)} != 225. %exactly 225 cells of matrix
 
 % the same cell
 chooseCell(X, Y) :- point(X, Y, _).
