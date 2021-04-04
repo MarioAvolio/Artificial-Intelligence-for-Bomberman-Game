@@ -27,6 +27,8 @@ point(X, Y, Z) | notpoint(X, Y, Z) :- cell(X, Y), elem(Z).
 :- #count{X, Y : point(X, Y, 2)} != 1. % only one enemy
 :- point(X, Y, Z1), point(X, Y, Z2), Z1!=Z2. % no differnt element in the same cell
 
+:- #count{X, Y : point(X, Y, 2)} != 225. %exactly 225 cells of matrix
+
 % the same cell
 chooseCell(X, Y) :- point(X, Y, _).
 :- cell(X, Y), not chooseCell(X, Y).
@@ -34,7 +36,6 @@ chooseCell(X, Y) :- point(X, Y, _).
 % enemy and player on one of the 4 vertex of matrix.
 :- point(X, Y, 1), not vertexCell(X, Y).
 :- point(X, Y, 2), not vertexCell(X, Y).
-
 
 % A wall must be "continuous", without hole.
 :- point(X, Y1, Z), point(X, Y2, Z), Y1<Y2, not point(X, Y3, Z), Y3 = Y1+1, Z = 3.
@@ -53,13 +54,22 @@ numberWood(K) :- #count{X, Y : point(X, Y, 4)} = K.
 % maximize grass --> Io non lo metterei, altrimenti diminuisce la randomicità della mappa
 %:~ notpoint(X, Y, 0). [1@1, X, Y]
 
-% adjacent(X, Y, X, Y1):- cell(X, Y), cell(X, Y1), Y1 = Y + 1.
-% adjacent(X, Y, X1, Y):- cell(X, Y), cell(X1, Y), X1 = X + 1.
-% adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y + 1.
-% adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y - 1.
-% adjacent(X, Y, X1, Y1):- adjacent(X1, Y1, X, Y).
+adjacent(X, Y, X, Y1):- cell(X, Y), cell(X, Y1), Y1 = Y + 1.
+adjacent(X, Y, X1, Y):- cell(X, Y), cell(X1, Y), X1 = X + 1.
+adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y + 1.
+adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y - 1.
+adjacent(X, Y, X1, Y1):- adjacent(X1, Y1, X, Y).
 
-%wood lines
-%lenghtWoodLine(W):- count{}
+wallAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 3).
+woodAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 4).
+wallAdjacentEnemy(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,2), point(X1, Y1, 3).
+woodAdjacentEnemy(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,2), point(X1, Y1, 4).
+
+%fare la somma : non possono esserci esattamente 2 (blocchi + legno) vicino al player o nemico --> non può essere chiuso
+
+%:- #count{X,Z : point(X, Y, Z)} != 6, Z != 0.
+
+%:- #count{Y,Z : point(X, Y, Z)} != 6, Z != 0.
+
 
 
