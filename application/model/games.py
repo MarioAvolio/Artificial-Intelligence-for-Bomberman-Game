@@ -1,6 +1,8 @@
 import copy
 import datetime
+import itertools
 import os
+import sys
 from threading import Thread, RLock
 from time import sleep
 
@@ -283,6 +285,20 @@ class BombThread(Thread, PointType):
         gameInstance.releaseLock()
 
 
+class Starting(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def run(self) -> None:
+        for c in itertools.cycle(['|', '/', '-', '\\']):
+            if done:
+                break
+            sys.stdout.write('\rBUILDING THE WORLD ' + c)
+            sys.stdout.flush()
+            sleep(0.1)
+        sys.stdout.write('\rDone!     ')
+
+
 # --- AI ---
 
 # this thread build matrix game world
@@ -296,8 +312,11 @@ class MatrixBuilder:
 
     def build(self) -> list[list[int]]:
 
-        print("I am building the World...")
+        global done
+        done = False
+        Starting().start()
         answerSets = self.__handler.start_sync()
+        done = True
         worldMap = [[0 for x in range(MAP_SIZE)] for y in range(MAP_SIZE)]
 
         print("~~~~~~~~~~~~~~~~~~~~~~  MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
@@ -311,7 +330,7 @@ class MatrixBuilder:
         for row in worldMap:
             print(row)
 
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("~~~~~~~~~~~~~~~~~~~~~~  END MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
 
         self.__handler.remove_all()
         return worldMap
@@ -567,6 +586,7 @@ buildMatrix = MatrixBuilder()
 world = buildMatrix.build()
 dlvThread = DLVThread()
 gameInstance = Game()
+done: bool = False
 
 gameInstance.acquireLock()
 gameInstance.setMap(world)
