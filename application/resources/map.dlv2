@@ -66,9 +66,15 @@ woodAdjacentEnemy(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point
 
 %fare la somma : non possono esserci esattamente 2 (blocchi + legno) vicino al player o nemico --> non può essere chiuso
 
-%:- #count{X,Z : point(X, Y, Z)} != 6, Z != 0.
+totalWrongAdjacentPlayer(T) :- wallAdjacentPlayer(A), woodAdjacentPlayer(B), T = A+B.
+totalWrongAdjacentEnemy(T) :- wallAdjacentEnemy(A), woodAdjacentEnemy(B), T = A+B.
 
-%:- #count{Y,Z : point(X, Y, Z)} != 6, Z != 0.
+:- totalWrongAdjacentEnemy(T), T > 1.
+:- totalWrongAdjacentPlayer(T), T > 1.
+
+%:- #count{X,Z : point(X, Y, Z)} > 3, Z != 0.
+
+%:- #count{Y,Z : point(X, Y, Z)} > 3, Z != 0.
 
 
 
