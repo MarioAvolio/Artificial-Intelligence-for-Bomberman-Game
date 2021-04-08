@@ -437,9 +437,6 @@ class DLVSolution:
         gameInstance.lock.release()
 
 
-is_running = True
-
-
 class DLVThread(Thread):
 
     def __init__(self):
@@ -581,6 +578,7 @@ world = buildMatrix.build()
 dlvThread = DLVThread()
 gameInstance = Game()
 done: bool = False
+is_running: bool = True
 
 gameInstance.lock.acquire()
 gameInstance.setMap(world)

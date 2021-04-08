@@ -63,7 +63,7 @@ class InputPointType(Predicate, PointType):
 
 
 class EnemyBomb(Predicate, Point):
-    predicate_name = "enemybomb"
+    predicate_name = "enemyBomb"
 
     def __init__(self, i=None, j=None):
         Predicate.__init__(self, [("i", int), ("j", int)])
@@ -71,19 +71,11 @@ class EnemyBomb(Predicate, Point):
 
 
 class BreakBomb(Predicate, Point):
-    predicate_name = "breakbomb"
+    predicate_name = "breakBomb"
 
     def __init__(self, i=None, j=None):
         Predicate.__init__(self, [("i", int), ("j", int)])
         Point.__init__(self, i, j)
-
-
-# class NoEnemyBomb(Predicate, Point):
-#     predicate_name = "noenemybomb"
-#
-#     def __init__(self, i=None, j=None):
-#         Predicate.__init__(self, [("i", int), ("j", int)])
-#         Point.__init__(self, i, j)
 
 
 class InputBomb(Predicate, Point):
@@ -92,16 +84,6 @@ class InputBomb(Predicate, Point):
     def __init__(self, i=None, j=None):
         Point.__init__(self, i, j)
         Predicate.__init__(self, [("i", int), ("j", int)])
-
-
-#
-#
-# class NoPath(Predicate, Point):
-#     predicate_name = "nopath"
-#
-#     def __init__(self, i=None, j=None):
-#         Predicate.__init__(self, [("i", int), ("j", int)])
-#         Point.__init__(self, i, j)
 
 
 class Path(Predicate, Point):

@@ -2,15 +2,9 @@
 
 #show path/2.
 #show bomb/2.
-#show enemybomb/2.
-#show breakbomb/2.
+#show enemyBomb/2.
+#show breakBomb/2.
 #show adjacentPlayerAndEnemy/2.
-
-
-% distance(0,1,2).
-% distance(0,2,12).
-% distance(0,3,6).
-% distance(0,5,5).
 
 % GRASS = 0
 % PLAYER = 1
@@ -33,6 +27,7 @@ adjacentPlayer(X1, Y):- player(X, Y), X1 = X + 1.
 adjacentPlayer(X1, Y):- player(X, Y), X1 = X - 1.
 adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y - 1.
 
+
 adjacentPlayerAndEnemy(X, Y) :- enemy(X, Y), adjacentPlayer(X, Y).
 
 
@@ -40,7 +35,7 @@ adjacentPlayerAndEnemy(X, Y) :- enemy(X, Y), adjacentPlayer(X, Y).
 bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
 
 % move
-path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
+path(X,Y) | noPath(X,Y) :- distance(X,Y,D).
 :- path(X,Y), point(X,Y,T), T!=0.
 :- #count{X,Y : path( X,Y)} > 1.
 
@@ -55,42 +50,22 @@ path(X,Y) | nopath(X,Y) :- distance(X,Y,D).
 :~ path(X,Y), distance(X,Y,D). [D@1,X,Y,D]
 
 % maximize movement, otherwise the player would always be seated
-:~ nopath(X,Y). [1@4,X,Y]
+:~ noPath(X,Y). [1@4,X,Y]
 
 
 %PLANT BOMB
-enemybomb(X,Y) | noenemybomb(X,Y):- distance(X,Y,D).
-:- enemybomb(X,Y), distance(X,Y,D), D > 1.
-:- #count{X,Y : enemybomb(X,Y)} > 1.
-:- enemybomb(X,Y), point(X, Y, Z), Z!=0.
-:- path(X, Y), enemybomb(X,Y), breakbomb(X, Y). %PATH != ANY TYPE OF BOMB
-% :~ noenemybomb(X,Y). [1@3,X,Y]
-:~ noenemybomb(X,Y), adjacentPlayer(X, Y). [1@2,X,Y]
+enemyBomb(X,Y) | noEnemyBomb(X,Y):- distance(X,Y,D).
+:- enemyBomb(X,Y), distance(X,Y,D), D > 1.
+:- #count{X,Y : enemyBomb(X,Y)} > 1.
+:- enemyBomb(X,Y), point(X, Y, Z), Z!=0.
+:- path(X, Y), enemyBomb(X,Y), breakBomb(X, Y). %PATH != ANY TYPE OF BOMB
+:~ noEnemyBomb(X,Y), adjacentPlayer(X, Y). [1@2,X,Y]
 free(C) :- #count{X,Y : distance(X,Y,Z)}= C, point(X,Y,0).
-:- free(C), C<=1, path(X,Y), enemybomb(X,Y).
-:- free(C), C<=1, path(X,Y), breakbomb(X,Y).
+:- free(C), C<=1, path(X,Y), enemyBomb(X,Y).
+:- free(C), C<=1, path(X,Y), breakBomb(X,Y).
 
 %BREAK WOODEN BLOCKS
-%movesavailable(C) :- #count{X,Y : path(X,Y)} = C.
-
 %IF LAST POSITION OF ENEMY IS ONLY PATH AVAILABLE, HE GO BACK AND PLACE A BOMB IN CURRENT POSITION
-breakbomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_), point(C,D,4).
-
-idealPath(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
-breakbomb(A,B) :- idealPath(X, Y), point(X, Y, 4), enemy(A,B).
-
-
-%%%%%%%%%%%%% NON CONSIDERARE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% plant bomb
-% adjacent(X, Y1):- path(X, Y), point(X, Y1, _), Y1 = Y + 1.
-% adjacent(X1, Y):- path(X, Y), point(X1, Y, _), X1 = X + 1.
-% adjacent(X, Y):- adjacent(Y, X).
-
-% woodBlockInAdjacent(1) :- adjacent(X, Y), point(X, Y, 4).
-% bomb(X, Y) :- path(X, Y), woodBlockInAdjacent(1). % plant bomb
-
-% SECOND METHOD
-
-% idealSwap(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
-% woodBlockInIdealSwap(1) :- idealSwap(X, Y), point(X, Y, 4).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_), point(C,D,4).
+%idealPath(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
+%breakBomb(A,B) :- idealPath(X, Y), point(X, Y, 4), enemy(A,B).

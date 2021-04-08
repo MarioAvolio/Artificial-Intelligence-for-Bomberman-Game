@@ -3,7 +3,8 @@
 n(0..15). % columns and rows
 %minN(X) :- #min{Y : n(Y)} = X.
 %maxN(X) :- #max{Y : n(Y)} = X.
-
+wallNumber(18).
+wallType(1..6).
 minN(0).
 maxN(15).
 
@@ -40,10 +41,13 @@ chooseCell(X, Y) :- point(X, Y, _).
 :- point(X, Y1, Z), point(X, Y2, Z), Y1<Y2, not point(X, Y3, Z), Y3 = Y1+1, Z = 3.
 :- point(X1, Y, Z), point(X2, Y, Z), X1<X2, not point(X3, Y, Z), X3 = X1+1, Z = 3.
 
+%WALL
+%pointWall(W, X, Y) | notPointWall(W, X, Y) :- point(X, Y, 3),
+%TODO!
+
 % not to much wall
 numberWall(K) :- #count{X, Y : point(X, Y, 3)} = K.
-:- numberWall(K), K < 15.
-:- numberWall(K), K > 21.
+:- numberWall(K), K != L, wallNumber(L).
 
 %not to much wood
 numberWood(K) :- #count{X, Y : point(X, Y, 4)} = K.
@@ -68,6 +72,10 @@ totalWrongAdjacentEnemy(T) :- wallAdjacentEnemy(A), woodAdjacentEnemy(B), T = A+
 
 :- totalWrongAdjacentEnemy(T), T > 1.
 :- totalWrongAdjacentPlayer(T), T > 1.
+
+% inconsistent!
+%:- #count{X,Z : point(X, Y, Z), Z != 0} > 3.
+%:- #count{Y,Z : point(X, Y, Z), Z != 0} > 3.
 
 
 
