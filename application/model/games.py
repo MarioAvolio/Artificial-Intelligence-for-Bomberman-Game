@@ -88,15 +88,8 @@ class Game:
         self.__size = len(self.__map)
         global BLOCK_SIZE
         BLOCK_SIZE = SIZE // self.__size
-        self.__lock = RLock()
+        self.lock = RLock()
         self.__finish = None
-
-    # LOCK MANAGEMENT
-    def acquireLock(self):
-        self.__lock.acquire()
-
-    def releaseLock(self):
-        self.__lock.release()
 
     def outBorders(self, i: int, j: int) -> bool:
         return i < 0 or j < 0 or i >= self.__size or j >= self.__size
@@ -239,7 +232,7 @@ class HandlerView:
         self.__imgBackground = pygame.transform.scale(img, (SIZE, SIZE))
 
     def __printOnScreen(self, surface) -> None:
-        gameInstance.acquireLock()
+        gameInstance.lock.acquire()
 
         if gameInstance.getFinish() is None:
             for i in range(gameInstance.getSize()):
@@ -253,7 +246,7 @@ class HandlerView:
 
         pygame.display.update()
 
-        gameInstance.releaseLock()
+        gameInstance.lock.release()
 
     def update(self, surface) -> None:
         self.__printOnScreen(surface)
@@ -280,9 +273,9 @@ class BombThread(Thread, PointType):
     def run(self) -> None:
         sleep(BombThread.TIME_LIMIT)  # time to explode bomb
 
-        gameInstance.acquireLock()
+        gameInstance.lock.acquire()
         gameInstance.explode(self.__listPoints, self)
-        gameInstance.releaseLock()
+        gameInstance.lock.release()
 
 
 class Starting(Thread):
@@ -376,7 +369,7 @@ class DLVSolution:
     # END DEBUG
 
     def recallASP(self) -> None:
-        gameInstance.acquireLock()
+        gameInstance.lock.acquire()
         try:
 
             print(f" ENEMY: {gameInstance.getEnemy()} \n "
@@ -441,7 +434,7 @@ class DLVSolution:
 
         except Exception as e:
             print(str(e))
-        gameInstance.releaseLock()
+        gameInstance.lock.release()
 
 
 is_running = True
@@ -455,9 +448,9 @@ class DLVThread(Thread):
 
     def run(self) -> None:
         while is_running:
-            gameInstance.acquireLock()
+            gameInstance.lock.acquire()
             finish = gameInstance.getFinish()
-            gameInstance.releaseLock()
+            gameInstance.lock.release()
             if finish is not None:
                 break
             self.dlv.recallASP()
@@ -474,9 +467,9 @@ class CheckBomb(Thread):
     def run(self) -> None:
         stop = False
         while not stop:
-            gameInstance.acquireLock()
+            gameInstance.lock.acquire()
             isGrass = gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS
-            gameInstance.releaseLock()
+            gameInstance.lock.release()
             if isGrass:
                 self.__bombs.remove(self.__bomb)
                 stop = True
@@ -500,14 +493,14 @@ def addBombEnemy(bombs: list[Point], bomb: Point) -> None:
 
 
 def moveEnemyFromPath(path: Path, lastPositionsEnemy: dict) -> None:
-    gameInstance.acquireLock()
+    gameInstance.lock.acquire()
     enemyLastPositionTmp = copy.deepcopy(gameInstance.getEnemy())
     if enemyLastPositionTmp not in lastPositionsEnemy:
         lastPositionsEnemy[enemyLastPositionTmp] = 0
     else:
         lastPositionsEnemy[enemyLastPositionTmp] += 1
     gameInstance.moveEnemy(path)
-    gameInstance.releaseLock()
+    gameInstance.lock.release()
 
 
 def movePoint(point: Point, directions: int) -> None:
@@ -541,23 +534,24 @@ def setCharacter(character: Point, coordinate: tuple) -> None:
 
 
 def collision(i: int, j: int) -> bool:
-    gameInstance.acquireLock()
+    gameInstance.lock.acquire()
     try:
         return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) != GRASS
     finally:
-        gameInstance.releaseLock()
+        gameInstance.lock.release()
 
 
 def collisionBomb(i: int, j: int) -> bool:
-    gameInstance.acquireLock()
+    gameInstance.lock.acquire()
     try:
-        return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) == BLOCK
+        return gameInstance.outBorders(i, j) or gameInstance.getElement(i, j) == BLOCK or gameInstance.getElement(i,
+                                                                                                                  j) == BOMB
     finally:
-        gameInstance.releaseLock()
+        gameInstance.lock.release()
 
 
 def move(directions: int, point) -> None:
-    gameInstance.acquireLock()
+    gameInstance.lock.acquire()
     oldPoint = copy.deepcopy(point)
 
     if directions in MOVEMENTS_MATRIX.keys():
@@ -568,15 +562,15 @@ def move(directions: int, point) -> None:
         point.set_j(oldPoint.get_j())
     else:
         gameInstance.moveOnMap(point, oldPoint)
-    gameInstance.releaseLock()
+    gameInstance.lock.release()
 
 
 def plant() -> None:
-    gameInstance.acquireLock()
+    gameInstance.lock.acquire()
     i = gameInstance.getPlayer().get_i() + lastMovement[Point.I]
     j = gameInstance.getPlayer().get_j() + lastMovement[Point.J]
     gameInstance.plantBomb(i, j)
-    gameInstance.releaseLock()
+    gameInstance.lock.release()
 
 
 # === MAIN === (lower_case names)
@@ -588,9 +582,9 @@ dlvThread = DLVThread()
 gameInstance = Game()
 done: bool = False
 
-gameInstance.acquireLock()
+gameInstance.lock.acquire()
 gameInstance.setMap(world)
-gameInstance.releaseLock()
+gameInstance.lock.release()
 
 # --- init ---
 
@@ -627,9 +621,9 @@ while is_running:
             if event.key in movements:
                 direction = movements[event.key]
                 lastMovement = MOVEMENTS_MATRIX[direction]  # set last movement
-                gameInstance.acquireLock()
+                gameInstance.lock.acquire()
                 player = gameInstance.getPlayer()
-                gameInstance.releaseLock()
+                gameInstance.lock.release()
                 move(direction, player)
             elif event.key == pygame.K_SPACE:
                 plant()
