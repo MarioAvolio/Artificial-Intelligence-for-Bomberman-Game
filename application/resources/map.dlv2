@@ -50,9 +50,6 @@ numberWood(K) :- #count{X, Y : point(X, Y, 4)} = K.
 :- numberWood(K), K < 10.
 :- numberWood(K), K > 16.
 
-% maximize grass --> Io non lo metterei, altrimenti diminuisce la randomicità della mappa
-%:~ notpoint(X, Y, 0). [1@1, X, Y]
-
 adjacent(X, Y, X, Y1):- cell(X, Y), cell(X, Y1), Y1 = Y + 1.
 adjacent(X, Y, X1, Y):- cell(X, Y), cell(X1, Y), X1 = X + 1.
 adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y + 1.
@@ -71,10 +68,6 @@ totalWrongAdjacentEnemy(T) :- wallAdjacentEnemy(A), woodAdjacentEnemy(B), T = A+
 
 :- totalWrongAdjacentEnemy(T), T > 1.
 :- totalWrongAdjacentPlayer(T), T > 1.
-
-%:- #count{X,Z : point(X, Y, Z)} > 3, Z != 0.
-
-%:- #count{Y,Z : point(X, Y, Z)} > 3, Z != 0.
 
 
 
