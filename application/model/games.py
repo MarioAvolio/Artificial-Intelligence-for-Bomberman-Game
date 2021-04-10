@@ -130,26 +130,8 @@ class Game:
         for point in listPoints:  # adjacent point
             if not self.outBorders(point.get_i(), point.get_j()):
                 if self.getElement(point.get_i(), point.get_j()) == ENEMY:
-
-                    # debug
-                    print(coordinateBomb)
-                    for point2 in listPoints:
-                        print(point2)
-
-                    for row in self.__map:
-                        print(row)
-
                     self.__finish = "Player"  # player win
                 elif self.getElement(point.get_i(), point.get_j()) == PLAYER:
-
-                    # debug
-                    print(coordinateBomb)
-                    for point2 in listPoints:
-                        print(point2)
-
-                    for row in self.__map:
-                        print(row)
-
                     self.__finish = "Enemy"  # enemy win
                 elif not collisionBomb(point.get_i(), point.get_j()):
                     self.__writeElement(point.get_i(), point.get_j(), GRASS)
@@ -198,33 +180,33 @@ class HandlerView:
         terrainPath = os.path.join(resource_path, "terrain")
 
         # IMG DICTIONARY
-        self.__imgdictionary = {}
+        self.__imgDictionary = {}
 
         # IMG TERRAIN
         img = pygame.image.load(os.path.join(terrainPath, "block.png"))
-        self.__imgdictionary[BLOCK] = pygame.transform.scale(img,
+        self.__imgDictionary[BLOCK] = pygame.transform.scale(img,
                                                              (BLOCK_SIZE, BLOCK_SIZE))
 
         img = pygame.image.load(os.path.join(terrainPath, "box.png"))
-        self.__imgdictionary[BOX] = pygame.transform.scale(img, (BLOCK_SIZE, BLOCK_SIZE))
+        self.__imgDictionary[BOX] = pygame.transform.scale(img, (BLOCK_SIZE, BLOCK_SIZE))
 
         img = pygame.image.load(os.path.join(terrainPath, "grass.png"))
-        self.__imgdictionary[GRASS] = pygame.transform.scale(img,
+        self.__imgDictionary[GRASS] = pygame.transform.scale(img,
                                                              (BLOCK_SIZE, BLOCK_SIZE))
 
         # IMG BOMBERMAN
         img = pygame.image.load(os.path.join(resource_path, "bomberman.png"))
-        self.__imgdictionary[PLAYER] = pygame.transform.scale(img,
+        self.__imgDictionary[PLAYER] = pygame.transform.scale(img,
                                                               (BLOCK_SIZE, BLOCK_SIZE))
 
         # IMG ENEMY
         img = pygame.image.load(os.path.join(resource_path, "enemy.png"))
-        self.__imgdictionary[ENEMY] = pygame.transform.scale(img,
+        self.__imgDictionary[ENEMY] = pygame.transform.scale(img,
                                                              (BLOCK_SIZE, BLOCK_SIZE))
 
         # IMG BOMB
         img = pygame.image.load(os.path.join(resource_path, "bomb.png"))
-        self.__imgdictionary[BOMB] = pygame.transform.scale(img,
+        self.__imgDictionary[BOMB] = pygame.transform.scale(img,
                                                             (BLOCK_SIZE, BLOCK_SIZE))
 
         # BACKGROUND
@@ -238,8 +220,8 @@ class HandlerView:
             for i in range(gameInstance.getSize()):
                 for j in range(gameInstance.getSize()):
 
-                    if gameInstance.getElement(i, j) in self.__imgdictionary.keys():
-                        img = self.__imgdictionary[gameInstance.getElement(i, j)]
+                    if gameInstance.getElement(i, j) in self.__imgDictionary.keys():
+                        img = self.__imgDictionary[gameInstance.getElement(i, j)]
                         surface.blit(img, (j * BLOCK_SIZE, i * BLOCK_SIZE))
         else:
             self.__gameOver(surface)
@@ -434,7 +416,8 @@ class DLVSolution:
 
         except Exception as e:
             print(str(e))
-        gameInstance.lock.release()
+        finally:
+            gameInstance.lock.release()
 
 
 class DLVThread(Thread):
@@ -451,7 +434,7 @@ class DLVThread(Thread):
             if finish is not None:
                 break
             self.dlv.recallASP()
-            sleep(1)
+            sleep(0.5)
 
 
 class CheckBomb(Thread):
@@ -625,10 +608,6 @@ while is_running:
                 move(direction, player)
             elif event.key == pygame.K_SPACE:
                 plant()
-
-        # --- objects events ---
-
-    # --- updates ---
 
     # --- draws ---
 

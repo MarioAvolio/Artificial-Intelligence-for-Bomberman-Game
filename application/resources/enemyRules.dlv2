@@ -1,10 +1,40 @@
-% point(0,0,1). point(0,1,0). point(0,2,0). point(0,3,0). point(0,4,3). point(0,5,0). point(0,6,0). point(0,7,0). point(0,8,0). point(0,9,3). point(0,10,0). point(0,11,0). point(0,12,0). point(0,13,0). point(0,14,0). point(0,15,0). point(1,0,0). point(1,1,0). point(1,2,0). point(1,3,0). point(1,4,3). point(1,5,0). point(1,6,0). point(1,7,0). point(1,8,0). point(1,9,3). point(1,10,0). point(1,11,0). point(1,12,0). point(1,13,0). point(1,14,0). point(1,15,0). point(2,0,4). point(2,1,0). point(2,2,0). point(2,3,0). point(2,4,0). point(2,5,0). point(2,6,4). point(2,7,4). point(2,8,0). point(2,9,3). point(2,10,0). point(2,11,0). point(2,12,0). point(2,13,0). point(2,14,0). point(2,15,0). point(3,0,0). point(3,1,0). point(3,2,4). point(3,3,0). point(3,4,3). point(3,5,3). point(3,6,3). point(3,7,3). point(3,8,3). point(3,9,3). point(3,10,0). point(3,11,0). point(3,12,0). point(3,13,0). point(3,14,0). point(3,15,0). point(4,0,0). point(4,1,0). point(4,2,0). point(4,3,0). point(4,4,0). point(4,5,0). point(4,6,0). point(4,7,0). point(4,8,0). point(4,9,3). point(4,10,0). point(4,11,0). point(4,12,0). point(4,13,0). point(4,14,0). point(4,15,0). point(5,0,4). point(5,1,0). point(5,2,0). point(5,3,0). point(5,4,3). point(5,5,0). point(5,6,4). point(5,7,0). point(5,8,0). point(5,9,0). point(5,10,0). point(5,11,0). point(5,12,0). point(5,13,4). point(5,14,0). point(5,15,0). point(6,0,0). point(6,1,0). point(6,2,3). point(6,3,0). point(6,4,0). point(6,5,0). point(6,6,0). point(6,7,0). point(6,8,0). point(6,9,0). point(6,10,0). point(6,11,0). point(6,12,0). point(6,13,0). point(6,14,0). point(6,15,0). point(7,0,0). point(7,1,0). point(7,2,0). point(7,3,0). point(7,4,3). point(7,5,0). point(7,6,0). point(7,7,4). point(7,8,0). point(7,9,0). point(7,10,3). point(7,11,0). point(7,12,0). point(7,13,0). point(7,14,0). point(7,15,0). point(8,0,0). point(8,1,0). point(8,2,3). point(8,3,0). point(8,4,0). point(8,5,0). point(8,6,0). point(8,7,0). point(8,8,0). point(8,9,0). point(8,10,3). point(8,11,0). point(8,12,0). point(8,13,4). point(8,14,0). point(8,15,0). point(9,0,0). point(9,1,0). point(9,2,3). point(9,3,0). point(9,4,0). point(9,5,0). point(9,6,0). point(9,7,0). point(9,8,0). point(9,9,0). point(9,10,3). point(9,11,3). point(9,12,3). point(9,13,4). point(9,14,0). point(9,15,0). point(10,0,0). point(10,1,0). point(10,2,3). point(10,3,0). point(10,4,0). point(10,5,0). point(10,6,0). point(10,7,0). point(10,8,0). point(10,9,0). point(10,10,0). point(10,11,0). point(10,12,4). point(10,13,4). point(10,14,0). point(10,15,0). point(11,0,0). point(11,1,0). point(11,2,3). point(11,3,0). point(11,4,0). point(11,5,0). point(11,6,0). point(11,7,0). point(11,8,0). point(11,9,3). point(11,10,3). point(11,11,3). point(11,12,3). point(11,13,0). point(11,14,0). point(11,15,0). point(12,0,0). point(12,1,0). point(12,2,3). point(12,3,0). point(12,4,0). point(12,5,0). point(12,6,0). point(12,7,0). point(12,8,0). point(12,9,3). point(12,10,0). point(12,11,0). point(12,12,0). point(12,13,0). point(12,14,0). point(12,15,0). point(13,0,0). point(13,1,0). point(13,2,3). point(13,3,0). point(13,4,0). point(13,5,0). point(13,6,0). point(13,7,0). point(13,8,0). point(13,9,4). point(13,10,4). point(13,11,4). point(13,12,0). point(13,13,0). point(13,14,0). point(13,15,0). point(14,0,0). point(14,1,0). point(14,2,3). point(14,3,0). point(14,4,0). point(14,5,0). point(14,6,0). point(14,7,0). point(14,8,0). point(14,9,0). point(14,10,0). point(14,11,0). point(14,12,0). point(14,13,0). point(14,14,0). point(14,15,0). point(15,0,2). point(15,1,0). point(15,2,3). point(15,3,0). point(15,4,0). point(15,5,0). point(15,6,0). point(15,7,0). point(15,8,0). point(15,9,0). point(15,10,0). point(15,11,0). point(15,12,0). point(15,13,0). point(15,14,0). point(15,15,0).
+% point(0,0,0). point(0,1,0). point(0,2,0). point(0,3,0). point(0,4,3). point(0,5,0). point(0,6,0). point(0,7,0). point(0,8,5). point(0,9,0). point(0,10,0). point(0,11,0).
+% point(0,12,0). point(0,13,0). point(0,14,0). point(0,15,0). point(1,0,0). point(1,1,0). point(1,2,0). point(1,3,0). point(1,4,3). point(1,5,0). point(1,6,0). point(1,7,0).
+% point(1,8,0). point(1,9,2). point(1,10,0). point(1,11,0). point(1,12,0). point(1,13,0). point(1,14,0). point(1,15,0). point(2,0,4). point(2,1,0). point(2,2,0). point(2,3,0).
+% point(2,4,0). point(2,5,0). point(2,6,4). point(2,7,4). point(2,8,0). point(2,9,0). point(2,10,5). point(2,11,0). point(2,12,0). point(2,13,0). point(2,14,0). point(2,15,0).
+% point(3,0,0). point(3,1,0). point(3,2,4). point(3,3,0). point(3,4,3). point(3,5,3). point(3,6,3). point(3,7,3). point(3,8,3). point(3,9,3). point(3,10,0). point(3,11,0).
+% point(3,12,0). point(3,13,0). point(3,14,0). point(3,15,0). point(4,0,0). point(4,1,0). point(4,2,0). point(4,3,0). point(4,4,0). point(4,5,0). point(4,6,0). point(4,7,0).
+% point(4,8,0). point(4,9,3). point(4,10,0). point(4,11,0). point(4,12,0). point(4,13,0). point(4,14,0). point(4,15,0). point(5,0,4). point(5,1,0). point(5,2,0). point(5,3,0).
+% point(5,4,3). point(5,5,0). point(5,6,4). point(5,7,0). point(5,8,0). point(5,9,0). point(5,10,0). point(5,11,0). point(5,12,0). point(5,13,4). point(5,14,0). point(5,15,0).
+% point(6,0,1). point(6,1,0). point(6,2,3). point(6,3,0). point(6,4,0). point(6,5,0). point(6,6,0). point(6,7,0). point(6,8,0). point(6,9,0). point(6,10,0). point(6,11,0).
+% point(6,12,0). point(6,13,0). point(6,14,0). point(6,15,0). point(7,0,0). point(7,1,0). point(7,2,0). point(7,3,0). point(7,4,3). point(7,5,0). point(7,6,0). point(7,7,4).
+% point(7,8,0). point(7,9,0). point(7,10,3). point(7,11,0). point(7,12,0). point(7,13,0). point(7,14,0). point(7,15,0). point(8,0,0). point(8,1,0). point(8,2,3). point(8,3,0).
+% point(8,4,0). point(8,5,0). point(8,6,0). point(8,7,0). point(8,8,0). point(8,9,0). point(8,10,3). point(8,11,0). point(8,12,0). point(8,13,4). point(8,14,0). point(8,15,0).
+% point(9,0,0). point(9,1,0). point(9,2,3). point(9,3,0). point(9,4,0). point(9,5,0). point(9,6,0). point(9,7,0). point(9,8,0). point(9,9,0). point(9,10,3). point(9,11,3).
+% point(9,12,3). point(9,13,4). point(9,14,0). point(9,15,0). point(10,0,0). point(10,1,0). point(10,2,3). point(10,3,0). point(10,4,0). point(10,5,0). point(10,6,0).
+% point(10,7,0). point(10,8,0). point(10,9,0). point(10,10,0). point(10,11,0). point(10,12,4). point(10,13,4). point(10,14,0). point(10,15,0). point(11,0,0). point(11,1,0).
+% point(11,2,3). point(11,3,0). point(11,4,0). point(11,5,0). point(11,6,0). point(11,7,0). point(11,8,0). point(11,9,3). point(11,10,3). point(11,11,3). point(11,12,3).
+% point(11,13,0). point(11,14,0). point(11,15,0). point(12,0,0). point(12,1,0). point(12,2,3). point(12,3,0). point(12,4,0). point(12,5,0). point(12,6,0). point(12,7,0).
+% point(12,8,0). point(12,9,3). point(12,10,0). point(12,11,0). point(12,12,0). point(12,13,0). point(12,14,0). point(12,15,0). point(13,0,0). point(13,1,0). point(13,2,3).
+% point(13,3,0). point(13,4,0). point(13,5,0). point(13,6,0). point(13,7,0). point(13,8,0). point(13,9,4). point(13,10,4). point(13,11,4). point(13,12,0). point(13,13,0).
+% point(13,14,0). point(13,15,0). point(14,0,0). point(14,1,0). point(14,2,3). point(14,3,0). point(14,4,0). point(14,5,0). point(14,6,0). point(14,7,0). point(14,8,0).
+% point(14,9,0). point(14,10,0). point(14,11,0). point(14,12,0). point(14,13,0). point(14,14,0). point(14,15,0). point(15,0,0). point(15,1,0). point(15,2,3). point(15,3,0).
+% point(15,4,0). point(15,5,0). point(15,6,0). point(15,7,0). point(15,8,0). point(15,9,0). point(15,10,0). point(15,11,0). point(15,12,0). point(15,13,0). point(15,14,0).
+% point(15,15,0).
+
+
+% distance(0, 9, 1).
+% distance(1, 10, 2).
+% distance(2, 9, 3).
+% distance(1, 8, 4).
+
 
 #show path/2.
-#show bomb/2.
-#show enemyBomb/2.
-#show breakBomb/2.
-#show adjacentPlayerAndEnemy/2.
+
+% #show bomb/2.
+% #show enemyBomb/2.
+% #show breakBomb/2.
+% #show adjacentPlayerAndEnemy/2.
 
 % GRASS = 0
 % PLAYER = 1
@@ -13,14 +43,9 @@
 % BOX = 4
 % BOMB = 5
 
-% UTILITY
+% %%%%%%%%%%%%%%%%% UTILITY %%%%%%%%%%%%%%%%%
 player(X, Y) :- point(X, Y, 1).
 enemy(X, Y) :- point(X, Y, 2).
-
-adjacentBomb(X, Y1):- bomb(X, Y), Y1 = Y + 1.
-adjacentBomb(X1, Y):- bomb(X, Y), X1 = X + 1.
-adjacentBomb(X1, Y):- bomb(X, Y), X1 = X - 1.
-adjacentBomb(X, Y1):- bomb(X, Y), Y1 = Y - 1.
 
 adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y + 1.
 adjacentPlayer(X1, Y):- player(X, Y), X1 = X + 1.
@@ -30,42 +55,59 @@ adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y - 1.
 
 adjacentPlayerAndEnemy(X, Y) :- enemy(X, Y), adjacentPlayer(X, Y).
 
-
-% dodge BombThread
-bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
-
-% move
+%%%%%%%%%%%%%%%%% MOVING %%%%%%%%%%%%%%%%%
 path(X,Y) | noPath(X,Y) :- distance(X,Y,D).
 :- path(X,Y), point(X,Y,T), T!=0.
 :- #count{X,Y : path( X,Y)} > 1.
 
 
-% minimizes path that the enemy can go in front of bomb!
-:~ path(X,Y), adjacentBomb(X, Y). [1@5, X, Y]
+%%%%%%%%%%%%%%%%% DODGE BOMB %%%%%%%%%%%%%%%%%
+bomb(X, Y) :- distance(X, Y, _), point(X, Y, 5).
 
-% don't go in last positions
-:~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@3, X, Y]
+% view on diagonals
+bomb(X1, Y1) :- enemy(X, Y), point(X1, Y1, 5), X1 = X + 1, Y1 = Y + 1.
+bomb(X1, Y1) :- enemy(X, Y), point(X1, Y1, 5), X1 = X + 1, Y1 = Y - 1.
+bomb(X1, Y1) :- enemy(X, Y), point(X1, Y1, 5), X1 = X - 1, Y1 = Y + 1.
+bomb(X1, Y1) :- enemy(X, Y), point(X1, Y1, 5), X1 = X - 1, Y1 = Y - 1.
 
-% minimize distance between player and enemy
-:~ path(X,Y), distance(X,Y,D). [D@1,X,Y,D]
+adjacentBomb(X, Y1):- bomb(X, Y), Y1 = Y + 1.
+adjacentBomb(X1, Y):- bomb(X, Y), X1 = X + 1.
+adjacentBomb(X1, Y):- bomb(X, Y), X1 = X - 1.
+adjacentBomb(X, Y1):- bomb(X, Y), Y1 = Y - 1.
 
-% maximize movement, otherwise the player would always be seated
-:~ noPath(X,Y). [1@4,X,Y]
 
 
-%PLANT BOMB
+%%%%%%%%%%%%%%%% PLANT BOMB %%%%%%%%%%%%%%%%%
 enemyBomb(X,Y) | noEnemyBomb(X,Y):- distance(X,Y,D).
 :- enemyBomb(X,Y), distance(X,Y,D), D > 1.
 :- #count{X,Y : enemyBomb(X,Y)} > 1.
 :- enemyBomb(X,Y), point(X, Y, Z), Z!=0.
 :- path(X, Y), enemyBomb(X,Y), breakBomb(X, Y). %PATH != ANY TYPE OF BOMB
-:~ noEnemyBomb(X,Y), adjacentPlayer(X, Y). [1@2,X,Y]
 free(C) :- #count{X,Y : distance(X,Y,Z)}= C, point(X,Y,0).
 :- free(C), C<=1, path(X,Y), enemyBomb(X,Y).
 :- free(C), C<=1, path(X,Y), breakBomb(X,Y).
 
-%BREAK WOODEN BLOCKS
+
+
+%%%%%%%%%%%%%%%%% BREAK WOODEN BLOCKS %%%%%%%%%%%%%%%%%
 %IF LAST POSITION OF ENEMY IS ONLY PATH AVAILABLE, HE GO BACK AND PLACE A BOMB IN CURRENT POSITION
 breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_), point(C,D,4).
 %idealPath(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
 %breakBomb(A,B) :- idealPath(X, Y), point(X, Y, 4), enemy(A,B).
+
+
+%%%%%%%%%%%%%%%%% WEAK CONSTRAINT %%%%%%%%%%%%%%%%%
+% % minimizes path that the enemy can go in front of bomb!
+:~ path(X,Y), adjacentBomb(X, Y). [1@5, X, Y] % TODO: BUG! enemy don't choose a path when it is between 2 bombs!
+
+% % dont go in last positions
+:~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@3, X, Y]
+
+% % minimize distance between player and enemy
+:~ path(X,Y), distance(X,Y,D). [D@1,X,Y,D]
+
+% % maximize movement, otherwise the player would always be seated
+:~ noPath(X,Y). [1@4,X,Y]
+
+% % maximize enemy bomb
+:~ noEnemyBomb(X,Y), adjacentPlayer(X, Y). [1@2,X,Y]
