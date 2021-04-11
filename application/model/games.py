@@ -353,9 +353,9 @@ class DLVSolution:
     def recallASP(self) -> None:
         gameInstance.lock.acquire()
         try:
-
-            print(f" ENEMY: {gameInstance.getEnemy()} \n "
-                  f"PLAYER: {gameInstance.getPlayer()}")
+            #
+            # print(f" ENEMY: {gameInstance.getEnemy()} \n "
+            #       f"PLAYER: {gameInstance.getPlayer()}")
             # self.__nMovements += 1  # increase movements
             size = gameInstance.getSize()
             self.__variableInputProgram = ASPInputProgram()
@@ -376,6 +376,7 @@ class DLVSolution:
                 if not gameInstance.outBorders(adjacent.get_i(), adjacent.get_j()):
                     distance = getDistanceEP(adjacent, p)
                     d = Distance(adjacent.get_i(), adjacent.get_j(), distance)
+                    print(f"Distance: {d} --> {distance}")
                     self.__variableInputProgram.add_object_input(d)
 
             # adding last position
@@ -391,6 +392,7 @@ class DLVSolution:
             index = self.__handler.add_program(self.__variableInputProgram)
             answerSets = self.__handler.start_sync()
 
+            self.__log_program()
             print("#######################################")
             print(answerSets.get_answer_sets_string())
             for answerSet in answerSets.get_optimal_answer_sets():
@@ -402,16 +404,17 @@ class DLVSolution:
                         addBombEnemy(self.__bombs, obj)
                     elif isinstance(obj, EnemyBomb):
                         gameInstance.plantBomb(obj.get_i(), obj.get_j())
-                        addBombEnemy(self.__bombs, obj)
+                        bomb = InputBomb(obj.get_i(), obj.get_j())
+                        addBombEnemy(self.__bombs, bomb)
                     elif isinstance(obj, BreakBomb):
                         gameInstance.plantBomb(obj.get_i(), obj.get_j())
-                        addBombEnemy(self.__bombs, obj)
+                        bomb = InputBomb(obj.get_i(), obj.get_j())
+                        addBombEnemy(self.__bombs, bomb)
                     elif isinstance(obj, AdjacentPlayerAndEnemy):
                         self.__lastPositionsEnemy.clear()  # clear last enemy position because enemy find player
 
             print("#######################################")
 
-            self.__log_program()
             self.__handler.remove_program_from_id(index)
 
         except Exception as e:
