@@ -3,37 +3,37 @@ from threading import RLock, Condition
 
 class RWLockWithoutStarvation:
     def __init__(self):
-        self.numberOfReaders = 0
-        self.thereIsAWriter = False
-        self.lock = RLock()
-        self.condition = Condition(self.lock)
+        self._numberOfReaders = 0
+        self._thereIsAWriter = False
+        self._lock = RLock()
+        self._condition = Condition(self._lock)
 
     def acquireReadLock(self):
-        self.lock.acquire()
-        while self.thereIsAWriter:
-            self.condition.wait()
-        self.numberOfReaders += 1
-        self.lock.release()
+        self._lock.acquire()
+        while self._thereIsAWriter:
+            self._condition.wait()
+        self._numberOfReaders += 1
+        self._lock.release()
 
     def releaseReadLock(self):
-        self.lock.acquire()
-        self.numberOfReaders -= 1
-        if self.numberOfReaders == 0:
-            self.condition.notify()
-        self.lock.release()
+        self._lock.acquire()
+        self._numberOfReaders -= 1
+        if self._numberOfReaders == 0:
+            self._condition.notify()
+        self._lock.release()
 
     def acquireWriteLock(self):
-        self.lock.acquire()
-        while self.numberOfReaders > 0 or self.thereIsAWriter:
-            self.condition.wait()
-        self.thereIsAWriter = True
-        self.lock.release()
+        self._lock.acquire()
+        while self._numberOfReaders > 0 or self._thereIsAWriter:
+            self._condition.wait()
+        self._thereIsAWriter = True
+        self._lock.release()
 
     def releaseWriteLock(self):
-        self.lock.acquire()
-        self.thereIsAWriter = False
-        self.condition.notify_all()
-        self.lock.release()
+        self._lock.acquire()
+        self._thereIsAWriter = False
+        self._condition.notify_all()
+        self._lock.release()
 
 
 class RWLock(RWLockWithoutStarvation):
@@ -41,32 +41,35 @@ class RWLock(RWLockWithoutStarvation):
 
     def __init__(self):
         super().__init__()
-        self.numberOfWritersInWaiting = 0
-        self.numberOfIterationsWithoutWriters = 0
+        self.__numberOfWritersInWaiting = 0
+        self.__numberOfIterationsWithoutWriters = 0
 
     def acquireReadLock(self):
-        self.lock.acquire()
-        while self.thereIsAWriter or \
-                (self.numberOfWritersInWaiting > 0 and self.numberOfIterationsWithoutWriters > self.LIMIT):
-            self.condition.wait()
-        self.numberOfReaders += 1
-        if self.numberOfWritersInWaiting > 0:
-            self.numberOfIterationsWithoutWriters += 1
-        self.lock.release()
+        self._lock.acquire()
+        # print(f"acquireReadLock {Thread.__name__}")
+        while self._thereIsAWriter or \
+                (self.__numberOfWritersInWaiting > 0 and self.__numberOfIterationsWithoutWriters > self.LIMIT):
+            self._condition.wait()
+        self._numberOfReaders += 1
+        if self.__numberOfWritersInWaiting > 0:
+            self.__numberOfIterationsWithoutWriters += 1
+        self._lock.release()
 
     def releaseReadLock(self):
-        self.lock.acquire()
-        self.numberOfReaders -= 1
-        if self.numberOfReaders == 0:
-            self.condition.notify_all()
-        self.lock.release()
+        self._lock.acquire()
+        # print(f"releaseReadLock {Thread.__name__}")
+        self._numberOfReaders -= 1
+        if self._numberOfReaders == 0:
+            self._condition.notify_all()
+        self._lock.release()
 
     def acquireWriteLock(self):
-        self.lock.acquire()
-        self.numberOfWritersInWaiting += 1
-        while self.numberOfReaders > 0 or self.thereIsAWriter:
-            self.condition.wait()
-        self.thereIsAWriter = True
-        self.numberOfWritersInWaiting -= 1
-        self.numberOfIterationsWithoutWriters = 0
-        self.lock.release()
+        self._lock.acquire()
+        # print(f"acquireWriteLock {Thread.__name__}")
+        self.__numberOfWritersInWaiting += 1
+        while self._numberOfReaders > 0 or self._thereIsAWriter:
+            self._condition.wait()
+        self._thereIsAWriter = True
+        self.__numberOfWritersInWaiting -= 1
+        self.__numberOfIterationsWithoutWriters = 0
+        self._lock.release()
