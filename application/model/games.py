@@ -68,27 +68,8 @@ MAP_SIZE = 16
 class Game:
     def __init__(self):
         self.__player = PointType(0, 0, PLAYER)
-        self.__enemy = PointType(15, 0, ENEMY)
-        self.__map = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                      [4, 0, 0, 0, 0, 0, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 4, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                      [4, 0, 0, 0, 3, 0, 4, 0, 0, 0, 0, 0, 0, 4, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 3, 0, 0, 0, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 4, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
-                      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-        self.__size = len(self.__map)
-        global BLOCK_SIZE
-        BLOCK_SIZE = SIZE // self.__size
+        self.__enemy = PointType(0, 1, ENEMY)
+        self.__size = None
         self.lock = RWLock()
         self.__finish = None
 
@@ -147,6 +128,8 @@ class Game:
     def setMap(self, w: list[list[int]]):
         self.__map = w
         self.__size = len(self.__map)
+        global BLOCK_SIZE
+        BLOCK_SIZE = SIZE // self.__size
         playerCoordinates = [(index, row.index(PLAYER)) for index, row in enumerate(self.__map) if
                              PLAYER in row]  # set player
         setCharacter(self.__player, playerCoordinates[0])
@@ -283,28 +266,45 @@ class MatrixBuilder:
 
     def build(self) -> list[list[int]]:
 
-        global done
-        done = False
-        Starting().start()
-        answerSets = self.__handler.start_sync()
-        done = True
         worldMap = [[0 for x in range(MAP_SIZE)] for y in range(MAP_SIZE)]
+        try:
+            Starting().start()
+            answerSets = self.__handler.start_sync()
 
-        print("~~~~~~~~~~~~~~~~~~~~~~  MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
-        # print(answerSets.get_answer_sets_string())
-        for answerSet in answerSets.get_answer_sets():
-            print(answerSet)
-            for obj in answerSet.get_atoms():
-                if isinstance(obj, InputPointType):
-                    worldMap[obj.get_i()][obj.get_j()] = obj.get_t()
+            print("~~~~~~~~~~~~~~~~~~~~~~  MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
+            for answerSet in answerSets.get_answer_sets():
+                print(answerSet)
+                for obj in answerSet.get_atoms():
+                    if isinstance(obj, InputPointType):
+                        worldMap[obj.get_i()][obj.get_j()] = obj.get_t()
 
-        for row in worldMap:
-            print(row)
+            for row in worldMap:
+                print(row)
 
-        print("~~~~~~~~~~~~~~~~~~~~~~  END MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
+            print("~~~~~~~~~~~~~~~~~~~~~~  END MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
 
-        self.__handler.remove_all()
-        return worldMap
+            self.__handler.remove_all()
+        except Exception as e:
+            worldMap = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+                        [4, 0, 0, 0, 0, 0, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 4, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+                        [4, 0, 0, 0, 3, 0, 4, 0, 0, 0, 0, 0, 0, 4, 0, 0],
+                        [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 3, 0, 0, 0, 0, 0],
+                        [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0],
+                        [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 4, 0, 0],
+                        [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0],
+                        [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0],
+                        [0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 3, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0],
+                        [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        finally:
+            global done
+            done = True
+            return worldMap
 
 
 class DLVSolution:
@@ -551,12 +551,13 @@ def plant() -> None:
 # === MAIN === (lower_case names)
 
 # --- (global) variables ---
+done: bool = False
+is_running: bool = True
+
 buildMatrix = MatrixBuilder()
 world = buildMatrix.build()
 dlvThread = DLVThread()
 gameInstance = Game()
-done: bool = False
-is_running: bool = True
 
 gameInstance.lock.acquireWriteLock()
 gameInstance.setMap(world)
