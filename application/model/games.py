@@ -101,6 +101,8 @@ class Game:
         self.__swap(oldPoint.get_i(), oldPoint.get_j(), newPoint.get_i(), newPoint.get_j())
 
     def moveEnemy(self, point: Point):
+        if self.getFinish() is not None:
+            return
         # print(f"muovo il nemico in {point} dalla precedente posizione {self.__enemy}")
         self.moveOnMap(point, self.__enemy)
         self.__enemy.set_j(point.get_j())
@@ -225,7 +227,7 @@ class HandlerView:
 
 
 class BombThread(Thread, PointType):
-    TIME_LIMIT = 3
+    TIME_LIMIT = 4
 
     def __init__(self, i=None, j=None):
         PointType.__init__(self, i, j, BOMB)
@@ -233,7 +235,6 @@ class BombThread(Thread, PointType):
         self.__listPoints = computeNeighbors(i, j)
 
     def run(self) -> None:
-
         sleep(BombThread.TIME_LIMIT)  # time to explode bomb
 
         gameInstance.lock.acquireWriteLock()
@@ -427,17 +428,14 @@ class DLVThread(Thread):
 
     def run(self) -> None:
         while is_running:
-
-            gameInstance.lock.acquireReadLock()
-            finish = gameInstance.getFinish()
-            gameInstance.lock.releaseReadLock()
-
-            if finish is not None:
-                break
-
-            gameInstance.lock.acquireWriteLock()
-            self.dlv.recallASP()
-            gameInstance.lock.releaseWriteLock()
+            try:
+                gameInstance.lock.acquireWriteLock()
+                finish = gameInstance.getFinish()
+                if finish is not None:
+                    break
+                self.dlv.recallASP()
+            finally:
+                gameInstance.lock.releaseWriteLock()
             sleep(0.5)
 
 
@@ -486,11 +484,12 @@ class CheckBomb(Thread):
         while not stop:
             gameInstance.lock.acquireReadLock()
             isGrass = gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS
-            gameInstance.lock.releaseReadLock()
 
             if isGrass:
                 self.__bombs.remove(self.__bomb)
                 stop = True
+
+            gameInstance.lock.releaseReadLock()
 
 
 # === FUNCTIONS === (lower_case names)
@@ -621,7 +620,6 @@ while is_running:
 
     # --- events ---
     for event in pygame.event.get():
-
         # --- global events ---
 
         if event.type == pygame.QUIT:
@@ -656,3 +654,4 @@ while is_running:
 # --- the end ---
 
 pygame.quit()
+sys.exit(0)
