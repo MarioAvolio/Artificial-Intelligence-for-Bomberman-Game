@@ -59,7 +59,7 @@ resource_path = os.path.join(current_path, '../resources')  # The resource folde
 logs_path = os.path.join(resource_path, 'logs')
 
 BLOCK_SIZE = 50
-MAP_SIZE = 16
+MAP_SIZE = 15
 
 
 # === CLASSES === (CamelCase names)
@@ -278,6 +278,9 @@ class MatrixBuilder:
 
             for i in range(int(MAP_SIZE / 2)):  # adding numbers of wall
                 self.__inputProgram.add_program(f"wallId({i}).")
+
+            self.__inputProgram.add_program(f"minWood({MAP_SIZE}).")
+            self.__inputProgram.add_program(f"maxWood({MAP_SIZE * 2}).")
 
             Starting().start()
             answerSets = self.__handler.start_sync()

@@ -3,6 +3,8 @@
 %n(0..15). % columns and rows
 %wallId(N) :- maxN(A), N = A/2.
 wallNumber(3).
+%minWood(16).
+%maxWood(32).
 elem(0). elem(1). elem(2). elem(3). elem(4).
 % GRASS = 0
 % PLAYER = 1
@@ -47,8 +49,8 @@ chooseCell(X, Y) :- point(X, Y, _).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% WOOD %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 numberWood(K) :- #count{X, Y : point(X, Y, 4)} = K.
-:- numberWood(K), K < 13.
-:- numberWood(K), K > 17.
+:- numberWood(K), K < X, minWood(X).
+:- numberWood(K), K > X, maxWood(X).
 
 :- point(A1,B1,4), point(A2,B2,4), adjacent(A1,B1,A2,B2).
 :- #count{B : point(A,B,4)} > 3, n(A).
@@ -58,19 +60,6 @@ numberWood(K) :- #count{X, Y : point(X, Y, 4)} = K.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ESCAPE WAY TO (ENEMY & PLAYER) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 :- adjacent(A,B,C,D), point(A,B,1), point(C,D,T), T!=0.
 :- adjacent(A,B,C,D), point(A,B,2), point(C,D,T), T!=0.
-
-%wallAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 3).
-%woodAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 4).
-%wallAdjacentEnemy(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,2), point(X1, Y1, 3).
-%woodAdjacentEnemy(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,2), point(X1, Y1, 4).
-
-%sum: we cant have exactly 2 blocks (wood and/or wall) on initial paths of enemy and player.
-
-%totalWrongAdjacentPlayer(T) :- wallAdjacentPlayer(A), woodAdjacentPlayer(B), T = A+B.
-%totalWrongAdjacentEnemy(T) :- wallAdjacentEnemy(A), woodAdjacentEnemy(B), T = A+B.
-
-%:- totalWrongAdjacentEnemy(T), T > 1.
-%:- totalWrongAdjacentPlayer(T), T > 1.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% WALL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
