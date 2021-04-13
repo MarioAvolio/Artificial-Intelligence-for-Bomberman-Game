@@ -67,6 +67,7 @@ MAP_SIZE = 16
 
 class Game:
     def __init__(self):
+        self.__map = None
         self.__player = PointType(0, 0, PLAYER)
         self.__enemy = PointType(0, 1, ENEMY)
         self.__size = None
@@ -100,6 +101,8 @@ class Game:
         self.__swap(oldPoint.get_i(), oldPoint.get_j(), newPoint.get_i(), newPoint.get_j())
 
     def moveEnemy(self, point: Point):
+        if self.getFinish() is not None:
+            return
         # print(f"muovo il nemico in {point} dalla precedente posizione {self.__enemy}")
         self.moveOnMap(point, self.__enemy)
         self.__enemy.set_j(point.get_j())
@@ -224,7 +227,7 @@ class HandlerView:
 
 
 class BombThread(Thread, PointType):
-    TIME_LIMIT = 3
+    TIME_LIMIT = 4
 
     def __init__(self, i=None, j=None):
         PointType.__init__(self, i, j, BOMB)
@@ -316,7 +319,7 @@ class DLVSolution:
         self.__countLogs = 0  # count for debug
         self.__dir = None  # log directory for debug
         self.__lastPositionsEnemy = {}  # check all last position of enemy
-        self.__bombs = []  # list of bomb already placed
+        self.__bombs = ListBomb()  # list of bomb already placed
 
         try:
             self.__handler = DesktopHandler(
@@ -428,23 +431,53 @@ class DLVThread(Thread):
 
     def run(self) -> None:
         while is_running:
-
-            gameInstance.lock.acquireReadLock()
-            finish = gameInstance.getFinish()
-            gameInstance.lock.releaseReadLock()
-
-            if finish is not None:
-                break
-
-            gameInstance.lock.acquireWriteLock()
-            self.dlv.recallASP()
-            gameInstance.lock.releaseWriteLock()
+            try:
+                gameInstance.lock.acquireWriteLock()
+                finish = gameInstance.getFinish()
+                if finish is not None:
+                    break
+                self.dlv.recallASP()
+            finally:
+                gameInstance.lock.releaseWriteLock()
             sleep(0.5)
+
+
+class ListBomb:
+    def __init__(self):
+        self.__l = []
+        self.__lock = RWLock()
+
+    def append(self, elem: InputBomb):
+        self.__lock.acquireWriteLock()
+        self.__l.append(elem)
+        self.__lock.releaseWriteLock()
+
+    def remove(self, elem: InputBomb):
+        self.__lock.acquireWriteLock()
+        self.__l.remove(elem)
+        self.__lock.releaseWriteLock()
+
+    def __contains__(self, elem: InputBomb):
+        try:
+            self.__lock.acquireReadLock()
+            return elem in self.__l
+        except Exception as e:
+            self.__lock.acquireReadLock()
+            return False
+        finally:
+            self.__lock.releaseReadLock()
+
+    def __iter__(self):
+        try:
+            self.__lock.acquireReadLock()
+            return iter(self.__l.copy())
+        finally:
+            self.__lock.releaseReadLock()
 
 
 class CheckBomb(Thread):
 
-    def __init__(self, listBomb=None, bomb=None):
+    def __init__(self, listBomb: ListBomb, bomb: InputBomb):
         Thread.__init__(self)
         self.__bombs = listBomb
         self.__bomb = bomb
@@ -454,11 +487,12 @@ class CheckBomb(Thread):
         while not stop:
             gameInstance.lock.acquireReadLock()
             isGrass = gameInstance.getElement(self.__bomb.get_i(), self.__bomb.get_j()) == GRASS
-            gameInstance.lock.releaseReadLock()
 
             if isGrass:
                 self.__bombs.remove(self.__bomb)
                 stop = True
+
+            gameInstance.lock.releaseReadLock()
 
 
 # === FUNCTIONS === (lower_case names)
@@ -472,7 +506,7 @@ ASPMapper.get_instance().register_class(BreakBomb)
 ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
 
 
-def addBombEnemy(bombs: list[Point], bomb: Point) -> None:
+def addBombEnemy(bombs: ListBomb, bomb: InputBomb) -> None:
     if bomb not in bombs:
         bombs.append(bomb)
         CheckBomb(bombs, bomb).start()
@@ -589,7 +623,6 @@ while is_running:
 
     # --- events ---
     for event in pygame.event.get():
-
         # --- global events ---
 
         if event.type == pygame.QUIT:
@@ -624,3 +657,4 @@ while is_running:
 # --- the end ---
 
 pygame.quit()
+sys.exit(0)
