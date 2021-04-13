@@ -268,6 +268,8 @@ class MatrixBuilder:
 
         worldMap = [[0 for x in range(MAP_SIZE)] for y in range(MAP_SIZE)]
         try:
+            for i in range(MAP_SIZE):
+                self.__inputProgram.add_program(f"n({i}).")
             Starting().start()
             answerSets = self.__handler.start_sync()
 
@@ -285,6 +287,7 @@ class MatrixBuilder:
 
             self.__handler.remove_all()
         except Exception as e:
+            print(e)
             worldMap = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                         [4, 0, 0, 0, 0, 0, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0],

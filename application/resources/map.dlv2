@@ -1,12 +1,10 @@
 #show point/3.
 
 n(0..15). % columns and rows
-%minN(X) :- #min{Y : n(Y)} = X.
-%maxN(X) :- #max{Y : n(Y)} = X.
-wallNumber(28).
-wallType(1..6).
-minN(0).
-maxN(15).
+minN(X) :- #min{Y : n(Y)} = X.
+maxN(X) :- #max{Y : n(Y)} = X.
+wallId(N) :- maxN(A), N = A/2.
+wallNumber(X) :- wallId(N), X = N*3.
 
 % calculate 4 vertex of matrix
 vertexNumber(X) :- minN(X).
@@ -20,31 +18,20 @@ elem(0). elem(1). elem(2). elem(3). elem(4).
 % BLOCK = 3
 % BOX = 4
 
-
 cell(X, Y) :- n(X), n(Y).
 
 point(X, Y, Z) | notpoint(X, Y, Z) :- cell(X, Y), elem(Z).
 :- #count{X, Y : point(X, Y, 1)} != 1. % only one player
 :- #count{X, Y : point(X, Y, 2)} != 1. % only one enemy
 :- point(X, Y, Z1), point(X, Y, Z2), Z1!=Z2. % no differnt element in the same cell
-%:- #count{A,B : point(A,B,C)} != 256.
-
 
 % the same cell
-%chooseCell(X, Y) :- point(X, Y, _).
-%:- cell(X, Y), not chooseCell(X, Y).
+chooseCell(X, Y) :- point(X, Y, _).
+:- cell(X, Y), not chooseCell(X, Y).
 
 % enemy and player on one of the 4 vertex of matrix.
 :- point(X, Y, 1), not vertexCell(X, Y).
 :- point(X, Y, 2), not vertexCell(X, Y).
-
-% A wall must be "continuous", without hole.
-%:- point(X, Y1, Z), point(X, Y2, Z), Y1<Y2, not point(X, Y3, Z), Y3 = Y1+1, Z = 3.
-%:- point(X1, Y, Z), point(X2, Y, Z), X1<X2, not point(X3, Y, Z), X3 = X1+1, Z = 3.
-
-%WALL
-%pointWall(W, X, Y) | notPointWall(W, X, Y) :- point(X, Y, 3),
-%TODO!
 
 % not to much wall
 numberWall(K) :- #count{X, Y : point(X, Y, 3)} = K.
@@ -52,14 +39,17 @@ numberWall(K) :- #count{X, Y : point(X, Y, 3)} = K.
 
 %not to much wood
 numberWood(K) :- #count{X, Y : point(X, Y, 4)} = K.
-:- numberWood(K), K < 15.
-:- numberWood(K), K > 22.
+:- numberWood(K), K < 13.
+:- numberWood(K), K > 17.
 
 adjacent(X, Y, X, Y1):- cell(X, Y), cell(X, Y1), Y1 = Y + 1.
 adjacent(X, Y, X1, Y):- cell(X, Y), cell(X1, Y), X1 = X + 1.
+adjacent(X, Y, X, Y1):- cell(X, Y), cell(X, Y1), Y1 = Y - 1.
+adjacent(X, Y, X1, Y):- cell(X, Y), cell(X1, Y), X1 = X - 1.
 adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y + 1.
 adjacent(X, Y, X1, Y1):- cell(X, Y), cell(X1, Y1), X1 = X + 1, Y1 = Y - 1.
 adjacent(X, Y, X1, Y1):- adjacent(X1, Y1, X, Y).
+:- pointWall(W, X, Y), pointWall(W1, X1, Y1), adjacent(X, Y, X1, Y1), W!=W1.
 
 wallAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 3).
 woodAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 4).
@@ -74,10 +64,25 @@ totalWrongAdjacentEnemy(T) :- wallAdjacentEnemy(A), woodAdjacentEnemy(B), T = A+
 :- totalWrongAdjacentEnemy(T), T > 1.
 :- totalWrongAdjacentPlayer(T), T > 1.
 
-:- #count{Y : point(X,Y,Z), Z!=0, Z!=2, Z!=1} > 6. %6 funziona anche qua, 4 funziona ma qua no..
-%:- #count{X : point(X,Y,Z), Z!= 0} > 5. %AGGIUNGENDO QUESTA ISTRUZIONE NON RIESCE A CALCOLARE. --> TROPPO PESANTE
+%WALL
+pointWall(W, X, Y) | notPointWall(W, X, Y) :- wallId(W), point(X, Y, 3).
 
-%Non fattibile.. troppo pesanti
-%oblique(X,Y,X1,Y1) :- point(X,Y,Z), point(X1,Y1,Z1), X = X1 - 1, Y = Y1 - 1, Z = Z1, Z!=0.
-%:- #count{A,B,C,D : oblique(A,B,C,D)} > 7.
-%:- #count{A,B,C,D : oblique(A,B,C,D)} < 5.
+% two different wall cant occupy the same position on matrix
+:- pointWall(W1, X, Y), pointWall(W2, X, Y), W1 != W2.
+
+%Every wall must occupy three positions on matrix (lenght of wall = 3)
+:- wallId(W), #count{X, Y: pointWall(W, X, Y)} != 3.
+
+%distance between different wall
+:- pointWall(W1,X1,Y1), pointWall(W2,X2,Y2),  adjacent(X1,Y1,X2,Y2), W1!=W2.
+
+%Oblique ? NO
+%A wall cant occupy two different positions ( on the rows and on the columns )
+%:- pointWall(W, X1, Y1), pointWall(W, X2, Y2), X1!=X2, Y1!=Y2.
+
+% A wall must be "continuous", without hole.
+:- point(X, Y1, Z), point(X, Y2, Z), Y1<Y2, not point(X, Y3, Z), Y3 = Y1+1, Z = 3.
+:- point(X1, Y, Z), point(X2, Y, Z), X1<X2, not point(X3, Y, Z), X3 = X1+1, Z = 3.
+
+:- #count{Y: pointWall(W, X, Y)} > 2.
+:- #count{X: pointWall(W, X, Y)} > 2.
