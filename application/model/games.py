@@ -67,6 +67,7 @@ MAP_SIZE = 16
 
 class Game:
     def __init__(self):
+        self.__map = None
         self.__player = PointType(0, 0, PLAYER)
         self.__enemy = PointType(0, 1, ENEMY)
         self.__size = None
@@ -232,6 +233,7 @@ class BombThread(Thread, PointType):
         self.__listPoints = computeNeighbors(i, j)
 
     def run(self) -> None:
+
         sleep(BombThread.TIME_LIMIT)  # time to explode bomb
 
         gameInstance.lock.acquireWriteLock()
@@ -313,7 +315,7 @@ class DLVSolution:
         self.__countLogs = 0  # count for debug
         self.__dir = None  # log directory for debug
         self.__lastPositionsEnemy = {}  # check all last position of enemy
-        self.__bombs = []  # list of bomb already placed
+        self.__bombs = ListBomb()  # list of bomb already placed
 
         try:
             self.__handler = DesktopHandler(
@@ -439,9 +441,42 @@ class DLVThread(Thread):
             sleep(0.5)
 
 
+class ListBomb:
+    def __init__(self):
+        self.__l = []
+        self.__lock = RWLock()
+
+    def append(self, elem: InputBomb):
+        self.__lock.acquireWriteLock()
+        self.__l.append(elem)
+        self.__lock.releaseWriteLock()
+
+    def remove(self, elem: InputBomb):
+        self.__lock.acquireWriteLock()
+        self.__l.remove(elem)
+        self.__lock.releaseWriteLock()
+
+    def __contains__(self, elem: InputBomb):
+        try:
+            self.__lock.acquireReadLock()
+            return elem in self.__l
+        except Exception as e:
+            self.__lock.acquireReadLock()
+            return False
+        finally:
+            self.__lock.releaseReadLock()
+
+    def __iter__(self):
+        try:
+            self.__lock.acquireReadLock()
+            return iter(self.__l.copy())
+        finally:
+            self.__lock.releaseReadLock()
+
+
 class CheckBomb(Thread):
 
-    def __init__(self, listBomb=None, bomb=None):
+    def __init__(self, listBomb: ListBomb, bomb: InputBomb):
         Thread.__init__(self)
         self.__bombs = listBomb
         self.__bomb = bomb
@@ -469,7 +504,7 @@ ASPMapper.get_instance().register_class(BreakBomb)
 ASPMapper.get_instance().register_class(AdjacentPlayerAndEnemy)
 
 
-def addBombEnemy(bombs: list[Point], bomb: Point) -> None:
+def addBombEnemy(bombs: ListBomb, bomb: InputBomb) -> None:
     if bomb not in bombs:
         bombs.append(bomb)
         CheckBomb(bombs, bomb).start()
