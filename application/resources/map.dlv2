@@ -50,21 +50,27 @@ numberWood(K) :- #count{X, Y : point(X, Y, 4)} = K.
 :- numberWood(K), K < 13.
 :- numberWood(K), K > 17.
 
+:- point(A1,B1,4), point(A2,B2,4), adjacent(A1,B1,A2,B2).
+:- #count{B : point(A,B,4)} > 3, n(A).
+:- #count{A : point(A,B,4)} > 3, n(B).
 
-wallAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 3).
-woodAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 4).
-wallAdjacentEnemy(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,2), point(X1, Y1, 3).
-woodAdjacentEnemy(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,2), point(X1, Y1, 4).
 
-%fare la somma : non possono esserci esattamente 2 (blocchi + legno) vicino al player o nemico --> non può essere chiuso
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ESCAPE WAY TO (ENEMY & PLAYER) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+:- adjacent(A,B,C,D), point(A,B,1), point(C,D,T), T!=0.
+:- adjacent(A,B,C,D), point(A,B,2), point(C,D,T), T!=0.
 
-totalWrongAdjacentPlayer(T) :- wallAdjacentPlayer(A), woodAdjacentPlayer(B), T = A+B.
-totalWrongAdjacentEnemy(T) :- wallAdjacentEnemy(A), woodAdjacentEnemy(B), T = A+B.
+%wallAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 3).
+%woodAdjacentPlayer(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,1), point(X1, Y1, 4).
+%wallAdjacentEnemy(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,2), point(X1, Y1, 3).
+%woodAdjacentEnemy(C) :- #count{X, Y, X1, Y1 : adjacent(X, Y, X1, Y1)} = C, point(X,Y,2), point(X1, Y1, 4).
+
+%sum: we cant have exactly 2 blocks (wood and/or wall) on initial paths of enemy and player.
+
+%totalWrongAdjacentPlayer(T) :- wallAdjacentPlayer(A), woodAdjacentPlayer(B), T = A+B.
+%totalWrongAdjacentEnemy(T) :- wallAdjacentEnemy(A), woodAdjacentEnemy(B), T = A+B.
 
 %:- totalWrongAdjacentEnemy(T), T > 1.
 %:- totalWrongAdjacentPlayer(T), T > 1.
-
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% WALL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,5 +97,5 @@ pointWall(W, X, Y) | notPointWall(W, X, Y) :- wallId(W), point(X, Y, 3).
 :- pointWall(S, X, Y1), pointWall(S, X, Y2), Y1<Y2, not pointWall(S, X, Y3), Y3 = Y1+1.
 :- pointWall(S, X1, Y), pointWall(S, X2, Y), X1<X2, not pointWall(S, X3, Y), X3 = X1+1.
 
-%different wall can't be adjacent
+%different wall cant be adjacent
 :- pointWall(S, X, Y), pointWall(S1, X1, Y1), adjacent(X, Y, X1, Y1), S!=S1.
