@@ -1,5 +1,16 @@
 from threading import RLock, Condition
 
+#
+# function of synchronized print
+#
+pLock = RLock()
+
+
+def prints(s):
+    pLock.acquire()
+    print(s, flush=True)
+    pLock.release()
+
 
 class RWLockWithoutStarvation:
     def __init__(self):
