@@ -269,14 +269,23 @@ class MatrixBuilder:
 
     def build(self) -> list[list[int]]:
 
-        worldMap = [[0 for x in range(MAP_SIZE)] for y in range(MAP_SIZE)]
+        global MAP_SIZE
+        worldMap = [[0 for _ in range(MAP_SIZE)] for _ in range(MAP_SIZE)]
         try:
-            for i in range(MAP_SIZE):
+
+            for i in range(MAP_SIZE):  # adding size matrix
                 self.__inputProgram.add_program(f"n({i}).")
+
+            for i in range(int(MAP_SIZE / 2)):  # adding numbers of wall
+                self.__inputProgram.add_program(f"wallId({i}).")
+
             Starting().start()
             answerSets = self.__handler.start_sync()
 
             print("~~~~~~~~~~~~~~~~~~~~~~  MATRIX ~~~~~~~~~~~~~~~~~~~~~~")
+            if len(answerSets.get_answer_sets()) == 0:
+                raise Exception
+
             for answerSet in answerSets.get_answer_sets():
                 print(answerSet)
                 for obj in answerSet.get_atoms():
@@ -290,7 +299,7 @@ class MatrixBuilder:
 
             self.__handler.remove_all()
         except Exception as e:
-            print(e)
+            MAP_SIZE = 16
             worldMap = [[1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
                         [4, 0, 0, 0, 0, 0, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0],
