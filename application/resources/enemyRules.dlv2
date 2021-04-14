@@ -20,6 +20,11 @@ adjacentPlayer(X1, Y):- player(X, Y), X1 = X + 1.
 adjacentPlayer(X1, Y):- player(X, Y), X1 = X - 1.
 adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y - 1.
 
+adjacentToPath(X, Y1):- path(X, Y), Y1 = Y + 1.
+adjacentToPath(X1, Y):- path(X, Y), X1 = X + 1.
+adjacentToPath(X1, Y):- path(X, Y), X1 = X - 1.
+adjacentToPath(X, Y1):- path(X, Y), Y1 = Y - 1.
+
 adjacentPlayerAndEnemy(X, Y) :- enemy(X, Y), adjacentPlayer(X, Y).
 
 adjacentEnemy(X,Y,V) :- distance(X,Y,Z), point(X,Y,V).
@@ -69,19 +74,25 @@ breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), adjacentEnemy(
 
 %%%%%%%%%%%%%%%%% WEAK CONSTRAINT %%%%%%%%%%%%%%%%%
 
+% % minimize distance between player and enemy
+:~ path(X,Y), distance(X,Y,D). [D@3,X,Y,D]
+
 % % maximize enemy bomb
 :~ noEnemyBomb(X,Y), adjacentPlayer(X, Y). [1@2,X,Y]
-
-% % minimize distance between player and enemy
-:~ path(X,Y), distance(X,Y,D). [D@1,X,Y,D]
-
-% % minimizes path that the enemy can go in front of bomb!
-:~ path(X,Y), adjacentBomb(X, Y). [1@5, X, Y]
 
 % % dont go in last positions
 :~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@3, X, Y]
 
 % % maximize movement, otherwise the player would always be seated
-:~ noPath(X,Y). [1@4,X,Y]
+:~ noPath(X,Y). [1@5,X,Y]
+
+%%%%%%%%%%%%%%%%% WEAK CONSTRAINT - DODGE BOMB %%%%%%%%%%%%%%%%%
+
+% % minimizes path that the enemy can go in front of bomb!
+:~ path(X,Y), adjacentBomb(X, Y). [2@5, X, Y]
+
+% % minimizes path that the enemy can go in front of bomb!
+:~ path(X,Y), adjacentToPath(A, B), bomb(A, B). [2@5, X, Y, A, B]
+
 
 
