@@ -30,6 +30,8 @@ adjacentToPath(X1, Y):- path(X, Y), X1 = X + 1.
 adjacentToPath(X1, Y):- path(X, Y), X1 = X - 1.
 adjacentToPath(X, Y1):- path(X, Y), Y1 = Y - 1.
 
+freeToPath(C) :- #count{X,Y : adjacentToPath(X,Y), point(X, Y, 0) } = C.
+
 adjacentPlayerAndEnemy(X, Y) :- enemy(X, Y), adjacentPlayer(X, Y).
 
 adjacentEnemy(X,Y) :- distance(X,Y,Z).
@@ -75,12 +77,12 @@ free(C) :- #count{X,Y : adjacentEnemy(X,Y), point(X, Y, 0)} = C.
 
 %%%%%%%%%%%%%%%%% BREAK WOODEN BLOCKS %%%%%%%%%%%%%%%%%
 %IF LAST POSITION OF ENEMY IS ONLY PATH AVAILABLE, HE GO BACK AND PLACE A BOMB IN CURRENT POSITION
-breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), adjacentEnemy(C,D), point(C, D, 4), free(K), K>1.
+breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), adjacentEnemy(C,D), point(C, D, 4), free(K), K>1, freeToPath(M), M > 1.
 
 idealPath(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
-breakBomb(A,B) :- idealPath(X, Y), point(X, Y, 4), enemy(A,B), free(C), C>1.
+breakBomb(A,B) :- idealPath(X, Y), point(X, Y, 4), enemy(A,B), free(C), C>1, freeToPath(M), M > 1.
 
-breakBomb(X,Y) :- adjacentPlayer(A,B), adjacentEnemy(A,B), point(A, B, 4), enemy(X, Y), free(C), C>1.
+breakBomb(X,Y) :- adjacentPlayer(A,B), adjacentEnemy(A,B), point(A, B, 4), enemy(X, Y), free(C), C>1, freeToPath(M), M > 1.
 :- #count{X,Y : breakBomb(X,Y)} > 1.
 
 %%%%%%%%%%%%%%%%% WEAK CONSTRAINT %%%%%%%%%%%%%%%%%
