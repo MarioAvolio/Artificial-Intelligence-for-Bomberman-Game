@@ -261,8 +261,17 @@ class Starting(Thread):
 # this thread build matrix game world
 class MatrixBuilder:
     def __init__(self):
-        self.__handler = DesktopHandler(
-            DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
+
+        if os.name == 'nt':
+            self.__handler = DesktopHandler(
+                DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
+        elif os.uname().sysname == 'Darwin':
+            self.__handler = DesktopHandler(
+                DLV2DesktopService(os.path.join(resource_path, "../../lib/dlv2.mac_7")))
+        else:
+            self.__handler = DesktopHandler(
+                DLV2DesktopService(os.path.join(resource_path, "../../lib/dlv2-linux-64_6")))
+
         self.__inputProgram = ASPInputProgram()
         self.__inputProgram.add_files_path(os.path.join(resource_path, "map.dlv2"))
         self.__handler.add_program(self.__inputProgram)
@@ -334,9 +343,15 @@ class DLVSolution:
         self.__bombs = ListBomb()  # list of bomb already placed
 
         try:
-            self.__handler = DesktopHandler(
-                DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
-
+            if os.name == 'nt':
+                self.__handler = DesktopHandler(
+                    DLV2DesktopService(os.path.join(resource_path, "../../lib/DLV2.exe")))
+            elif os.uname().sysname == 'Darwin':
+                self.__handler = DesktopHandler(
+                    DLV2DesktopService(os.path.join(resource_path, "../../lib/dlv2.mac_7")))
+            else:
+                self.__handler = DesktopHandler(
+                    DLV2DesktopService(os.path.join(resource_path, "../../lib/dlv2-linux-64_6")))
             self.__fixedInputProgram = ASPInputProgram()
             self.__variableInputProgram = None
 
