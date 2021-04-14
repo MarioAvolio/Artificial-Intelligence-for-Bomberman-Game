@@ -22,11 +22,14 @@ adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y - 1.
 
 adjacentPlayerAndEnemy(X, Y) :- enemy(X, Y), adjacentPlayer(X, Y).
 
+adjacentEnemy(X,Y,V) :- distance(X,Y,Z), point(X,Y,V).
 
 %%%%%%%%%%%%%%%%% MOVING %%%%%%%%%%%%%%%%%
 path(X,Y) | noPath(X,Y) :- distance(X,Y,D).
 :- path(X,Y), point(X,Y,T), T!=0.
 :- #count{X,Y : path( X,Y)} > 1.
+:- path(X, Y), enemyBomb(X,Y).
+:- path(X, Y), breakBomb(X, Y). %PATH != ANY TYPE OF BOMB
 
 
 %%%%%%%%%%%%%%%%% DODGE BOMB %%%%%%%%%%%%%%%%%
@@ -50,19 +53,19 @@ enemyBomb(X,Y) | noEnemyBomb(X,Y):- distance(X,Y,D).
 :- enemyBomb(X,Y), distance(X,Y,D), D > 1.
 :- #count{X,Y : enemyBomb(X,Y)} > 1.
 :- enemyBomb(X,Y), point(X, Y, Z), Z!=0.
-:- path(X, Y), enemyBomb(X,Y), breakBomb(X, Y). %PATH != ANY TYPE OF BOMB
-free(C) :- #count{X,Y : distance(X,Y,Z)}= C, point(X,Y,0).
-:- free(C), C<=1, path(X,Y), enemyBomb(X,Y).
-:- free(C), C<=1, path(X,Y), breakBomb(X,Y).
 
+free(C) :- #count{X,Y : adjacentEnemy(X,Y,0)}= C.
+:- free(C), C<=1, enemyBomb(X,Y).
+:- free(C), C<=1, breakBomb(X,Y).
 
 
 %%%%%%%%%%%%%%%%% BREAK WOODEN BLOCKS %%%%%%%%%%%%%%%%%
 %IF LAST POSITION OF ENEMY IS ONLY PATH AVAILABLE, HE GO BACK AND PLACE A BOMB IN CURRENT POSITION
-breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_), point(C,D,4).
+breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), adjacentEnemy(_,_,4).
 %idealPath(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
 %breakBomb(A,B) :- idealPath(X, Y), point(X, Y, 4), enemy(A,B).
-
+%:- #count{X,Y : breakBomb(X,Y)} > 1.
+%breakBomb(X,Y) :- adjacentPlayer(A,B), point(A,B,4), distance(X,Y,Z), Z <= 2
 
 %%%%%%%%%%%%%%%%% WEAK CONSTRAINT %%%%%%%%%%%%%%%%%
 
@@ -76,8 +79,9 @@ breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_
 :~ path(X,Y), adjacentBomb(X, Y). [1@5, X, Y]
 
 % % dont go in last positions
-:~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@4, X, Y]
+:~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@3, X, Y]
 
 % % maximize movement, otherwise the player would always be seated
-:~ noPath(X,Y). [1@3,X,Y]
+:~ noPath(X,Y). [1@4,X,Y]
+
 
