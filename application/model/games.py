@@ -59,7 +59,7 @@ resource_path = os.path.join(current_path, '../resources')  # The resource folde
 logs_path = os.path.join(resource_path, 'logs')
 
 BLOCK_SIZE = 50
-MAP_SIZE = 15
+MAP_SIZE = 16
 
 
 # === CLASSES === (CamelCase names)

@@ -69,15 +69,15 @@ breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_
 % % maximize enemy bomb
 :~ noEnemyBomb(X,Y), adjacentPlayer(X, Y). [1@1,X,Y]
 
-% % dont go in last positions
-:~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@2, X, Y]
-
 % % minimize distance between player and enemy
-:~ path(X,Y), distance(X,Y,D). [D@3,X,Y,D]
-
-% % maximize movement, otherwise the player would always be seated
-:~ noPath(X,Y). [1@4,X,Y]
+:~ path(X,Y), distance(X,Y,D). [D@2,X,Y,D]
 
 % % minimizes path that the enemy can go in front of bomb!
 :~ path(X,Y), adjacentBomb(X, Y). [1@5, X, Y]
+
+% % dont go in last positions
+:~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@4, X, Y]
+
+% % maximize movement, otherwise the player would always be seated
+:~ noPath(X,Y). [1@3,X,Y]
 
