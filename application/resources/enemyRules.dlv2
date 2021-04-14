@@ -67,10 +67,10 @@ breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), distance(C,D,_
 %%%%%%%%%%%%%%%%% WEAK CONSTRAINT %%%%%%%%%%%%%%%%%
 
 % % maximize enemy bomb
-:~ noEnemyBomb(X,Y), adjacentPlayer(X, Y). [1@1,X,Y]
+:~ noEnemyBomb(X,Y), adjacentPlayer(X, Y). [1@2,X,Y]
 
 % % minimize distance between player and enemy
-:~ path(X,Y), distance(X,Y,D). [D@2,X,Y,D]
+:~ path(X,Y), distance(X,Y,D). [D@1,X,Y,D]
 
 % % minimizes path that the enemy can go in front of bomb!
 :~ path(X,Y), adjacentBomb(X, Y). [1@5, X, Y]
