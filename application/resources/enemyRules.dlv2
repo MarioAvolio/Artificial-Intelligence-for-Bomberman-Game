@@ -19,6 +19,11 @@ adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y + 1.
 adjacentPlayer(X1, Y):- player(X, Y), X1 = X + 1.
 adjacentPlayer(X1, Y):- player(X, Y), X1 = X - 1.
 adjacentPlayer(X, Y1):- player(X, Y), Y1 = Y - 1.
+adjacentPlayer(X1, Y1):- player(X, Y), X1 = X + 1, Y1 = Y + 1.
+adjacentPlayer(X1, Y1):- player(X, Y), X1 = X + 1, Y1 = Y - 1.
+adjacentPlayer(X1, Y1):- player(X, Y), X1 = X - 1, Y1 = Y + 1.
+adjacentPlayer(X1, Y1):- player(X, Y), X1 = X - 1, Y1 = Y - 1.
+
 
 adjacentToPath(X, Y1):- path(X, Y), Y1 = Y + 1.
 adjacentToPath(X1, Y):- path(X, Y), X1 = X + 1.
@@ -27,7 +32,11 @@ adjacentToPath(X, Y1):- path(X, Y), Y1 = Y - 1.
 
 adjacentPlayerAndEnemy(X, Y) :- enemy(X, Y), adjacentPlayer(X, Y).
 
-adjacentEnemy(X,Y,V) :- distance(X,Y,Z), point(X,Y,V).
+adjacentEnemy(X,Y) :- distance(X,Y,Z).
+adjacentEnemy(X1, Y1):- enemy(X, Y), X1 = X + 1, Y1 = Y + 1.
+adjacentEnemy(X1, Y1):- enemy(X, Y), X1 = X + 1, Y1 = Y - 1.
+adjacentEnemy(X1, Y1):- enemy(X, Y), X1 = X - 1, Y1 = Y + 1.
+adjacentEnemy(X1, Y1):- enemy(X, Y), X1 = X - 1, Y1 = Y - 1.
 
 %%%%%%%%%%%%%%%%% MOVING %%%%%%%%%%%%%%%%%
 path(X,Y) | noPath(X,Y) :- distance(X,Y,D).
@@ -59,40 +68,37 @@ enemyBomb(X,Y) | noEnemyBomb(X,Y):- distance(X,Y,D).
 :- #count{X,Y : enemyBomb(X,Y)} > 1.
 :- enemyBomb(X,Y), point(X, Y, Z), Z!=0.
 
-free(C) :- #count{X,Y : adjacentEnemy(X,Y,0)}= C.
+free(C) :- #count{X,Y : adjacentEnemy(X,Y), point(X, Y, 0)} = C.
 :- free(C), C<=1, enemyBomb(X,Y).
 :- free(C), C<=1, breakBomb(X,Y).
 
 
 %%%%%%%%%%%%%%%%% BREAK WOODEN BLOCKS %%%%%%%%%%%%%%%%%
 %IF LAST POSITION OF ENEMY IS ONLY PATH AVAILABLE, HE GO BACK AND PLACE A BOMB IN CURRENT POSITION
-breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), adjacentEnemy(_,_,4).
-%idealPath(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
-%breakBomb(A,B) :- idealPath(X, Y), point(X, Y, 4), enemy(A,B).
-%:- #count{X,Y : breakBomb(X,Y)} > 1.
-%breakBomb(X,Y) :- adjacentPlayer(A,B), point(A,B,4), distance(X,Y,Z), Z <= 2
+breakBomb(A,B):- lastPositionEnemy(X,Y,_), path(X,Y), enemy(A,B), adjacentEnemy(C,D), point(C, D, 4), free(K), K>1.
+
+idealPath(X, Y) :- #min{D, X1, Y1 : distance(X1, Y1, D)} = K, distance(X, Y, K).
+breakBomb(A,B) :- idealPath(X, Y), point(X, Y, 4), enemy(A,B), free(C), C>1.
+
+breakBomb(X,Y) :- adjacentPlayer(A,B), adjacentEnemy(A,B), point(A, B, 4), enemy(X, Y), free(C), C>1.
+:- #count{X,Y : breakBomb(X,Y)} > 1.
 
 %%%%%%%%%%%%%%%%% WEAK CONSTRAINT %%%%%%%%%%%%%%%%%
 
 % % minimize distance between player and enemy
-:~ path(X,Y), distance(X,Y,D). [D@3,X,Y,D]
+:~ path(X,Y), distance(X,Y,D). [D@1,X,Y,D]
+
+% % dont go in last positions
+:~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@1, X, Y]
 
 % % maximize enemy bomb
 :~ noEnemyBomb(X,Y), adjacentPlayer(X, Y). [1@2,X,Y]
 
-% % dont go in last positions
-:~ path(X,Y), lastPositionEnemy(X,Y,Z). [Z@3, X, Y]
-
 % % maximize movement, otherwise the player would always be seated
-:~ noPath(X,Y). [1@5,X,Y]
-
-%%%%%%%%%%%%%%%%% WEAK CONSTRAINT - DODGE BOMB %%%%%%%%%%%%%%%%%
+:~ noPath(X,Y). [1@3,X,Y]
 
 % % minimizes path that the enemy can go in front of bomb!
-:~ path(X,Y), adjacentBomb(X, Y). [2@5, X, Y]
-
-% % minimizes path that the enemy can go in front of bomb!
-:~ path(X,Y), adjacentToPath(A, B), bomb(A, B). [2@5, X, Y, A, B]
+:~ path(X,Y), adjacentBomb(X, Y). [2@3, X, Y]
 
 
 
