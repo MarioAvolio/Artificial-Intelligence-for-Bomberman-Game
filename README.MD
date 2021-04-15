@@ -3,8 +3,8 @@
 **Simple** Bomberman clone written in python using pygame. 
 - **ASP** for Artificial Intelligence, indeed, the system is based on **DLV2**.
 - **Multithreading** game based on **RWLock**.
-- Easy graphics with PyGame.
-- Supported platforms: _Windows_, _Linux_ (not tested), _MacOS_ (not tested)
+- Easy graphics with **PyGame**.
+- Supported **platforms**: _Windows_, _Linux_, _MacOS_
 
 ### Capture 1
 ![](screenshots/Capture1.PNG)
@@ -49,7 +49,8 @@ https://www.flaticon.com/free-icon/bomberman_528079?term=bomberman&page=1&positi
 
 https://www.flaticon.com/free-icon/enemy_1477179?term=enemy&page=1&position=1&page=1&position=1&related_id=1477179&origin=search
 
-
 https://www.flaticon.com/free-icon/bomb_595582?term=bomb&page=1&position=2&page=1&position=2&related_id=595582&origin=search
+
+https://wallpapercave.com/w/wp3539078
 ## DLV2 
 http://www.dlvsystem.com/
