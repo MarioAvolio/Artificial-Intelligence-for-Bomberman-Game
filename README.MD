@@ -36,11 +36,7 @@
 <h3 align="center">Bomberman AI in ASP</h3>
 
   <p align="center">
-    **Simple** Bomberman clone written in python using pygame. 
-    - **ASP** for Artificial Intelligence, indeed, the system is based on **DLV2**.
-    - **Multithreading** game based on **RWLock**.
-    - Easy graphics with **PyGame**.
-    - Supported **platforms**: _Windows_, _Linux_, _MacOS_
+    Simple Bomberman clone written in python using pygame and ASP.
     <br />
     <a href="https://github.com/MarioAvolio/Artificial-Intelligence-for-Bomberman-Game"><strong>Explore the docs »</strong></a>
     <br />
