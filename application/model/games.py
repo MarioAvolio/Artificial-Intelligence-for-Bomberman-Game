@@ -5,6 +5,7 @@ import os
 import sys
 from threading import Thread
 from time import sleep
+from typing import List
 
 import pygame
 # === CONSTANS === (UPPER_CASE names)
@@ -108,7 +109,7 @@ class Game:
         self.__enemy.set_j(point.get_j())
         self.__enemy.set_i(point.get_i())
 
-    def explode(self, listPoints: list[Point], coordinateBomb: Point):
+    def explode(self, listPoints: List[Point], coordinateBomb: Point):
         if self.getFinish() is not None:
             return
 
@@ -128,7 +129,7 @@ class Game:
     def __writeElement(self, i: int, j: int, elem):
         self.__map[i][j] = elem
 
-    def setMap(self, w: list[list[int]]):
+    def setMap(self, w: List[List[int]]):
         self.__map = w
         self.__size = len(self.__map)
         global BLOCK_SIZE
@@ -276,7 +277,7 @@ class MatrixBuilder:
         self.__inputProgram.add_files_path(os.path.join(resource_path, "map.dlv2"))
         self.__handler.add_program(self.__inputProgram)
 
-    def build(self) -> list[list[int]]:
+    def build(self) -> List[List[int]]:
 
         global MAP_SIZE
         worldMap = [[0 for _ in range(MAP_SIZE)] for _ in range(MAP_SIZE)]
@@ -563,7 +564,7 @@ def getDistanceEP(p1: Point, e1: Point) -> int:
     return int(pow(pow(eI - pI, 2) + pow(eJ - pJ, 2), 1 / 2))
 
 
-def computeNeighbors(i: int, j: int) -> list[Point]:
+def computeNeighbors(i: int, j: int) -> List[Point]:
     listPoints = [Path(i, j) for _ in range(4)]
     movePoint(listPoints[0], LEFT)
     movePoint(listPoints[1], RIGHT)
